@@ -1,32 +1,15 @@
 package aocmaven.a2018;
 
-import static java.util.Arrays.stream;
-import static java.util.Collections.singletonList;
 import static org.apache.commons.io.FileUtils.readFileToString;
-import java.util.stream.*;
-
-import advent_of_code.main.a2020.Day19T.Rule;
-import lombok.Data;
-import lombok.Value;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import org.apache.commons.lang3.StringUtils;
+
+import lombok.Data;
+import lombok.Value;
 
 public class Day8A2018 {
 
