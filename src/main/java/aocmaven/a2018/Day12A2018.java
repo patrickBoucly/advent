@@ -3,7 +3,7 @@ package aocmaven.a2018;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-public class Day11A2018 {
+public class Day12A2018 {
 
 	public static void main(String[] args0) {
 		//s1();
