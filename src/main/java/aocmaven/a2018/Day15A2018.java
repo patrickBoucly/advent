@@ -9,8 +9,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.Stack;
 
 import aocmaven.a2018.Day13A2018.Plan;
 import aocmaven.a2018.Day13A2018.Train;
@@ -30,7 +35,40 @@ public class Day15A2018 {
 	private static void s1() {
 		String input = read();
 		Board board = getBoard(input);
-		board.initialiser();
+		int id=1;
+		Map<Case, Set<Case>> adjCases = new HashMap<>();
+		for (int j = 0; j < board.nbLignes; j++) {
+			for (int i = 0; i < board.longeurLigne; i++) {
+				if((board.getBoard()[i][j]).equals(".")) {
+					adjCases.put(new Case(i,j), new HashSet<Case>());
+				} else if ((board.getBoard()[i][j]).equals("E")) {
+					adjCases.put(new Case(i,j,new Combattant(id, 200, "E", i, j)), new HashSet<Case>());
+					id++;
+				} else if ((board.getBoard()[i][j]).equals("G")) {
+					adjCases.put(new Case(i,j,new Combattant(id, 200, "G", i, j)), new HashSet<Case>());
+					id++;
+				}
+			}
+			
+			for(Case c1:adjCases.keySet()) {
+				for(Case c2:adjCases.keySet()) {
+					if(Math.abs(c1.x-c2.x)+Math.abs(c1.y-c2.y) ==1 ) {
+						adjCases.get(c1).add(c2);
+					}
+				}	
+			}
+			
+		}
+		
+		Graph g = new Graph(adjCases);
+		for(Case c: g.adjCases.keySet()) {
+			for(Case c2: g.adjCases.keySet()) {
+				System.out.println("la distance mini entre "+c+ " et "+c2+ " est "+g.distMin(c,c2));
+			}
+		}
+		
+		
+		
 		board.passerUnTour();
 
 		System.out.println(board);
@@ -60,6 +98,48 @@ public class Day15A2018 {
 		List<Combattant> combattants = new ArrayList<>();
 		int round = 0;
 
+		
+		
+		public String[][] getBoard() {
+			return board;
+		}
+
+		public void setBoard(String[][] board) {
+			this.board = board;
+		}
+
+		public int getLongeurLigne() {
+			return longeurLigne;
+		}
+
+		public void setLongeurLigne(int longeurLigne) {
+			this.longeurLigne = longeurLigne;
+		}
+
+		public int getNbLignes() {
+			return nbLignes;
+		}
+
+		public void setNbLignes(int nbLignes) {
+			this.nbLignes = nbLignes;
+		}
+
+		public List<Combattant> getCombattants() {
+			return combattants;
+		}
+
+		public void setCombattants(List<Combattant> combattants) {
+			this.combattants = combattants;
+		}
+
+		public int getRound() {
+			return round;
+		}
+
+		public void setRound(int round) {
+			this.round = round;
+		}
+
 		public Board(String[][] board, int longeurLigne, int nbLignes) {
 			this.board = board;
 			this.longeurLigne = longeurLigne;
@@ -85,6 +165,7 @@ public class Day15A2018 {
 			}
 
 		}
+		
 
 		private void action(Combattant c) {
 			String nord = board[c.x][c.y - 1];
@@ -217,21 +298,7 @@ public class Day15A2018 {
 			return combattants;
 		}
 
-		public void initialiser() {
-			int id = 1;
-			for (int j = 0; j < nbLignes; j++) {
-				for (int i = 0; i < longeurLigne; i++) {
-					String s = board[i][j];
-					if (s.equals("G")) {
-						combattants.add(new Combattant(id, 200, "G", i, j));
-						id++;
-					} else if (s.equals("E")) {
-						combattants.add(new Combattant(id, 200, "E", i, j));
-						id++;
-					}
-				}
-			}
-		}
+		
 
 		public void set(int x, int y, String string) {
 			board[x][y] = string;
@@ -259,6 +326,105 @@ public class Day15A2018 {
 
 	}
 
+	public static class Case {
+		int x;
+		int y;
+		Combattant c;
+		
+		
+		public Case(int x, int y) {
+			super();
+			this.x = x;
+			this.y = y;
+		}
+		public Case(int x, int y, Combattant c) {
+			super();
+			this.x = x;
+			this.y = y;
+			this.c = c;
+		}
+		public int getX() {
+			return x;
+		}
+		public void setX(int x) {
+			this.x = x;
+		}
+		public int getY() {
+			return y;
+		}
+		public void setY(int y) {
+			this.y = y;
+		}
+		public Combattant getC() {
+			return c;
+		}
+		public void setC(Combattant c) {
+			this.c = c;
+		}
+		@Override
+		public String toString() {
+			return "Case [x=" + x + ", y=" + y + "]";
+		}
+		
+		
+	}
+	
+	public static class Graph {
+	    private Map<Case, Set<Case>> adjCases;
+
+	    
+		public Graph() {
+			super();
+		}
+		
+		public Integer distMin(Case c, Case c2) {
+			Set<Case> cases=adjCases.keySet();
+			Stack<Case> file = new Stack<>();
+			file.add(c);
+			if(adjCases.get(c).contains(c2)) {
+				return 1;
+			} else {
+			//	Case nextCase=
+			}
+			
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		Set<Case> depthFirstTraversal(Graph graph, Case root) {
+		    Set<Case> visited = new LinkedHashSet<>();
+		    Stack<Case> stack = new Stack<>();
+		    stack.push(root);
+		    while (!stack.isEmpty()) {
+		    	Case uneCase = stack.pop();
+		        if (!visited.contains(uneCase)) {
+		            visited.add(uneCase);
+		            for (Case c : graph.adjCases.get(uneCase)) {     
+		                stack.push(c);
+		            }
+		        }
+		    }
+		    return visited;
+		}
+		
+
+		public Graph(Map<Case, Set<Case>> adjCases) {
+			super();
+			this.adjCases = adjCases;
+		}
+
+		public Map<Case, Set<Case>> getAdjCases() {
+			return adjCases;
+		}
+
+		public void setAdjCases(Map<Case, Set<Case>> adjCases) {
+			this.adjCases = adjCases;
+		}
+	    
+	}
+	
+	
+	
 	public static class Combattant {
 		int id;
 		int hp;
@@ -267,62 +433,48 @@ public class Day15A2018 {
 		int y;
 		HashMap<String, String> voisinage = new HashMap<>();
 		HashMap<String, Integer> distMinEnnemi = new HashMap<>();
-
 		public int getHp() {
 			return hp;
 		}
-
 		public String autreRace() {
 			if (type.equals("E")) {
 				return "G";
 			}
 			return "E";
 		}
-
 		public HashMap<String, String> getVoisinage() {
 			return voisinage;
 		}
-
 		public HashMap<String, Integer> getDistMinEnnemi() {
 			return distMinEnnemi;
 		}
-
 		public void setDistMinEnnemi(HashMap<String, Integer> distMinEnnemi) {
 			this.distMinEnnemi = distMinEnnemi;
 		}
-
 		public void setVoisinage(HashMap<String, String> voisinage) {
 			this.voisinage = voisinage;
 		}
-
 		public void setHp(int hp) {
 			this.hp = hp;
 		}
-
 		public String getType() {
 			return type;
 		}
-
 		public void setType(String type) {
 			this.type = type;
 		}
-
 		public int getX() {
 			return x;
 		}
-
 		public void setX(int x) {
 			this.x = x;
 		}
-
 		public int getY() {
 			return y;
 		}
-
 		public void setY(int y) {
 			this.y = y;
 		}
-
 		public Combattant(int id, int hp, String type, int x, int y) {
 			super();
 			this.id = id;
@@ -331,7 +483,6 @@ public class Day15A2018 {
 			this.x = x;
 			this.y = y;
 		}
-
 		public int getId() {
 			return id;
 		}
@@ -339,7 +490,6 @@ public class Day15A2018 {
 		public void setId(int id) {
 			this.id = id;
 		}
-
 	}
 
 	private static String read() {
