@@ -1,18 +1,14 @@
 package aocmaven.a2018;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import aocmaven.a2018.Day14A2018.Jeux;
+import java.util.Map;
 
 public class Day16A2018 {
 
@@ -37,18 +33,21 @@ public class Day16A2018 {
 		int pos=0;
 		String[] inputS=input.split("\n");
 		for (String s : inputS) {
-		System.out.println(s);
+	//	System.out.println(s);
 		}
 		
 		for (String s : inputS) {
-			System.out.println(s);
+			if(s.equals("@")) {
+				break;
+			}
+		///	System.out.println(s);
 			if(pos % 4 ==0) {
 			before =new Register(Arrays.asList(Integer.parseInt(s.substring(9, 10)),Integer.parseInt(s.substring(12, 13)),Integer.parseInt(s.substring(15, 16)),Integer.parseInt(s.substring(18, 19))));
 			} else if(pos % 4 ==1) {
 				List<Integer> instruc= new ArrayList<>();
 				String[] instrucS=s.split(" ");
 				for(String c:instrucS) {
-					instruc.add(Integer.parseInt(c));
+					instruc.add(Integer.parseInt(c.trim()));
 				}
 				instruction=new Instruction(instruc);
 			}else if(pos % 4 ==2) {
@@ -69,18 +68,58 @@ public class Day16A2018 {
 			if(cpt>4) {
 		//		break;
 			}
-			
-			res+=matchPlusDe3OpCode(s);
-			
+		//	res+=matchPlusDe3OpCode(s);
 			cpt++;
 		}
+		Map<Integer,String> mapOpCode = new HashMap<>();
+		Map<String,Integer> mapOpCodeNomNum = new HashMap<>();
+		List<Sample> LM1=null;
+		List<Sample> LM2=null;
+		List<Sample> LM3=null;
+		List<Sample> LM4=null;
+		List<Sample> LM5=null;
 		
-
-		System.out.println(res);
-		//System.out.println(getOPverifiees(s1));
-
+		LM1=getMatch(inputSamples,1);
+		
+		System.out.println(LM1.get(0).instruction);
+		System.out.println(getOPverifiees(LM1.get(0)));
+		
+		LM2=getMatch(inputSamples,2);
+		System.out.println(LM2.get(0).instruction);
+		System.out.println(getOPverifiees(LM2.get(0)));
+		LM3=getMatch(inputSamples,3);
+		System.out.println(LM3.get(0).instruction);
+		System.out.println(getOPverifiees(LM3.get(0)));
+		
+		
+		for(int i=1;i<17;i++) {
+			List<Sample> LM=getLMI(inputSamples,i);
+			for(int j=0;j<LM.size();j++) {
+				//if(!opTrouves.contains(getOPverifiees(LM2.get(j)).instruction.opcode.toString()))) {
+					
+			//	}
+			}
+			
+		}
+		
 	}
-	 private static int matchPlusDe3OpCode(Sample s) {
+	
+	 private static List<Sample> getLMI(List<Sample> inputSamples, int i) {
+		return getMatch( inputSamples, i) ;
+	}
+	
+	 private static List<Sample> getMatch(List<Sample> inputSamples, int i) {
+		 List<Sample> LM= new ArrayList<>();
+		 for(Sample s:inputSamples) {
+			 if(getOPverifiees(s).size()== i) {
+					LM.add(s);
+			}
+		 }
+		
+		return LM;
+	}
+
+	private static int matchPlusDe3OpCode(Sample s) {
 		if(getOPverifiees(s).size()>=3) {
 			return 1;
 		}
@@ -98,95 +137,95 @@ public class Day16A2018 {
 		if (addr(before, instruction).equals(afterRecherche)) {
 			opVerifies.add("addr");
 		}
-		System.out.println("after addr:"+addr(before, instruction));
+		//System.out.println("after addr:"+addr(before, instruction));
 		
 		
 		if (addi(before, instruction).equals(afterRecherche)) {
 			opVerifies.add("addi");
 		}
-		System.out.println("after addi:"+addi(before, instruction));
+	//	System.out.println("after addi:"+addi(before, instruction));
 		
 		
 		if (mulr(before, instruction).equals(afterRecherche)) {
 			opVerifies.add("mulr");
 		}
-		System.out.println("after mulr:"+mulr(before, instruction));
+	//	System.out.println("after mulr:"+mulr(before, instruction));
 		
 
 		if (muli(before, instruction).equals(afterRecherche)) {
 			opVerifies.add("muli");
 		}
-		System.out.println("after muli:"+muli(before, instruction));
+	//	System.out.println("after muli:"+muli(before, instruction));
 		
 		if (eqrr(before, instruction).equals(afterRecherche)) {
 			opVerifies.add("eqrr");
 		}
 		
-		System.out.println("after eqrr:"+eqrr(before, instruction));
+	//	System.out.println("after eqrr:"+eqrr(before, instruction));
 		
 		
 		if (eqri(before, instruction).equals(afterRecherche)) {
 			opVerifies.add("eqri");
 		}
-		System.out.println("after eqri:"+eqri(before, instruction));
+		//System.out.println("after eqri:"+eqri(before, instruction));
 		
 		
 		
 		if (eqir(before, instruction).equals(afterRecherche)) {
 			opVerifies.add("eqir");
 		}
-		System.out.println("after eqir:"+eqir(before, instruction));
+		//System.out.println("after eqir:"+eqir(before, instruction));
 		
 		
 		if (gtrr(before, instruction).equals(afterRecherche)) {
 			opVerifies.add("gtrr");
 		}
-		System.out.println("after gtrr:"+gtrr(before, instruction));
+	//	System.out.println("after gtrr:"+gtrr(before, instruction));
 		
 		
 		if (gtri(before, instruction).equals(afterRecherche)) {
 			opVerifies.add("gtri");
 		}
-		System.out.println("after gtri:"+gtri(before, instruction));
+	//	System.out.println("after gtri:"+gtri(before, instruction));
 		
 		
 		if (gtir(before, instruction).equals(afterRecherche)) {
 			opVerifies.add("gtir");
 		}
-		System.out.println("after gtir:"+gtir(before, instruction));
+	//	System.out.println("after gtir:"+gtir(before, instruction));
 		if (banr(before, instruction).equals(afterRecherche)) {
 			opVerifies.add("banr");
 		}
-		System.out.println("after banr:"+banr(before, instruction));
+	//	System.out.println("after banr:"+banr(before, instruction));
 		
 		
 		if (bani(before, instruction).equals(afterRecherche)) {
 			opVerifies.add("bani");
 		}
-		System.out.println("after bani:"+bani(before, instruction));
+	//	System.out.println("after bani:"+bani(before, instruction));
 		
 		if (seti(before, instruction).equals(afterRecherche)) {
 			opVerifies.add("seti");
 		}
-		System.out.println("after seti:"+seti(before, instruction));
+	//	System.out.println("after seti:"+seti(before, instruction));
 		
 		
 		if (setr(before, instruction).equals(afterRecherche)) {
 			opVerifies.add("setr");
 		}
-		System.out.println("after setr"+setr(before, instruction));
+	//	System.out.println("after setr"+setr(before, instruction));
 		
 		
 		if (bori(before, instruction).equals(afterRecherche)) {
 			opVerifies.add("bori");
 		}
-		System.out.println("after bori:"+bori(before, instruction));
+	//	System.out.println("after bori:"+bori(before, instruction));
 		
 		
 		if (borr(before, instruction).equals(afterRecherche)) {
 			opVerifies.add("borr");
 		}
-		System.out.println("after borr:"+borr(before, instruction));
+	//	System.out.println("after borr:"+borr(before, instruction));
 		
 		return opVerifies;
 	}
