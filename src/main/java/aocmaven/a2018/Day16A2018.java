@@ -1,6 +1,8 @@
 package aocmaven.a2018;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,12 +15,111 @@ import java.util.Map;
 public class Day16A2018 {
 
 	public static void main(String[] args0) {
-		s1();
-		// s2();
+		//s1();
+		s2();
 	}
 
 	private static void s2() {
-		String input = read();
+		//Sample s1= new Sample(new Register(Arrays.asList(3, 2, 1, 1)),new Register(Arrays.asList(3, 2, 2, 1)),new Instruction(9, 2, 1, 2));
+		String input=read();
+		List<Sample> inputSamples = getInputSample(input);
+		Map<Integer, String> mapOpCode = getMapOpCode(inputSamples);
+		mapOpCode.put(8, "addr");
+		List<Instruction> test = getInstructions(input);
+		System.out.println(mapOpCode);
+		Register before = new Register(Arrays.asList(1,3,1,1));
+		for(Instruction i:test) {
+			Register after=null;
+			after=apply(before,i,mapOpCode);
+			System.out.println(after);
+			before=new Register(after.register);
+		}
+	}
+
+	private static Register apply(Register before, Instruction i, Map<Integer, String> mapOpCode) {
+		Register after = null;
+		try {
+			Method m = Day16A2018.class.getDeclaredMethod(mapOpCode.get(i.opcode), Register.class,Instruction.class);
+			after=(Register) m.invoke(mapOpCode.get(i.opcode), before,i);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return after;
+	}
+
+	private static List<Instruction> getInstructions(String input) {
+		List<Instruction> test = new ArrayList<>();
+		int pos=0;
+		String[] inputS=input.split("\n");
+	
+		for (String s : inputS) {
+			if(pos < 3263) {
+				pos++;
+			} else {
+				List<Integer> instruc= new ArrayList<>();
+				String[] instrucS=s.split(" ");
+				for(String c:instrucS) {
+					instruc.add(Integer.parseInt(c.trim()));
+				}
+				test.add(new Instruction(instruc));
+				pos++;
+			}
+		}
+		return test;
+	}
+
+	private static Map<Integer, String> getMapOpCode(List<Sample> inputSamples) {
+		Map<Integer,String> mapOpCode = new HashMap<>();
+		
+		for(int i=1;i<30;i++) {
+			List<Sample> LM=getLMI(inputSamples,i);
+			for(int j=0;j<LM.size();j++) {
+				if(!mapOpCode.containsKey(LM.get(j).instruction.opcode)){
+					for(String f:getOPverifiees(LM.get(j))){
+						if(!mapOpCode.values().contains(f)) {
+							mapOpCode.put(LM.get(j).instruction.opcode, f);
+						}
+					}
+					
+				}
+				
+			}
+			
+		}
+		return mapOpCode;
+	}
+
+	private static List<Sample> getInputSample(String input) {
+		List<Sample> inputSamples = new ArrayList<>();
+		 
+		Register before=null;
+		Instruction instruction=null;
+		Register afterRecherche=null;
+		int pos=0;
+		String[] inputS=input.split("\n");
+		
+		for (String s : inputS) {
+			if(pos == 3260) {
+				return inputSamples;
+			}
+			if(pos % 4 ==0) {
+			before =new Register(Arrays.asList(Integer.parseInt(s.substring(9, 10)),Integer.parseInt(s.substring(12, 13)),Integer.parseInt(s.substring(15, 16)),Integer.parseInt(s.substring(18, 19))));
+			} else if(pos % 4 ==1) {
+				List<Integer> instruc= new ArrayList<>();
+				String[] instrucS=s.split(" ");
+				for(String c:instrucS) {
+					instruc.add(Integer.parseInt(c.trim()));
+				}
+				instruction=new Instruction(instruc);
+			}else if(pos % 4 ==2) {
+				afterRecherche=new Register(Arrays.asList(Integer.parseInt(s.substring(9, 10)),Integer.parseInt(s.substring(12, 13)),Integer.parseInt(s.substring(15, 16)),Integer.parseInt(s.substring(18, 19))));
+			} else {
+				inputSamples.add(new Sample(before, afterRecherche,instruction));
+			}
+			pos++;
+		}
+		return null;
 	}
 
 	private static void s1() {
@@ -71,36 +172,8 @@ public class Day16A2018 {
 		//	res+=matchPlusDe3OpCode(s);
 			cpt++;
 		}
-		Map<Integer,String> mapOpCode = new HashMap<>();
-		Map<String,Integer> mapOpCodeNomNum = new HashMap<>();
-		List<Sample> LM1=null;
-		List<Sample> LM2=null;
-		List<Sample> LM3=null;
-		List<Sample> LM4=null;
-		List<Sample> LM5=null;
+		Map<Integer, String> mapOpCode = getMapOpCode(inputSamples);
 		
-		LM1=getMatch(inputSamples,1);
-		
-		System.out.println(LM1.get(0).instruction);
-		System.out.println(getOPverifiees(LM1.get(0)));
-		
-		LM2=getMatch(inputSamples,2);
-		System.out.println(LM2.get(0).instruction);
-		System.out.println(getOPverifiees(LM2.get(0)));
-		LM3=getMatch(inputSamples,3);
-		System.out.println(LM3.get(0).instruction);
-		System.out.println(getOPverifiees(LM3.get(0)));
-		
-		
-		for(int i=1;i<17;i++) {
-			List<Sample> LM=getLMI(inputSamples,i);
-			for(int j=0;j<LM.size();j++) {
-				//if(!opTrouves.contains(getOPverifiees(LM2.get(j)).instruction.opcode.toString()))) {
-					
-			//	}
-			}
-			
-		}
 		
 	}
 	
@@ -556,7 +629,7 @@ public class Day16A2018 {
 
 	private static String read() {
 		Path path = Paths.get(
-				"C:\\git_repositories\\advent\\src\\main\\resources\\src\\advent_of_code\\main\\resources\\a2018\\input16_1");
+				"C:\\git_repositories\\advent\\src\\main\\resources\\src\\advent_of_code\\main\\resources\\a2018\\input16_2");
 		String content = "";
 		try {
 			content = Files.readString(path);
