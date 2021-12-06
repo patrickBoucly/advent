@@ -7,15 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class A2021Day6 extends  A2021 {
+public class A2021Day7 extends  A2021 {
 
 
-	public A2021Day6(int day) {
+	public A2021Day7(int day) {
 		super(day);
 	}
 
 	public static void main(String[] args0) {
-		A2021Day6 d = new A2021Day6(6);
+		A2021Day7 d = new A2021Day7(6);
 		d.s(false,18);
 		d.s(false, 80);
 		d.s(false, 256);

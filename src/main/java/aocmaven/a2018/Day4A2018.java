@@ -110,8 +110,7 @@ public class Day4A2018 {
 		
 		
 	}
-	@Data
-    @Value
+	
     public static class Revendication{
         int id;
         int deportH;
@@ -132,8 +131,7 @@ public class Day4A2018 {
 		}
        
 	}
-	@Data
-    @Value
+	
     public static class Info implements Comparable<Info> {
 		Date date;
 		int numGardien;

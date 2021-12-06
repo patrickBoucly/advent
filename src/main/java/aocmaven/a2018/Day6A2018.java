@@ -189,8 +189,6 @@ public class Day6A2018 {
 		return res;
 	}
 
-	@Data
-	@Value
 	public static class Point {
 		int id;
 		int x;

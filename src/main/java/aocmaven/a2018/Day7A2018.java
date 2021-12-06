@@ -1,9 +1,8 @@
 package aocmaven.a2018;
 
-import static org.apache.commons.io.FileUtils.readFileToString;
-
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,8 +10,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import lombok.Data;
-import lombok.Value;
 
 public class Day7A2018 {
 
@@ -238,15 +235,14 @@ public class Day7A2018 {
 		return rules;
 	}
 
-	@Data
-	@Value
+	
 	public static class Rule {
 		String before;
 		String after;
 
 		@Override
 		public int hashCode() {
-			final int prime = 31;
+			int prime = 31;
 			int result = 1;
 			result = prime * result + ((after == null) ? 0 : after.hashCode());
 			result = prime * result + ((before == null) ? 0 : before.hashCode());
@@ -288,8 +284,6 @@ public class Day7A2018 {
 
 	}
 
-	@Data
-	@Value
 	public static class Worker {
 		int numero;
 
@@ -342,7 +336,7 @@ public class Day7A2018 {
 
 		@Override
 		public int hashCode() {
-			final int prime = 31;
+			int prime = 31;
 			int result = 1;
 			result = prime * result + numero;
 			return result;
@@ -367,7 +361,7 @@ public class Day7A2018 {
 	private static String getMessage(String monFic) {
 		String line = "";
 		try {
-			line = readFileToString(new File(monFic));
+			Files.readString(Paths.get(monFic));
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}

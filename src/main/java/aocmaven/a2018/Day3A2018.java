@@ -24,8 +24,7 @@ public class Day3A2018 {
 		s2();
 
 	}
-	@Data
-    @Value
+	
     public static class Revendication{
         int id;
         int deportH;
