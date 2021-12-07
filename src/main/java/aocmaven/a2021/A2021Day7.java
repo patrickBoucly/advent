@@ -5,64 +5,79 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-public class A2021Day7 extends  A2021 {
-
+public class A2021Day7 extends A2021 {
 
 	public A2021Day7(int day) {
 		super(day);
 	}
 
 	public static void main(String[] args0) {
-		A2021Day7 d = new A2021Day7(6);
-		d.s(false,18);
-		d.s(false, 80);
-		d.s(false, 256);
-		d.s(true, 18);
-		d.s(true, 80);
-		d.s(true, 256);
+		A2021Day7 d = new A2021Day7(7);
+		//d.s1(true);
+		d.s2(true);
+
 	}
 
-	private void s(boolean b, int nbDay) {
-		String champs = (b ? "full input" : "sample data");
+	private void s1(boolean b) {
 		List<String> input = Arrays.asList(getInput(b).split(","));
-		List<Integer> inputNum = input.stream().map(s -> Integer.parseInt(s.trim())).collect(Collectors.toList());
-		Map<Integer, BigInteger> comptage = new HashMap<>();
-		for (Integer i : inputNum) {
-			if (comptage.containsKey(i)) {
-				comptage.put(i, comptage.get(i).add(BigInteger.ONE));
-			} else {
-				comptage.put(i, BigInteger.ONE);
+		List<Integer> listOfIntegers = input.stream().map(s -> Integer.parseInt(s.trim())).collect(Collectors.toList());
+		Integer max = listOfIntegers.stream().mapToInt(v -> v).max().orElseThrow(NoSuchElementException::new);
+		Integer min = listOfIntegers.stream().mapToInt(v -> v).min().orElseThrow(NoSuchElementException::new);
+
+		int coutMin = 10000000;
+		int jmin = -1;
+		for (int j = min; j <= max; j++) {
+			int cout = 0;
+			for (Integer i : listOfIntegers) {
+				cout += Math.abs(j - i);
+			}
+			
+			if(cout<coutMin) {
+				jmin=j;
+				coutMin=cout;
 			}
 		}
-		for (int k = 0; k <= 8; k++) {
-			if (!comptage.containsKey(k)) {
-				comptage.put(k, BigInteger.ZERO);
+		System.out.println(jmin);
+		System.out.println(coutMin);
+
+	}
+	private void s2(boolean b) {
+		List<String> input = Arrays.asList(getInput(b).split(","));
+		List<Integer> listOfIntegers = input.stream().map(s -> Integer.parseInt(s.trim())).collect(Collectors.toList());
+		Integer max = listOfIntegers.stream().mapToInt(v -> v).max().orElseThrow(NoSuchElementException::new);
+		Integer min = listOfIntegers.stream().mapToInt(v -> v).min().orElseThrow(NoSuchElementException::new);
+
+		BigInteger coutMin =new BigInteger("1000000000000");
+		int jmin = -1;
+		for (int j = min; j <= max; j++) {
+			BigInteger cout = BigInteger.ZERO;
+			for (Integer i : listOfIntegers) {
+				cout=cout.add(coutV2(Math.abs(j-i)));
+			}
+			
+			if(cout.compareTo(coutMin)<0) {
+				jmin=j;
+				coutMin=cout;
 			}
 		}
-		Map<Integer, BigInteger> nextComptage = new HashMap<>();
-		int day = 0;
-		while (day < nbDay) {
-			nextComptage = new HashMap<>();
-			for (int k = 0; k <= 8; k++) {
-				if (k == 6) {
-					nextComptage.put(6, comptage.get(7).add(comptage.get(0)));
-				} else if (k == 8) {
-					nextComptage.put(8, comptage.get(0));
-				} else {
-					nextComptage.put(k, comptage.get(k + 1));
-				}
-			}
-			comptage = new HashMap<>(nextComptage);
-			day++;
-		}
-		BigInteger tot = BigInteger.ZERO;
-		for (Integer i : nextComptage.keySet()) {
-			tot = tot.add(nextComptage.get(i));
-		}
-		System.out.println("number of fish after " + nbDay + " days on " + champs + " : " + tot);
+		System.out.println(jmin);
+		System.out.println(coutMin);
+
 	}
 
-	
+	private BigInteger coutV2(int i) {
+		int res=0;
+		if(i % 2 ==0) {
+			 res=(i/2)*(i+1);
+			
+		} else {
+			 res=((i+1)/2)*(i);
+		}
+		
+		return new BigInteger(String.valueOf(res));
+	}
+
 }
