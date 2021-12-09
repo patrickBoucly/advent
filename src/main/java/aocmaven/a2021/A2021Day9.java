@@ -20,8 +20,10 @@ public class A2021Day9 extends A2021 {
 	public static void main(String[] args0) {
 		A2021Day9 d = new A2021Day9(9);
 		// d.s1(true);
+		long startTime = System.currentTimeMillis();
 		d.s2(true);
-
+		long endTime = System.currentTimeMillis();
+		System.out.println("That took " + (endTime - startTime) / 1000 + " seconds");
 	}
 
 	private void s2(boolean c) {
@@ -33,10 +35,8 @@ public class A2021Day9 extends A2021 {
 			List<Point> bassin = getBassin(points, p);
 			bassinSize.add(bassin.size());
 		}
-		System.out.println(bassinSize);
-		bassinSize=bassinSize.stream().sorted(Collections.reverseOrder()).collect(Collectors.toList());
-		System.out.println(bassinSize);
-		System.out.println(bassinSize.get(0)*bassinSize.get(1)*bassinSize.get(2));
+		bassinSize = bassinSize.stream().sorted(Collections.reverseOrder()).collect(Collectors.toList());
+		System.out.println(bassinSize.get(0) * bassinSize.get(1) * bassinSize.get(2));
 	}
 
 	private List<Point> getBassin(List<Point> points, Point p) {
@@ -45,8 +45,8 @@ public class A2021Day9 extends A2021 {
 		List<Point> newBassin = new ArrayList<>(bassin);
 		boolean start = true;
 		while (start || bassin.size() < newBassin.size()) {
-			bassin=new ArrayList<>(newBassin);
-			start=false;
+			bassin = new ArrayList<>(newBassin);
+			start = false;
 			for (Point b : bassin) {
 				List<Point> adj = getAdj(points, b);
 				for (Point a : adj) {
@@ -55,7 +55,7 @@ public class A2021Day9 extends A2021 {
 					}
 				}
 			}
-			
+
 		}
 		return newBassin;
 	}
@@ -75,49 +75,20 @@ public class A2021Day9 extends A2021 {
 
 	public List<Point> getAdj(List<Point> points, Point p) {
 		List<Point> adj = new ArrayList<>();
-		if (Point.getPoint(points, p.x - 1, p.y).isPresent()) {
-			adj.add(Point.getPoint(points, p.x - 1, p.y).get());
-		}
-		if (Point.getPoint(points, p.x + 1, p.y).isPresent()) {
-			adj.add(Point.getPoint(points, p.x + 1, p.y).get());
-		}
-		if (Point.getPoint(points, p.x, p.y - 1).isPresent()) {
-			adj.add(Point.getPoint(points, p.x, p.y - 1).get());
-		}
-		if (Point.getPoint(points, p.x, p.y + 1).isPresent()) {
-			adj.add(Point.getPoint(points, p.x, p.y + 1).get());
-		}
+		Point.getPoint(points, p.x - 1, p.y).ifPresent(adj::add);
+		Point.getPoint(points, p.x, p.y - 1).ifPresent(adj::add);
+		Point.getPoint(points, p.x + 1, p.y).ifPresent(adj::add);
+		Point.getPoint(points, p.x, p.y + 1).ifPresent(adj::add);
 		return adj;
 	}
 
-	private void setDanger(List<Point> points) {
-		for (Point p : points) {
-			boolean isMin = true;
-			if (Point.getPoint(points, p.x - 1, p.y).isPresent()) {
-				if (Point.getPoint(points, p.x - 1, p.y).get().alt <= p.alt) {
-					isMin = false;
-				}
-			}
-			if (Point.getPoint(points, p.x + 1, p.y).isPresent()) {
-				if (Point.getPoint(points, p.x + 1, p.y).get().alt <= p.alt) {
-					isMin = false;
-				}
-			}
-			if (Point.getPoint(points, p.x, p.y - 1).isPresent()) {
-				if (Point.getPoint(points, p.x, p.y - 1).get().alt <= p.alt) {
-					isMin = false;
-				}
-			}
-			if (Point.getPoint(points, p.x, p.y + 1).isPresent()) {
-				if (Point.getPoint(points, p.x, p.y + 1).get().alt <= p.alt) {
-					isMin = false;
-				}
-			}
-			if (isMin) {
-				p.setDanger(p.alt + 1);
-			}
+	public boolean minLocal(List<Point> adj, Point p) {
+		return adj.stream().allMatch(x -> x.alt > p.alt);
+	}
 
-		}
+	private List<Point> setDanger(List<Point> points) {
+		return points.stream().filter(x -> minLocal(getAdj(points, x), x)).map(Point::dangereux)
+				.collect(Collectors.toList());
 	}
 
 	private List<Point> getPoints(boolean c) {
@@ -146,6 +117,11 @@ public class A2021Day9 extends A2021 {
 		@Override
 		public int hashCode() {
 			return Objects.hash(id);
+		}
+
+		public Point dangereux() {
+			setDanger(getAlt() + 1);
+			return this;
 		}
 
 		@Override
@@ -227,6 +203,5 @@ public class A2021Day9 extends A2021 {
 		public String toString() {
 			return "Point [id=" + id + ", x=" + x + ", y=" + y + ", alt=" + alt + ", danger=" + danger + "]";
 		}
-
 	}
 }
