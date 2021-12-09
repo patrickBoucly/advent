@@ -16,113 +16,97 @@ public class A2021Day8 extends A2021 {
 
 	public static void main(String[] args0) {
 		A2021Day8 d = new A2021Day8(8);
-		//d.s1(true);
-		d.s2(true);
+		d.s1(true);
+		// d.s2(true);
 
 	}
 
 	private void s1(boolean c) {
-		
-
-		List<Info> infos = getInfos(c);
-		int res = 0;
-		for (Info i : infos) {
-			System.out.println(i.getOutput());
-			res += i.getOutput().stream().filter(s -> Arrays.asList(2, 3, 4, 7).contains(s.length())).count();
-		}
-		System.out.println(res);
-
+		System.out.println(getInfos(c).stream().map(Info::getOutput).mapToLong(out->out.stream().filter(s ->Arrays.asList(2, 3, 4, 7).contains(s.length())).count()).reduce((long) 0, (a, b) -> a + b));
 	}
 
 	private void s2(boolean c) {
 		List<Info> infos = getInfos(c);
-		int res=0;
-		for(Info i:infos) {
-			int decode=getDecodeOutput(i.getInput(),i.getOutput());
+		int res = 0;
+		for (Info i : infos) {
+			int decode = getDecodeOutput(i.getInput(), i.getOutput());
 			System.out.println(decode);
-			res+=decode;
+			res += decode;
 		}
-		
+
 		System.out.println(res);
-		
+
 	}
 
 	private int getDecodeOutput(List<String> t, List<String> to) {
-		String sept=t.stream().filter(s->s.length()==3).findFirst().get();
-		String un=t.stream().filter(s->s.length()==2).findFirst().get();
-		String quatre=t.stream().filter(s->s.length()==4).findFirst().get();
-		String A="";
-		String B="";
-		String C="";
-		String D="";
-		String E="";
-		String F="";
-		String G="";
-		String al="abcdefg";
-		for(int pos=0;pos<sept.length();pos++) {
-			if(!un.contains(sept.substring(pos, pos+1))){
-				A=sept.substring(pos, pos+1);
-				
+		String sept = t.stream().filter(s -> s.length() == 3).findFirst().get();
+		String un = t.stream().filter(s -> s.length() == 2).findFirst().get();
+		String quatre = t.stream().filter(s -> s.length() == 4).findFirst().get();
+		Map<String, String> corespOldLnewL = new HashMap<>();
+		String al = "abcdefg";
+		for (int pos = 0; pos < sept.length(); pos++) {
+			if (!un.contains(sept.substring(pos, pos + 1))) {
+				corespOldLnewL.put(sept.substring(pos, pos + 1), "a");
 			}
 		}
-		String elementCommunCpt6="";
-		for(int l=0;l<7;l++) {
-			if(isInCpt6(t, al, l)){
-				elementCommunCpt6+=al.substring(l, l+1);
-			}
-		}
-		if(elementCommunCpt6.contains(un.substring(0,1))) {
-			F=un.substring(0,1);
-			C=un.substring(1,2);
+		String elementCommunCpt6 = "";
+		elementCommunCpt6 = getElementCommunCpt6(t, al, elementCommunCpt6);
+		if (elementCommunCpt6.contains(un.substring(0, 1))) {
+			corespOldLnewL.put(un.substring(0, 1), "f");
+			corespOldLnewL.put(un.substring(0, 1), "c");
 		} else {
-			C=un.substring(0,1);
-			F=un.substring(1,2);
+			corespOldLnewL.put(un.substring(0, 1), "c");
+			corespOldLnewL.put(un.substring(0, 1), "f");
 		}
-		for(int pos=0;pos<quatre.length();pos++) {
-		   if(!elementCommunCpt6.contains(quatre.substring(pos, pos+1)) && !quatre.substring(pos, pos+1).equals(C)){
-			   D=quatre.substring(pos, pos+1);
-		   }
+		for (int pos = 0; pos < quatre.length(); pos++) {
+			if (!elementCommunCpt6.contains(quatre.substring(pos, pos + 1))
+					&& !quatre.substring(pos, pos + 1).equals(corespOldLnewL.get("c"))) {
+				corespOldLnewL.put(quatre.substring(pos, pos + 1), "d");
+			}
 		}
-		for(int l=0;l<7;l++) {
-			int cpt=0;
-			for(String s:t) {
-				if(s.contains(al.substring(l, l+1))) {
+		for (int l = 0; l < 7; l++) {
+			int cpt = 0;
+			for (String s : t) {
+				if (s.contains(al.substring(l, l + 1))) {
 					cpt++;
 				}
 			}
-			if(cpt==4) {
-				E=al.substring(l, l+1);
+			if (cpt == 4) {
+				corespOldLnewL.put(al.substring(l, l + 1), "e");
+
 			}
-			if(cpt==7 && !al.substring(l, l+1).equals(D)) {
-				G=al.substring(l, l+1);
+			if (cpt == 7 && !al.substring(l, l + 1).equals(corespOldLnewL.get("d"))) {
+				corespOldLnewL.put(al.substring(l, l + 1), "g");
 			}
-			if(cpt==6) {
-				B=al.substring(l, l+1);
+			if (cpt == 6) {
+				corespOldLnewL.put(al.substring(l, l + 1), "b");
 			}
 		}
-		
-		
-		Map<String,String> corespOldLnewL = new HashMap<>();
-		corespOldLnewL.put(A, "a");
-		corespOldLnewL.put(B, "b");
-		corespOldLnewL.put(C, "c");
-		corespOldLnewL.put(D, "d");
-		corespOldLnewL.put(E, "e");
-		corespOldLnewL.put(F, "f");
-		corespOldLnewL.put(G, "g");
-		Map<String,Integer> corespnewLNumber = new HashMap<>();
-		Map<Integer, String> cl = new HashMap<>();
-		cl.put(0, "abcefg");
-		cl.put(1, "cg");
-		cl.put(2, "acdeg");
-		cl.put(3, "acdfg");
-		cl.put(4, "bcdf");
-		cl.put(5, "abdfg");
-		cl.put(6, "abdefg");
-		cl.put(7, "acf");
-		cl.put(8, "abcdefg");
-		cl.put(9, "abcdfg");
-		
+		Map<String, Integer> corespnewLNumber = getCorespnewLNumber();
+		for (String s : t) {
+			String cleanMessage = "";
+			for (int pos = 0; pos < s.length(); pos++) {
+				String letter = s.substring(pos, pos + 1);
+				cleanMessage += corespOldLnewL.get(letter);
+			}
+
+			cleanMessage = sortString(cleanMessage);
+			System.out.println(corespnewLNumber.get(cleanMessage));
+		}
+		String numberDecode = "";
+		for (String s : to) {
+			String cleanMessage = "";
+			for (int pos = 0; pos < s.length(); pos++) {
+				String letter = s.substring(pos, pos + 1);
+				cleanMessage += corespOldLnewL.get(letter);
+			}
+			numberDecode += corespnewLNumber.get(sortString(cleanMessage));
+		}
+		return Integer.parseInt(numberDecode);
+	}
+
+	private Map<String, Integer> getCorespnewLNumber() {
+		Map<String, Integer> corespnewLNumber = new HashMap<>();
 		corespnewLNumber.put("abcefg", 0);
 		corespnewLNumber.put("cf", 1);
 		corespnewLNumber.put("acdeg", 2);
@@ -133,49 +117,38 @@ public class A2021Day8 extends A2021 {
 		corespnewLNumber.put("acf", 7);
 		corespnewLNumber.put("abcdefg", 8);
 		corespnewLNumber.put("abcdfg", 9);
-		
-		
-		for(String s:t) {
-			String cleanMessage="";
-			for(int pos=0;pos<s.length();pos++) {
-				String letter=s.substring(pos, pos+1);
-				cleanMessage+=corespOldLnewL.get(letter);
-			}
-			
-			cleanMessage=sortString(cleanMessage);
-			System.out.println(corespnewLNumber.get(cleanMessage));
-		}
-		String numberDecode="";
-		for(String s:to) {
-			String cleanMessage="";
-			for(int pos=0;pos<s.length();pos++) {
-				String letter=s.substring(pos, pos+1);
-				cleanMessage+=corespOldLnewL.get(letter);
-			}
-			numberDecode+=corespnewLNumber.get(sortString(cleanMessage));
-		}
-		return Integer.parseInt(numberDecode);
+		return corespnewLNumber;
 	}
-	public static String sortString(String inputString)
-    {
-        // Converting input string to character array
-        char tempArray[] = inputString.toCharArray();
- 
-        // Sorting temp array using
-        Arrays.sort(tempArray);
- 
-        // Returning new sorted string
-        return new String(tempArray);
-    }
+
+	private String getElementCommunCpt6(List<String> t, String al, String elementCommunCpt6) {
+		for (int l = 0; l < 7; l++) {
+			if (isInCpt6(t, al, l)) {
+				elementCommunCpt6 += al.substring(l, l + 1);
+			}
+		}
+		return elementCommunCpt6;
+	}
+
+	public static String sortString(String inputString) {
+		// Converting input string to character array
+		char tempArray[] = inputString.toCharArray();
+
+		// Sorting temp array using
+		Arrays.sort(tempArray);
+
+		// Returning new sorted string
+		return new String(tempArray);
+	}
+
 	private boolean isInCpt6(List<String> t, String al, int l) {
-		List<String> les6=t.stream().filter(s->s.length()==6).collect(Collectors.toList());
-		int cpt=0;
-		for(String e:les6) {
-			if(e.contains(al.substring(l, l+1))) {
+		List<String> les6 = t.stream().filter(s -> s.length() == 6).collect(Collectors.toList());
+		int cpt = 0;
+		for (String e : les6) {
+			if (e.contains(al.substring(l, l + 1))) {
 				cpt++;
 			}
 		}
-		return cpt==les6.size();
+		return cpt == les6.size();
 	}
 
 	private List<Info> getInfos(boolean c) {
