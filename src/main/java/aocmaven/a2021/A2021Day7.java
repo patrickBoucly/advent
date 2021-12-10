@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import outils.MesOutils;
+
 public class A2021Day7 extends A2021 {
 
 	public A2021Day7(int day) {

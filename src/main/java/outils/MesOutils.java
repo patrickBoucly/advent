@@ -1,4 +1,4 @@
-package aocmaven.a2021;
+package outils;
 
 import java.util.List;
 import java.util.NoSuchElementException;
