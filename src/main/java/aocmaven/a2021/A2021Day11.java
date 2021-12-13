@@ -228,7 +228,7 @@ public class A2021Day11 extends A2021 {
 	}
 
 	private List<String> getLignes(boolean c) {
-		List<String> lignes = Arrays.asList(getInput(c).split("\n")).stream().collect(Collectors.toList());
+		List<String> lignes = Arrays.asList(getInput(c).split("\n")).stream().map(String::trim).collect(Collectors.toList());
 		return lignes;
 	}
 

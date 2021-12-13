@@ -30,7 +30,7 @@ public class A2021Day13 extends A2021 {
 	}
 
 	private String s2(boolean b) {
-		List<String> lignes = Arrays.asList(getInput(b).split("\n")).stream().collect(Collectors.toList());
+		List<String> lignes = Arrays.asList(getInput(b).split("\n")).stream().map(String::trim).collect(Collectors.toList());
 		Set<Point> pts = new HashSet<>();
 		List<Operation> pliages = new ArrayList<>();
 		for (String l : lignes) {
@@ -68,7 +68,7 @@ public class A2021Day13 extends A2021 {
 	}
 
 	private int s1(boolean b) {
-		List<String> lignes = Arrays.asList(getInput(b).split("\n")).stream().collect(Collectors.toList());
+		List<String> lignes = Arrays.asList(getInput(b).split("\n")).stream().map(String::trim).collect(Collectors.toList());
 		Set<Point> pts = new HashSet<>();
 		List<Operation> pliages = new ArrayList<>();
 		for (String l : lignes) {
