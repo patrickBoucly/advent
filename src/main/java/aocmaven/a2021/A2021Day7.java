@@ -36,18 +36,16 @@ public class A2021Day7 extends A2021 {
 	private Long coutDeplacement2(List<Integer> listOfIntegers, int j) {
 		return listOfIntegers.stream().mapToLong(l->((Math.abs(l-j))*(Math.abs(l-j)+1))/2).reduce((long) 0, (a, b) -> a + b);
 	}
-
-	public static String getDuration() {
+	public static List<Long> getDuration() {
 		A2021Day7 d = new A2021Day7(7);
 		long startTime = System.currentTimeMillis();
 		d.s1(true);
 		long endTime = System.currentTimeMillis();
-		long timeS1=endTime - startTime;
+		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
 		d.s2(true);
 		endTime = System.currentTimeMillis();
-		return "Day "+ d.day+" run 1 took "+timeS1+" milliseconds, run 2 took " + (endTime - startTime) + " milliseconds";
-		
+		return Arrays.asList(timeS1,endTime - startTime);
 	}
-
+	
 }

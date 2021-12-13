@@ -354,7 +354,7 @@ public class A2021Day12 extends A2021 {
 		return lignes;
 	}
 
-	public static String getDuration() {
+	public static List<Long> getDuration() {
 		A2021Day12 d = new A2021Day12(12);
 		long startTime = System.currentTimeMillis();
 		d.s1(true);
@@ -363,8 +363,6 @@ public class A2021Day12 extends A2021 {
 		startTime = System.currentTimeMillis();
 		d.s2(true);
 		endTime = System.currentTimeMillis();
-		return "Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took " + (endTime - startTime)
-				+ " milliseconds";
-
+		return Arrays.asList(timeS1,endTime - startTime);
 	}
 }

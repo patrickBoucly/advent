@@ -200,16 +200,16 @@ public class A2021Day13 extends A2021 {
 		}
 
 	}
-	public static String getDuration() {
+	public static List<Long> getDuration() {
 		A2021Day13 d = new A2021Day13(13);
 		long startTime = System.currentTimeMillis();
 		d.s1(true);
 		long endTime = System.currentTimeMillis();
-		long timeS1=endTime - startTime;
+		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
 		d.s2(true);
 		endTime = System.currentTimeMillis();
-		return "Day "+ d.day+" run 1 took "+timeS1+" milliseconds, run 2 took " + (endTime - startTime) + " milliseconds";
-		
+		return Arrays.asList(timeS1,endTime - startTime);
 	}
+
 }

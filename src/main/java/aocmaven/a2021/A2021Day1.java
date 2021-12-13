@@ -49,19 +49,17 @@ public class A2021Day1 extends A2021 {
 		return getNbIncrease(sommeDe3);
 		
 	}
-	
-	
-
-	public static String getDuration() {
+	public static List<Long> getDuration() {
 		A2021Day1 d = new A2021Day1(1);
 		long startTime = System.currentTimeMillis();
 		d.s1(true);
 		long endTime = System.currentTimeMillis();
-		long timeS1=endTime - startTime;
+		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
 		d.s2(true);
 		endTime = System.currentTimeMillis();
-		return "Day "+ d.day+" run 1 took "+timeS1+" milliseconds, run 2 took " + (endTime - startTime) + " milliseconds";
-		
+		return Arrays.asList(timeS1,endTime - startTime);
 	}
+
+	
 }
