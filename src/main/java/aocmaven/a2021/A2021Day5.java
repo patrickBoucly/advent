@@ -12,28 +12,34 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class A2021Day5 {
+public class A2021Day5 extends A2021 {
+
+	public A2021Day5(int day) {
+		super(day);
+	}
 
 	public static void main(String[] args0) {
-		s1();
-		s2();
+		A2021Day5 d = new A2021Day5(5);
+		System.out.println(d.s1(true));
+		System.out.println(d.s2(true));
 
 	}
 
-	private static void s2() {
-		List<String> input;
-		input = Arrays.asList(read().split("\n"));
+	public int s2(boolean b) {
+		List<String> input = Arrays.asList(getInput(b).split("\n")).stream().map(String::trim)
+				.collect(Collectors.toList());
+
 		List<Wind> winds = getWinds(input);
 		Map<String, Integer> cpt = getMapPointsHVD(winds);
 		int res = 0;
 		for (String key : cpt.keySet()) {
-			System.out.println(key + " :" + cpt.get(key));
+			
 			if (cpt.get(key) > 1) {
 				res++;
-				System.out.println(key);
+				
 			}
 		}
-		System.out.println(res);
+		return res;
 	}
 
 	private static Map<String, Integer> getMapPointsHVD(List<Wind> winds) {
@@ -77,9 +83,8 @@ public class A2021Day5 {
 					}
 				}
 			} else if (w.isDiag()) {
-				System.out.println("Diag :"+ w.oneEnd +" "+w.otherEnd);
 				Point xmin = new Point();
-	
+
 				if (w.oneEnd.x < w.otherEnd.x) {
 					min = w.oneEnd.x;
 					xmin = w.oneEnd;
@@ -88,12 +93,9 @@ public class A2021Day5 {
 					xmin = w.otherEnd;
 					min = w.otherEnd.x;
 				}
-				System.out.println("dir :"+w.getDir());
-				
+			
 				for (int k = 0; k <= Math.abs(w.oneEnd.y - w.otherEnd.y); k++) {
-					String key = String.valueOf(k + xmin.x) + "_"
-							+ String.valueOf(k * w.getDir() + xmin.y);
-					System.out.println("key "+key);
+					String key = String.valueOf(k + xmin.x) + "_" + String.valueOf(k * w.getDir() + xmin.y);
 					if (cpt.containsKey(key)) {
 						cpt.put(key, cpt.get(key) + 1);
 					} else {
@@ -105,20 +107,19 @@ public class A2021Day5 {
 		return cpt;
 	}
 
-	private static void s1() {
-		List<String> input;
-		input = Arrays.asList(read().split("\n"));
+	public int s1(boolean b) {
+		List<String> input = Arrays.asList(getInput(b).split("\n")).stream().map(String::trim)
+				.collect(Collectors.toList());
+
 		List<Wind> winds = getWinds(input);
 		Map<String, Integer> cpt = getMapPointsHV(winds);
 		int res = 0;
 		for (String key : cpt.keySet()) {
-			System.out.println(key + " :" + cpt.get(key));
 			if (cpt.get(key) > 1) {
 				res++;
-				System.out.println(key);
 			}
 		}
-		System.out.println(res);
+		return res;
 	}
 
 	private static Map<String, Integer> getMapPointsHV(List<Wind> winds) {
@@ -155,7 +156,7 @@ public class A2021Day5 {
 				}
 				for (int i = min; i <= max; i++) {
 					String key = String.valueOf(i) + "_" + String.valueOf(w.oneEnd.y);
-					
+
 					if (cpt.containsKey(key)) {
 						cpt.put(key, cpt.get(key) + 1);
 					} else {
@@ -195,10 +196,10 @@ public class A2021Day5 {
 
 		public int getDir() {
 			int res = 0;
-			if(oneEnd.y -otherEnd.y== oneEnd.x-otherEnd.x) {
+			if (oneEnd.y - otherEnd.y == oneEnd.x - otherEnd.x) {
 				return 1;
 			}
-			if(oneEnd.y -otherEnd.y== -oneEnd.x+otherEnd.x) {
+			if (oneEnd.y - otherEnd.y == -oneEnd.x + otherEnd.x) {
 				return -1;
 			}
 			return res;
@@ -274,16 +275,17 @@ public class A2021Day5 {
 
 	}
 
-	private static String read() {
-		Path path = Paths.get(
-				"C:\\git_repositories\\advent\\src\\main\\resources\\src\\advent_of_code\\main\\resources\\a2021\\input5");
-		String content = "";
-		try {
-			content = Files.readString(path);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return content;
 
+	public static String getDuration() {
+		A2021Day5 d = new A2021Day5(5);
+		long startTime = System.currentTimeMillis();
+		d.s1(true);
+		long endTime = System.currentTimeMillis();
+		long timeS1=endTime - startTime;
+		startTime = System.currentTimeMillis();
+		d.s2(true);
+		endTime = System.currentTimeMillis();
+		return "Day "+ d.day+" run 1 took "+timeS1+" milliseconds, run 2 took " + (endTime - startTime) + " milliseconds";
+		
 	}
 }

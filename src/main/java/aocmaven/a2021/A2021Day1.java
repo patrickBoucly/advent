@@ -1,25 +1,33 @@
 package aocmaven.a2021;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class A2021Day1 {
+public class A2021Day1 extends A2021 {
 
-	public static void main(String[] args0) {
-		 s1();
-		s2();
+	public A2021Day1(int day) {
+		super(day);
 	}
 
-	private static void s1() {
-		String input=read();
-		List<Integer> inputL=Arrays.asList(input.split("\n")).stream().map(Integer::parseInt).collect(Collectors.toList());
-		System.out.println("s1 : "+getNbIncrease(inputL));
+	public static void main(String[] args0) {
+		A2021Day1 d = new A2021Day1(1);
+		// d.s1(true);
+		long startTime = System.currentTimeMillis();
+		d.s1(true);
+		long endTime = System.currentTimeMillis();
+		long timeS1=endTime - startTime;
+		startTime = System.currentTimeMillis();
+		d.s2(true);
+		endTime = System.currentTimeMillis();
+		System.out.println("Day "+ d.day+" run 1 took "+timeS1+" milliseconds, run 2 took " + (endTime - startTime) + " milliseconds");
+		
+	}
+
+	public int s1(boolean b) {
+		List<Integer> inputL=Arrays.asList(getInput(b).split("\n")).stream().map(String::trim).map(Integer::parseInt).collect(Collectors.toList());
+		return getNbIncrease(inputL);
 	}
 
 	private static int getNbIncrease(List<Integer> inputL) {
@@ -32,27 +40,28 @@ public class A2021Day1 {
 		return res;
 	}
 	
-	private static void s2() {
-		String input=read();
-		List<Integer> inputL=Arrays.asList(input.split("\n")).stream().map(Integer::parseInt).collect(Collectors.toList());
+	public int s2(boolean b) {
+		List<Integer> inputL=Arrays.asList(getInput(b).split("\n")).stream().map(String::trim).map(Integer::parseInt).collect(Collectors.toList());
 		List<Integer> sommeDe3= new ArrayList<>();
 		for(int i=0;i<inputL.size()-2;i++) {
 			sommeDe3.add(inputL.get(i)+inputL.get(i+1)+inputL.get(i+2));
 		}
-		System.out.println("s2 : "+getNbIncrease(sommeDe3));
+		return getNbIncrease(sommeDe3);
 		
 	}
 	
-	private static String read() {
-		Path path = Paths.get(
-				"C:\\git_repositories\\advent\\src\\main\\resources\\src\\advent_of_code\\main\\resources\\a2021\\input1");
-		String content = "";
-		try {
-			content = Files.readString(path);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return content;
+	
 
+	public static String getDuration() {
+		A2021Day1 d = new A2021Day1(1);
+		long startTime = System.currentTimeMillis();
+		d.s1(true);
+		long endTime = System.currentTimeMillis();
+		long timeS1=endTime - startTime;
+		startTime = System.currentTimeMillis();
+		d.s2(true);
+		endTime = System.currentTimeMillis();
+		return "Day "+ d.day+" run 1 took "+timeS1+" milliseconds, run 2 took " + (endTime - startTime) + " milliseconds";
+		
 	}
 }

@@ -12,11 +12,21 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class A2021Day4 {
+public class A2021Day4 extends A2021 {
+
+	public A2021Day4(int day) {
+		super(day);
+	}
 
 	public static void main(String[] args0) {
-		// Map g = s1();
-		Map g = s2();
+		A2021Day4 d = new A2021Day4(4);
+		System.out.println(d.s1(true));
+		System.out.println(d.s2(true));
+
+	}
+
+	public int s1(boolean b) {
+		Map g = res1(b);
 		Integer t = 0;
 
 		Set<Integer> s = g.keySet();
@@ -31,13 +41,34 @@ public class A2021Day4 {
 				res += c.value;
 			}
 		}
-		System.out.println(res * t);
+		return res * t;
 
 	}
 
-	private static Map<Integer, Grid> s2() {
-		List<String> input;
-		input = Arrays.asList(read().split("\n"));
+	public int s2(boolean b) {
+		Map g = res2(b);
+		Integer t = 0;
+
+		Set<Integer> s = g.keySet();
+		for (Integer i : s) {
+			t = i;
+		}
+		Grid grid = (Grid) g.get(t);
+
+		int res = 0;
+		for (Case c : grid.cases) {
+			if (!c.marked) {
+				res += c.value;
+			}
+		}
+		return res * t;
+
+	}
+
+	public Map<Integer, Grid> res2(boolean b) {
+		List<String> input = Arrays.asList(getInput(b).split("\n")).stream().map(String::trim)
+				.collect(Collectors.toList());
+
 		int idres = 0;
 		int tres = 0;
 		Grid gres = new Grid();
@@ -46,20 +77,13 @@ public class A2021Day4 {
 		List<Grid> grilles = getGrilles(input);
 		List<Integer> ordreGagnant = new ArrayList<>();
 		for (Integer t : tirage) {
-
-			System.out.println(grilles.size());
 			for (Grid g : grilles) {
 
 				for (Case c : g.cases) {
 					if (!ordreGagnant.contains(g.id)) {
 						if (c.value == t) {
 							c.setMarked(true);
-							/*
-							 * System.out.println("id : "+g.id); System.out.println("tirage : "+t);
-							 * System.out.println(g);
-							 * System.out.println(g.compteMaxAligne()+" marked alignés");
-							 * System.out.println("###");
-							 */
+							
 						}
 						if (g.gagne()) {
 							if (!ordreGagnant.contains(g.id)) {
@@ -76,33 +100,26 @@ public class A2021Day4 {
 		}
 
 		Map res = new HashMap<>();
-		System.out.println(gres);
 		res.put(tres, gres);
 		return res;
 
 	}
 
-	private static Map<Integer, Grid> s1() {
-		List<String> input;
-		input = Arrays.asList(read().split("\n"));
+	public Map<Integer, Grid> res1(boolean b) {
+		List<String> input = Arrays.asList(getInput(b).split("\n")).stream().map(String::trim)
+				.collect(Collectors.toList());
 
 		List<Integer> tirage = getTirage(input);
 		List<Grid> grilles = getGrilles(input);
 
 		for (Integer t : tirage) {
 
-			System.out.println(grilles.size());
 			for (Grid g : grilles) {
 
 				for (Case c : g.cases) {
 					if (c.value == t) {
 						c.setMarked(true);
-						System.out.println("id : " + g.id);
-						System.out.println("tirage : " + t);
-						System.out.println(g);
-						System.out.println(g.compteMaxAligne() + " marked alignés");
-						System.out.println("###");
-					}
+						}
 					if (g.gagne()) {
 						Map res = new HashMap<>();
 						res.put(t, g);
@@ -324,16 +341,18 @@ public class A2021Day4 {
 
 	}
 
-	private static String read() {
-		Path path = Paths.get(
-				"C:\\git_repositories\\advent\\src\\main\\resources\\src\\advent_of_code\\main\\resources\\a2021\\input4");
-		String content = "";
-		try {
-			content = Files.readString(path);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return content;
+	
 
+	public static String getDuration() {
+		A2021Day4 d = new A2021Day4(4);
+		long startTime = System.currentTimeMillis();
+		d.s1(true);
+		long endTime = System.currentTimeMillis();
+		long timeS1=endTime - startTime;
+		startTime = System.currentTimeMillis();
+		d.s2(true);
+		endTime = System.currentTimeMillis();
+		return "Day "+ d.day+" run 1 took "+timeS1+" milliseconds, run 2 took " + (endTime - startTime) + " milliseconds";
+		
 	}
 }

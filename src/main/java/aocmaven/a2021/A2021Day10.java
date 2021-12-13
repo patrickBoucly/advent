@@ -21,17 +21,11 @@ public class A2021Day10 extends A2021 {
 
 	public static void main(String[] args0) {
 		A2021Day10 d = new A2021Day10(10);
-		// d.s1(true);
-		long startTime = System.currentTimeMillis();
-		// d.s1(true);
-		d.s2(true);
-		
-		
-		long endTime = System.currentTimeMillis();
-		System.out.println("That took " + (endTime - startTime) / 1000 + " seconds");
-	}
+		System.out.println(d.s1(true));
+		System.out.println(d.s2(true));
+		}
 
-	private void s2(boolean c) {
+	public Long s2(boolean c) {
 		List<String> lignes = getLignes(c);
 		List<String> incomplete = lignes.stream().filter(l -> this.getValue(l) == 0).collect(Collectors.toList());
 		List<String> clean = incomplete.stream().map(this::clean).collect(Collectors.toList());
@@ -40,7 +34,7 @@ public class A2021Day10 extends A2021 {
 
 		List<Long> pointsTries = points.stream().sorted().collect(Collectors.toList());
 		Long median = pointsTries.stream().skip(points.size() / 2).findFirst().get();
-		System.out.println(median);
+		return (median);
 
 	}
 
@@ -123,9 +117,9 @@ public class A2021Day10 extends A2021 {
 		return retour;
 	}
 
-	private void s1(boolean c) {
+	public int s1(boolean c) {
 		List<String> lignes = getLignes(c);
-		System.out.println(lignes.stream().mapToInt(this::getValue).reduce(0, (a, b) -> a + b));
+		return (lignes.stream().mapToInt(this::getValue).reduce(0, (a, b) -> a + b));
 	}
 
 	private Integer getValue(String l) {
@@ -248,4 +242,17 @@ public class A2021Day10 extends A2021 {
 		}
 
 	}
+	public static String getDuration() {
+		A2021Day10 d = new A2021Day10(10);
+		long startTime = System.currentTimeMillis();
+		d.s1(true);
+		long endTime = System.currentTimeMillis();
+		long timeS1=endTime - startTime;
+		startTime = System.currentTimeMillis();
+		d.s2(true);
+		endTime = System.currentTimeMillis();
+		return "Day "+ d.day+" run 1 took "+timeS1+" milliseconds, run 2 took " + (endTime - startTime) + " milliseconds";
+		
+	}
+
 }

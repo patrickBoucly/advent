@@ -14,14 +14,8 @@ public class A2021Day11 extends A2021 {
 
 	public static void main(String[] args0) {
 		A2021Day11 d = new A2021Day11(11);
-		// d.s1(true);
-		long startTime = System.currentTimeMillis();
-		// d.s1(true);
+		System.out.println(d.s1(true));
 		System.out.println(d.s2(true));
-		
-
-		long endTime = System.currentTimeMillis();
-		System.out.println("That took " + (endTime - startTime) / 1000 + " seconds");
 	}
 
 	private int s2(boolean c) {
@@ -36,17 +30,16 @@ public class A2021Day11 extends A2021 {
 			y++;
 		}
 		Jeu j = new Jeu(poulpes);
-		System.out.println(j);
-		for(int g=0;g<1000;g++) {
+		for (int g = 0; g < 1000; g++) {
 			j.nextStep();
-			if(j.poulpes.stream().allMatch(p->p.nrj==0)) {
+			if (j.poulpes.stream().allMatch(p -> p.nrj == 0)) {
 				return j.step;
 			}
 		}
 		return 0;
 	}
 
-	private void s1(boolean c) {
+	private long s1(boolean c) {
 		List<String> lignes = getLignes(c);
 		List<Poulpe> poulpes = new ArrayList<>();
 		int y = 0;
@@ -58,21 +51,17 @@ public class A2021Day11 extends A2021 {
 			y++;
 		}
 		Jeu j = new Jeu(poulpes);
-		System.out.println(j);
-		for(int g=0;g<100;g++) {
+		for (int g = 0; g < 100; g++) {
 			j.nextStep();
-			System.out.println(j);
-			System.out.println(j.nbFlash);
-			System.out.println("##########");
 		}
-		System.out.println(j.nbFlash);
+		return (j.nbFlash);
 	}
 
 	public static class Jeu {
 		List<Poulpe> poulpes;
 		int step;
 		long nbFlash;
-		
+
 		public Jeu(List<Poulpe> poulpes) {
 			super();
 			this.poulpes = poulpes;
@@ -88,7 +77,7 @@ public class A2021Day11 extends A2021 {
 				poulpes = poulpe.flash(poulpes);
 				nbFlash++;
 			}
-			poulpes=poulpes.stream().map(Poulpe::notFlashed).collect(Collectors.toList());
+			poulpes = poulpes.stream().map(Poulpe::notFlashed).collect(Collectors.toList());
 		}
 
 		public List<Poulpe> getPoulpes() {
@@ -117,30 +106,27 @@ public class A2021Day11 extends A2021 {
 
 		@Override
 		public String toString() {
-			String res="Step "+step;
-			res+="\n";
-			for(int i=1;i<=100;i++) {
-				if(i%10==0) {
-					res+=String.valueOf(poulpes.get(i-1).nrj)+" \n";
+			String res = "Step " + step;
+			res += "\n";
+			for (int i = 1; i <= 100; i++) {
+				if (i % 10 == 0) {
+					res += String.valueOf(poulpes.get(i - 1).nrj) + " \n";
 				} else {
-					res+=String.valueOf(poulpes.get(i-1).nrj)+" ";
+					res += String.valueOf(poulpes.get(i - 1).nrj) + " ";
 				}
 			}
 			return res;
 		}
- 
+
 	}
 
-	
 	public static class Poulpe {
 		int id;
 		int x;
 		int y;
 		int nrj;
 		boolean asFlashed;
-		
-		
-		
+
 		@Override
 		public String toString() {
 			return "Poulpe [x=" + x + ", y=" + y + ", nrj=" + nrj + ", asFlashed=" + asFlashed + "]";
@@ -161,18 +147,20 @@ public class A2021Day11 extends A2021 {
 						if (poulpe.isPresent()) {
 							poulpe.get().setAsFlashed(true);
 							poulpe.get().setNrj(0);
-							
+
 						}
 					}
 				}
 			}
 			return poulpes;
 		}
+
 		public Poulpe notFlashed() {
 			setAsFlashed(false);
 			return this;
-			
+
 		}
+
 		private Optional<Poulpe> getPoulpe(int i, int j, List<Poulpe> poulpes) {
 			Poulpe lePoulpe = null;
 			for (Poulpe p : poulpes) {
@@ -182,8 +170,6 @@ public class A2021Day11 extends A2021 {
 			}
 			return Optional.ofNullable(lePoulpe);
 		}
-
-		
 
 		public Poulpe nrjUp() {
 			nrj++;
@@ -244,5 +230,19 @@ public class A2021Day11 extends A2021 {
 	private List<String> getLignes(boolean c) {
 		List<String> lignes = Arrays.asList(getInput(c).split("\n")).stream().collect(Collectors.toList());
 		return lignes;
+	}
+
+	public static String getDuration() {
+		A2021Day11 d = new A2021Day11(11);
+		long startTime = System.currentTimeMillis();
+		d.s1(true);
+		long endTime = System.currentTimeMillis();
+		long timeS1 = endTime - startTime;
+		startTime = System.currentTimeMillis();
+		d.s2(true);
+		endTime = System.currentTimeMillis();
+		return "Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took " + (endTime - startTime)
+				+ " milliseconds";
+
 	}
 }

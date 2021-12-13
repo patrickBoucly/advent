@@ -19,14 +19,11 @@ public class A2021Day9 extends A2021 {
 
 	public static void main(String[] args0) {
 		A2021Day9 d = new A2021Day9(9);
-		// d.s1(true);
-		long startTime = System.currentTimeMillis();
-		d.s2(true);
-		long endTime = System.currentTimeMillis();
-		System.out.println("That took " + (endTime - startTime) / 1000 + " seconds");
-	}
+		System.out.println(d.s1(true));
+		System.out.println(d.s2(true));
+		}
 
-	private void s2(boolean c) {
+	public int s2(boolean c) {
 		List<Point> points = getPoints(c);
 		setDanger(points);
 		List<Point> mini = points.stream().filter(p -> p.danger != -1).collect(Collectors.toList());
@@ -36,7 +33,7 @@ public class A2021Day9 extends A2021 {
 			bassinSize.add(bassin.size());
 		}
 		bassinSize = bassinSize.stream().sorted(Collections.reverseOrder()).collect(Collectors.toList());
-		System.out.println(bassinSize.get(0) * bassinSize.get(1) * bassinSize.get(2));
+		return (bassinSize.get(0) * bassinSize.get(1) * bassinSize.get(2));
 	}
 
 	private List<Point> getBassin(List<Point> points, Point p) {
@@ -60,7 +57,7 @@ public class A2021Day9 extends A2021 {
 		return newBassin;
 	}
 
-	private void s1(boolean c) {
+	public int s1(boolean c) {
 		List<Point> points = getPoints(c);
 		setDanger(points);
 
@@ -70,7 +67,7 @@ public class A2021Day9 extends A2021 {
 				res += p.danger;
 			}
 		}
-		System.out.println(res);
+		return (res);
 	}
 
 	public List<Point> getAdj(List<Point> points, Point p) {
@@ -92,7 +89,7 @@ public class A2021Day9 extends A2021 {
 	}
 
 	private List<Point> getPoints(boolean c) {
-		List<String> lignes = Arrays.asList(getInput(c).split("\n")).stream().collect(Collectors.toList());
+		List<String> lignes = Arrays.asList(getInput(c).split("\n")).stream().map(String::trim).collect(Collectors.toList());
 		List<Point> points = new ArrayList<>();
 		int imax = lignes.get(0).length();
 		int id = 0;
@@ -204,4 +201,18 @@ public class A2021Day9 extends A2021 {
 			return "Point [id=" + id + ", x=" + x + ", y=" + y + ", alt=" + alt + ", danger=" + danger + "]";
 		}
 	}
+
+	public static String getDuration() {
+		A2021Day9 d = new A2021Day9(9);
+		long startTime = System.currentTimeMillis();
+		d.s1(true);
+		long endTime = System.currentTimeMillis();
+		long timeS1=endTime - startTime;
+		startTime = System.currentTimeMillis();
+		d.s2(true);
+		endTime = System.currentTimeMillis();
+		return "Day "+ d.day+" run 1 took "+timeS1+" milliseconds, run 2 took " + (endTime - startTime) + " milliseconds";
+		
+	}
+
 }

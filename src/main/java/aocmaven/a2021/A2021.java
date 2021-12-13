@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class A2021 {
+public class A2021  {
 	int day;
 	public A2021(int day) {
 		super();
@@ -31,5 +31,49 @@ public class A2021 {
 		}
 		return content;
 
+	}
+	
+	public static void printDuration() {
+		String res="---------------------------------------------------------------";
+		res+="\n";
+		res+="-------------------Advent of Code 2021-------------------------";
+		res+="\n";
+		res+="--------------------------TIMINGS-----------------------------";
+		res+="\n";
+		res+="---------------------------------------------------------------";
+		res+="\n";
+		res+=A2021Day1.getDuration();
+		res+="\n";
+		res+=A2021Day2.getDuration();
+		res+="\n";
+		res+=A2021Day3.getDuration();
+		res+="\n";
+		res+=A2021Day4.getDuration();
+		res+="\n";
+		res+=A2021Day5.getDuration();
+		res+="\n";
+		res+=A2021Day6.getDuration();
+		res+="\n";
+		res+=A2021Day7.getDuration();
+		res+="\n";
+		res+=A2021Day8.getDuration();
+		res+="\n";
+		res+=A2021Day9.getDuration();
+		res+="\n";
+		res+=A2021Day10.getDuration();
+		res+="\n";
+		res+=A2021Day11.getDuration();
+		res+="\n";
+		res+=A2021Day12.getDuration();
+		res+="\n";
+		res+=A2021Day13.getDuration();
+	
+		System.out.println(res);
+		
+	}
+	
+	public static void main(String[] args0) {
+		printDuration();
+		
 	}
 }

@@ -9,78 +9,74 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class A2021Day2 {
+public class A2021Day2 extends A2021 {
 
-	public static void main(String[] args0) {
-		 s1();
-		//s2();
+	public A2021Day2(int day) {
+		super(day);
 	}
 
-	private static void s1() {
-		List<String> input;
-		input = Arrays.asList(read().split("\n"));
+	public static void main(String[] args0) {
+		A2021Day2 d = new A2021Day2(2);
+		System.out.println(d.s1(true));
+		 System.out.println( d.s2(true));
+		
+	}
+
+	public int s1(boolean b) {
+		List<String> input=Arrays.asList(getInput(b).split("\n")).stream().collect(Collectors.toList());
+
 		int f = 0;
 		int a = 0;
 		for (String s : input) {
 			if (s.substring(0, 1).equals("f")) {
-				f += Integer.parseInt(((String[]) s.split(" "))[1]);
+				f += Integer.parseInt(((String)((String[]) s.split(" "))[1]).trim());
 			} else if (s.substring(0, 1).equals("d")) {
-				a += Integer.parseInt(((String[]) s.split(" "))[1]);
+				a += Integer.parseInt(((String)((String[]) s.split(" "))[1]).trim());
 			} else {
-				a -= Integer.parseInt(((String[]) s.split(" "))[1]);
+				a -= Integer.parseInt(((String)((String[]) s.split(" "))[1]).trim());
 			}
 		}
-		System.out.println(f * a);
-		int resStream = Arrays.asList(read().split("\n")).stream().filter(s -> s.substring(0, 1).equals("f"))
-				.map(s -> ((String[]) s.split(" "))[1]).map(Integer::parseInt)
-				.collect(Collectors.summingInt(Integer::intValue))
-				* (Arrays.asList(read().split("\n")).stream().filter(s -> s.substring(0, 1).equals("d"))
-						.map(s -> ((String[]) s.split(" "))[1]).map(Integer::parseInt)
-						.collect(Collectors.summingInt(Integer::intValue))
-						- Arrays.asList(read().split("\n")).stream().filter(s -> s.substring(0, 1).equals("u"))
-								.map(s -> ((String[]) s.split(" "))[1]).map(Integer::parseInt)
-								.collect(Collectors.summingInt(Integer::intValue)));
-		System.out.println(resStream);
-		int resStreamFunction =sumLetter("f")*(sumLetter("d")-sumLetter("u"));
-		System.out.println(resStreamFunction);
+		int resStreamFunction =sumLetter("f",b)*(sumLetter("d",b)-sumLetter("u",b));
+		return resStreamFunction;
 	}
 	
-	public static int sumLetter(String letter) {
-		return Arrays.asList(read().split("\n")).stream().filter(s -> s.substring(0, 1).equals(letter))
-				.map(s -> ((String[]) s.split(" "))[1]).map(Integer::parseInt)
+	public int sumLetter(String letter,boolean b) {
+		return Arrays.asList(getInput(b).split("\n")).stream().filter(s -> s.substring(0, 1).equals(letter))
+				.map(s -> ((String[]) s.split(" "))[1]).map(String::trim).map(Integer::parseInt)
 				.collect(Collectors.summingInt(Integer::intValue));
 	}
 
-	private static void s2() {
-		List<String> input;
-		input = Arrays.asList(read().split("\n"));
+	public int s2(boolean b) {
+		List<String> input=Arrays.asList(getInput(b).split("\n")).stream().collect(Collectors.toList());
 		int f = 0;
 		int a = 0;
 		int v = 0;
 		for (String s : input) {
 			if (s.substring(0, 1).equals("f")) {
-				f += Integer.parseInt(((String[]) s.split(" "))[1]);
-				a += v * Integer.parseInt(((String[]) s.split(" "))[1]);
+				f += Integer.parseInt(((String) ((String[]) s.split(" "))[1]).trim());
+				a += v * Integer.parseInt(((String)((String[]) s.split(" "))[1]).trim());
 			} else if (s.substring(0, 1).equals("d")) {
-				v += Integer.parseInt(((String[]) s.split(" "))[1]);
+				v += Integer.parseInt(((String)((String[]) s.split(" "))[1]).trim());
 			} else {
-				v -= Integer.parseInt(((String[]) s.split(" "))[1]);
+				v -= Integer.parseInt(((String)((String[]) s.split(" "))[1]).trim());
 			}
 		}
-		System.out.println(f * a);
+		 return (f * a);
 		
 	}
 
-	private static String read() {
-		Path path = Paths.get(
-				"C:\\git_repositories\\advent\\src\\main\\resources\\src\\advent_of_code\\main\\resources\\a2021\\input2");
-		String content = "";
-		try {
-			content = Files.readString(path);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return content;
+	
 
+	public static String getDuration() {
+		A2021Day2 d = new A2021Day2(2);
+		long startTime = System.currentTimeMillis();
+		d.s1(true);
+		long endTime = System.currentTimeMillis();
+		long timeS1=endTime - startTime;
+		startTime = System.currentTimeMillis();
+		d.s2(true);
+		endTime = System.currentTimeMillis();
+		return "Day "+ d.day+" run 1 took "+timeS1+" milliseconds, run 2 took " + (endTime - startTime) + " milliseconds";
+		
 	}
 }

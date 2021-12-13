@@ -16,16 +16,20 @@ public class A2021Day6 extends  A2021 {
 
 	public static void main(String[] args0) {
 		A2021Day6 d = new A2021Day6(6);
-		d.s(false,18);
-		d.s(false, 80);
-		d.s(false, 256);
-		d.s(true, 18);
-		d.s(true, 80);
-		d.s(true, 256);
+		System.out.println(d.s1(true));
+		System.out.println(d.s2(true));
 	}
 
-	private void s(boolean b, int nbDay) {
-		String champs = (b ? "full input" : "sample data");
+	public BigInteger s2(boolean b) {
+		return s(b,256);
+	}
+
+	public BigInteger s1(boolean b) {
+		return s(b,80);
+	}
+
+	private BigInteger s(boolean b, int nbDay) {
+		//String champs = (b ? "full input" : "sample data");
 		List<String> input = Arrays.asList(getInput(b).split(","));
 		List<Integer> inputNum = input.stream().map(s -> Integer.parseInt(s.trim())).collect(Collectors.toList());
 		Map<Integer, BigInteger> comptage = new HashMap<>();
@@ -61,8 +65,20 @@ public class A2021Day6 extends  A2021 {
 		for (Integer i : nextComptage.keySet()) {
 			tot = tot.add(nextComptage.get(i));
 		}
-		System.out.println("number of fish after " + nbDay + " days on " + champs + " : " + tot);
+		return tot;
 	}
 
+	public static String getDuration() {
+		A2021Day6 d = new A2021Day6(6);
+		long startTime = System.currentTimeMillis();
+		d.s1(true);
+		long endTime = System.currentTimeMillis();
+		long timeS1=endTime - startTime;
+		startTime = System.currentTimeMillis();
+		d.s2(true);
+		endTime = System.currentTimeMillis();
+		return "Day "+ d.day+" run 1 took "+timeS1+" milliseconds, run 2 took " + (endTime - startTime) + " milliseconds";
+		
+	}
 	
 }
