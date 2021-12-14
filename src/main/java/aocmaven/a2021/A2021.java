@@ -61,6 +61,7 @@ public class A2021  {
 		res+=getColoredLine(A2021Day11.getDuration(),11);
 		res+=getColoredLine(A2021Day12.getDuration(),12);
 		res+=getColoredLine(A2021Day13.getDuration(),13);
+		res+=getColoredLine(A2021Day14.getDuration(),14);
 		System.out.println(res);
 		
 	}
