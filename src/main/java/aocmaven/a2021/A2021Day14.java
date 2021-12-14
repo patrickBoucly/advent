@@ -3,12 +3,9 @@ package aocmaven.a2021;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import aocmaven.a2018.Day16A2018.Instruction;
 import outils.MesOutils;
 
 public class A2021Day14 extends A2021 {
