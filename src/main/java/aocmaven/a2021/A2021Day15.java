@@ -27,36 +27,29 @@ public class A2021Day15 extends A2021 {
 	}
 
 	public static void main(String[] args0) {
-		
-		
 		A2021Day15 d = new A2021Day15(15);
-		System.out.println(d.newRisk(2,3,8));
-		d.s1(true);
-		
 		long startTime = System.currentTimeMillis();
-		 System.out.println(d.s1old(true));
+	//	 System.out.println(d.s1(true));
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
-		// System.out.println(timeS1);
 		startTime = System.currentTimeMillis();
-
-		System.out.println(d.s2(true,5));
+		System.out.println(d.s2(true));
 		endTime = System.currentTimeMillis();
 		System.out.println("Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took "
 				+ (endTime - startTime) + " milliseconds");
 	}
-
-	private int s2(boolean b,int rep) {
+	private int s1(boolean b) {
+		return s(b,1);
+	}
+	private int s2(boolean b) {
+		return s(b,5);
+	}
+	private int s(boolean b,int rep) {
 		UniformCostSearch.Graph graph = new UniformCostSearch.Graph();
-		// s
-		A2021Day15 d = new A2021Day15(15);
-		List<Point> p1 = d.getPoints(true);
-		System.out.println(p1);
-		List<Point> points = d.getAllPoints(p1, 5);
-		
+		List<Point> p1 = getPoints(true);
+		List<Point> points = getAllPoints(p1, 5);
 		points.sort(Comparator.comparing(Point::getY).thenComparing(Comparator.comparing(Point::getX)));
 		Cave c=new Cave(points);
-		 System.out.println(c);
 		for (int i = 0; i < points.size(); i++) {
 			graph.addNode(i);
 		}
@@ -84,7 +77,6 @@ public class A2021Day15 extends A2021 {
 		return graph.uniformSearch(0, points.size()-1);
 	
 	}
-
 	private String getCout(List<Point> p1, int rep, int bandeau) {	
 		List<Point> points = getAllPoints(p1, rep);
 		int imax = MesOutils.getMaxIntegerFromList(points.stream().map(Point::getX).collect(Collectors.toList()));
@@ -152,7 +144,7 @@ public class A2021Day15 extends A2021 {
 		return res;
 	}
 
-	private String s1(boolean b) {
+	private String s1old2(boolean b) {
 
 		List<Point> points = getPoints(b);
 		int imax = MesOutils.getMaxIntegerFromList(points.stream().map(Point::getX).collect(Collectors.toList()));
@@ -183,8 +175,6 @@ public class A2021Day15 extends A2021 {
 			}
 		}
 		String[] res = graphWeighted.DijkstraShortestPath(getNode(0, 0, nodes), getNode(imax, imax, nodes));
-		System.out.println(res[0]);
-		System.out.println(res[1]);
 		return res[0];
 	}
 
@@ -451,7 +441,7 @@ public class A2021Day15 extends A2021 {
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-		//d.s2(true);
+		d.s2(true);
 		endTime = System.currentTimeMillis();
 		return Arrays.asList(timeS1, endTime - startTime);
 	}
