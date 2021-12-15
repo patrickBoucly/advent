@@ -48,18 +48,18 @@ public class A2021Day15 extends A2021 {
 		points.sort(Comparator.comparing(Point::getY).thenComparing(Comparator.comparing(Point::getX)));
 		for (int j = 0; j <= imax; j++) {
 			for (int i = 0; i < imax; i++) {
-				Point mpt = Point.getPoint(i + 1, j, points);
+				Point mpt = points.get(i+1+j*(imax+1));// Point.getPoint(i + 1, j, points);
 				graph.addEdge((imax + 1) * j + i, (imax + 1) * j + i + 1, mpt.getValue());
-				mpt = Point.getPoint(i, j, points);
+				mpt = points.get(i+j*(imax+1)); //Point.getPoint(i, j, points);
 				graph.addEdge((imax + 1) * j + i + 1, (imax + 1) * j + i, mpt.getValue());
 			}
 		}
-		points.sort(Comparator.comparing(Point::getX).thenComparing(Comparator.comparing(Point::getY)));
+		//points.sort(Comparator.comparing(Point::getX).thenComparing(Comparator.comparing(Point::getY)));
 		for (int i = 0; i <= imax; i++) {
 			for (int j = 0; j < imax; j++) {
-				Point mpt = Point.getPoint(i, j + 1, points);
+				Point mpt =  points.get(i+(j+1)*(imax+1))   ;//Point.getPoint(i, j + 1, points);
 				graph.addEdge((imax + 1) * j + i, (imax + 1) * (j + 1) + i, mpt.getValue());
-				mpt = Point.getPoint(i, j, points);
+				mpt =points.get(i+(j)*(imax+1))   ;// Point.getPoint(i, j, points);
 				graph.addEdge((imax + 1) * (j + 1) + i, (imax + 1) * j + i, mpt.getValue());
 			}
 		}
