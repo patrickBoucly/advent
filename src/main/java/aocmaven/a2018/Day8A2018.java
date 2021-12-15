@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import lombok.Data;
-import lombok.Value;
-
 public class Day8A2018 {
 
 	public static void main(String[] args) {

@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 
-import aocmaven.a2021.A2021Day15;
-import aocmaven.a2021.A2021Day15.Point;
-import aocmaven.a2021.A2021Day15.Cave;
 
 public class UniformCostSearch {
 	public static class Graph {
@@ -101,6 +98,7 @@ public class UniformCostSearch {
 	}
 
 	public static void main(String[] args) {
+		/*
 		Graph graph = new Graph();
 		// s
 		A2021Day15 d = new A2021Day15(15);
@@ -138,6 +136,7 @@ public class UniformCostSearch {
 		System.out.println("Cost calc");
 		int cost = graph.uniformSearch(0, points.size()-1);
 		System.out.println("Cost : " + cost);
+		*/
 	}
 
 }

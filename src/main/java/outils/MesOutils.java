@@ -1,12 +1,7 @@
 package outils;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Stream;
-
-import org.apache.commons.io.IOUtils;
 
 public class MesOutils {
 	public static Integer getMaxIntegerFromList(List<Integer> listOfIntegers) {

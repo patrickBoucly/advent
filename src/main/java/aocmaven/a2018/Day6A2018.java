@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import lombok.Data;
-import lombok.Value;
-
 public class Day6A2018 {
 
 	public final static Integer DISTMAX = 10000;
