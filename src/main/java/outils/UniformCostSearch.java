@@ -13,7 +13,7 @@ import aocmaven.a2021.A2021Day15.Point;
 import aocmaven.a2021.A2021Day15.Cave;
 
 public class UniformCostSearch {
-	static class Graph {
+	public static class Graph {
 
 		private HashMap<Integer, Node> nodeLookup = new HashMap<>();
 

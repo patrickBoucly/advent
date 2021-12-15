@@ -12,10 +12,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import aocmaven.a2021.A2021Day15.Cave;
 import aocmaven.a2021.A2021Day15.Point;
 import outils.GraphWeighted;
 import outils.MesOutils;
 import outils.NodeWeighted;
+import outils.UniformCostSearch;
+import outils.UniformCostSearch.Graph;
 
 public class A2021Day15 extends A2021 {
 
@@ -28,10 +31,10 @@ public class A2021Day15 extends A2021 {
 		
 		A2021Day15 d = new A2021Day15(15);
 		System.out.println(d.newRisk(2,3,8));
-		// d.s1(true);
-		/*
+		d.s1(true);
+		
 		long startTime = System.currentTimeMillis();
-		// System.out.println(d.s1old(true));
+		 System.out.println(d.s1old(true));
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		// System.out.println(timeS1);
@@ -41,38 +44,45 @@ public class A2021Day15 extends A2021 {
 		endTime = System.currentTimeMillis();
 		System.out.println("Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took "
 				+ (endTime - startTime) + " milliseconds");
-				*/
-
 	}
 
-	private String s2(boolean b,int rep) {
-		List<Point> p1 = getPoints(b);
-		 boolean continuer=true;
-		 int bandeau=90;
-	        while(continuer) {
-	        	bandeau+=10;
-	        	System.out.println("go, bandeau "+bandeau);
-	        	long startTime = System.currentTimeMillis();
-	        	String cout1=getCout(p1,rep,bandeau);
-	        	long endTime = System.currentTimeMillis();
-	        	long timeS1 = endTime - startTime;
-	        	//System.out.println(cout1+ "durée du bandeau "+bandeau+" : "+timeS1);
-	        	Charset charset = Charset.forName("UTF-8");
-	        	String s =cout1+ "durée du bandeau "+bandeau+" : "+timeS1;
-	        	Path p=Paths.get("C:\\tmp\\d15.txt");
-	        	try (BufferedWriter writer = Files.newBufferedWriter(p, charset)) {
-	        	    writer.write(s, 0, s.length());
-	        	} catch (IOException x) {
-	        	    System.err.format("IOException: %s%n", x);
-	        	}
-	        	System.out.println(cout1+ "durée du bandeau "+bandeau+" : "+timeS1);
-	        	if(bandeau>200) {
-	        		continuer=false;
-	        	}
-	        }
-        
+	private int s2(boolean b,int rep) {
+		UniformCostSearch.Graph graph = new UniformCostSearch.Graph();
+		// s
+		A2021Day15 d = new A2021Day15(15);
+		List<Point> p1 = d.getPoints(true);
+		System.out.println(p1);
+		List<Point> points = d.getAllPoints(p1, 5);
 		
-		return "";
+		points.sort(Comparator.comparing(Point::getY).thenComparing(Comparator.comparing(Point::getX)));
+		Cave c=new Cave(points);
+		 System.out.println(c);
+		for (int i = 0; i < points.size(); i++) {
+			graph.addNode(i);
+		}
+		int imax = MesOutils.getMaxIntegerFromList(points.stream().map(Point::getX).collect(Collectors.toList()));
+		points.sort(Comparator.comparing(Point::getY).thenComparing(Comparator.comparing(Point::getX)));
+		for (int j = 0; j <= imax; j++) {
+			for (int i = 0; i < imax; i++) {
+				Point mpt=Point.getPoint(i + 1, j, points);
+				graph.addEdge((imax+1) * j + i, (imax+1) * j + i + 1, mpt.getValue());
+				mpt=Point.getPoint(i, j , points);
+				graph.addEdge( (imax+1) * j + i + 1,(imax+1) * j + i, mpt.getValue());
+			//	graph.addEdge((imax+1) * j + i, (imax+1) * j + i + 1, points.get((imax+1) * j + i + 1).getValue());
+			}
+		}
+		points.sort(Comparator.comparing(Point::getX).thenComparing(Comparator.comparing(Point::getY)));
+		for (int i = 0; i <= imax; i++) {
+			for (int j = 0; j < imax; j++) {
+				Point mpt=Point.getPoint(i, j + 1, points);
+				graph.addEdge((imax+1) * j + i, (imax+1) * (j + 1) + i, mpt.getValue());
+				mpt=Point.getPoint(i, j , points);
+				graph.addEdge((imax+1) * (j + 1) + i,(imax+1) * j + i, mpt.getValue());
+			//	graph.addEdge((imax+1) * j + i, (imax+1) * j + i + 1, points.get((imax+1) * i + j + 1).getValue());
+			}
+		}
+		return graph.uniformSearch(0, points.size()-1);
+	
 	}
 
 	private String getCout(List<Point> p1, int rep, int bandeau) {	
