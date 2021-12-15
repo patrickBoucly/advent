@@ -104,7 +104,7 @@ public class UniformCostSearch {
 		Graph graph = new Graph();
 		// s
 		A2021Day15 d = new A2021Day15(15);
-		List<Point> p1 = d.getPoints(false);
+		List<Point> p1 = d.getPoints(true);
 		System.out.println(p1);
 		List<Point> points = d.getAllPoints(p1, 5);
 		
@@ -120,6 +120,8 @@ public class UniformCostSearch {
 			for (int i = 0; i < imax; i++) {
 				Point mpt=Point.getPoint(i + 1, j, points);
 				graph.addEdge((imax+1) * j + i, (imax+1) * j + i + 1, mpt.getValue());
+				mpt=Point.getPoint(i, j , points);
+				graph.addEdge( (imax+1) * j + i + 1,(imax+1) * j + i, mpt.getValue());
 			//	graph.addEdge((imax+1) * j + i, (imax+1) * j + i + 1, points.get((imax+1) * j + i + 1).getValue());
 			}
 		}
@@ -128,6 +130,8 @@ public class UniformCostSearch {
 			for (int j = 0; j < imax; j++) {
 				Point mpt=Point.getPoint(i, j + 1, points);
 				graph.addEdge((imax+1) * j + i, (imax+1) * (j + 1) + i, mpt.getValue());
+				mpt=Point.getPoint(i, j , points);
+				graph.addEdge((imax+1) * (j + 1) + i,(imax+1) * j + i, mpt.getValue());
 			//	graph.addEdge((imax+1) * j + i, (imax+1) * j + i + 1, points.get((imax+1) * i + j + 1).getValue());
 			}
 		}
