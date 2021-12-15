@@ -39,7 +39,7 @@ public class A2021Day15 extends A2021 {
 	private int s(boolean b, int rep) {
 		UniformCostSearch.Graph graph = new UniformCostSearch.Graph();
 		List<Point> p1 = getPoints(true);
-		List<Point> points = getAllPoints(p1, 5);
+		List<Point> points = getAllPoints(p1, rep);
 		points.sort(Comparator.comparing(Point::getY).thenComparing(Comparator.comparing(Point::getX)));
 		for (int i = 0; i < points.size(); i++) {
 			graph.addNode(i);
