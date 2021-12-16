@@ -81,7 +81,6 @@ public class A2021Day16 extends A2021 {
 					lgSousPaquet = Integer.parseInt(reste.substring(0, 15), 2);
 					reste = reste.substring(15);
 					t.sousPaquet = new ArrayList<>();
-					int nbSP = 0;
 					while (t.sousPaquet.stream().map(tx -> tx.binT).map(String::length).reduce(0,
 							(a, b) -> a + b) < lgSousPaquet) {
 						t.sousPaquet.add(decode(new Transmission(reste)));
