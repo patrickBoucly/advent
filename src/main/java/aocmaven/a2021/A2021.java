@@ -64,7 +64,15 @@ public class A2021  {
 		res+=getColoredLine(A2021Day14.getDuration(),14);
 		res+=getColoredLine(A2021Day15.getDuration(),15);
 		res+=getColoredLine(A2021Day16.getDuration(),16);
-		res+=getColoredLine(A2021Day16.getDuration(),17);
+		res+=getColoredLine(A2021Day17.getDuration(),17);
+		res+=getColoredLine(A2021Day18.getDuration(),18);
+		//res+=getColoredLine(A2021Day19.getDuration(),19);
+		//res+=getColoredLine(A2021Day20.getDuration(),20);
+		//res+=getColoredLine(A2021Day21.getDuration(),21);
+		//res+=getColoredLine(A2021Day22.getDuration(),22);
+		//res+=getColoredLine(A2021Day23.getDuration(),23);
+		//res+=getColoredLine(A2021Day24.getDuration(),24);
+		
 		System.out.println(res);
 		
 	}

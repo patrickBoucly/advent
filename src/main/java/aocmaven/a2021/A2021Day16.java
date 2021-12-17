@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import outils.MesOutils;
-
 public class A2021Day16 extends A2021 {
 
 	public A2021Day16(int day) {

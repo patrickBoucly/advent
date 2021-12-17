@@ -1,18 +1,10 @@
 package aocmaven.a2021;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.Stack;
 import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.tuple.Pair;
-
-import outils.MesOutils;
 
 public class A2021Day17 extends A2021 {
 
