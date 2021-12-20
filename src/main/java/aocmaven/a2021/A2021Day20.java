@@ -2,9 +2,7 @@ package aocmaven.a2021;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -12,7 +10,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import aocmaven.a2021.A2021Day9.Point;
 import outils.MesOutils;
 
 public class A2021Day20 extends A2021 {
@@ -28,7 +25,7 @@ public class A2021Day20 extends A2021 {
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-		System.out.println(d.s2(false));
+		System.out.println(d.s2(true));
 		endTime = System.currentTimeMillis();
 		System.out.println("Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took "
 				+ (endTime - startTime) + " milliseconds");
@@ -84,8 +81,9 @@ public class A2021Day20 extends A2021 {
 		int xmin = MesOutils.getMinIntegerFromList(map.pts.stream().map(Point::getX).collect(Collectors.toList()));
 		int ymax = MesOutils.getMaxIntegerFromList(map.pts.stream().map(Point::getY).collect(Collectors.toList()));
 		int xmax = MesOutils.getMaxIntegerFromList(map.pts.stream().map(Point::getX).collect(Collectors.toList()));
-		for(int i=xmin-3;i<=xmax+3;i++) {
-			for(int j=ymin-3;j<=ymax+3;j++) {
+		int bande=10;
+		for(int i=xmin-bande;i<=xmax+bande;i++) {
+			for(int j=ymin-bande;j<=ymax+bande;j++) {
 				Optional<Point> p=Point.getPoint(map.pts, i, j);
 				Point np;
 				if(p.isPresent()) {
@@ -110,8 +108,10 @@ public class A2021Day20 extends A2021 {
 		int xmin = MesOutils.getMinIntegerFromList(pts.stream().map(Point::getX).collect(Collectors.toList()));
 		int ymax = MesOutils.getMaxIntegerFromList(pts.stream().map(Point::getY).collect(Collectors.toList()));
 		int xmax = MesOutils.getMaxIntegerFromList(pts.stream().map(Point::getX).collect(Collectors.toList()));
-		for(int i=xmin-2;i<=xmax+2;i++) {
-			for(int j=ymin-2;j<=ymax+2;j++) {
+		int bande=1;
+		String goodPixel="";
+		for(int i=xmin-bande;i<=xmax+bande;i++) {
+			for(int j=ymin-bande;j<=ymax+bande;j++) {
 				Optional<Point> p=Point.getPoint(pts, i, j);
 				Point np;
 				if(p.isPresent()) {
@@ -119,13 +119,31 @@ public class A2021Day20 extends A2021 {
 				} else {
 					np=new Point(i,j,".");
 				}
+				
 					code=getStringFromVoisins(pts,np);
 					valCode=getValueFromCode(code);
 					firstEnhance.add(new Point(np.x,np.y,decoder(valCode,decode)));
-				
+					if(i==xmin-bande+5 && j==ymin-bande+5) {
+						goodPixel=Point.getPoint(firstEnhance, i, j).get().pixel;
+					}
 			}
 		}	
+		
+		firstEnhance=clean(firstEnhance,goodPixel,xmin,xmax,ymin,ymax);
 		return firstEnhance;
+	}
+
+	private Set<Point> clean(Set<Point> firstEnhance,String gp, int xmin, int xmax, int ymin, int ymax) {
+		Set<Point> res= new HashSet<>();
+		for(Point pt:firstEnhance) {
+			if((pt.x<xmin+5 ||pt.x>xmax-5|| pt.y<ymin+5||pt.y>ymax-5)){ 
+				res.add(new Point(pt.x,pt.y,gp));
+			}else {
+				res.add(pt);
+			}
+		}
+		
+		return res;
 	}
 
 	private String decoder(int valCode, String decode) {
