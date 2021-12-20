@@ -24,11 +24,11 @@ public class A2021Day20 extends A2021 {
 	public static void main(String[] args0) {
 		A2021Day20 d = new A2021Day20(20);
 		long startTime = System.currentTimeMillis();
-	     System.out.println(d.s1(true));
+	//     System.out.println(d.s1(false));
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-	//	System.out.println(d.s2(false));
+		System.out.println(d.s2(false));
 		endTime = System.currentTimeMillis();
 		System.out.println("Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took "
 				+ (endTime - startTime) + " milliseconds");
@@ -38,45 +38,18 @@ public class A2021Day20 extends A2021 {
 		List<String> lignes = Arrays.asList(getInput(b).split("\n")).stream().map(String::trim)
 				.collect(Collectors.toList());
 		String decode = lignes.get(0);
-		
-		HashMap<String,String> codeToValue = new HashMap<>();
-		for(int i=0;i<512;i++) {
-			codeToValue.put(String.valueOf(i),decoder(i,decode));
-		}
-		int ymin = MesOutils.getMinIntegerFromList(map.pts.stream().map(Point::getY).collect(Collectors.toList()));
-		int xmin = MesOutils.getMinIntegerFromList(map.pts.stream().map(Point::getX).collect(Collectors.toList()));
-		int ymax = MesOutils.getMaxIntegerFromList(map.pts.stream().map(Point::getY).collect(Collectors.toList()));
-		int xmax = MesOutils.getMaxIntegerFromList(map.pts.stream().map(Point::getX).collect(Collectors.toList()));
-		String code;
-		int valCode;
-		HashMap<String,Integer> cpt = new HashMap<>();
-		
-		for(Point p:map.pts) {
-			if(p.x ==xmin || p.x==xmax || p.y==ymin || p.y==ymax) {
-				for(Point pa:getAdj(map.pts, p)) {
-					code=getStringFromVoisins(map.pts,pa);
-					valCode=getValueFromCode(code);
-			//		firstEnhance.add(new Point(pa.x,pa.y,decoder(valCode,decode)));
-				}
-			}
-		//	code=getStringFromVoisins(pts,p);
-		//	valCode=getValueFromCode(code);
-	//		firstEnhance.add(new Point(p.x,p.y,decoder(valCode,decode)));
-		}
-		
 		Set<Point> nextEnhance= new HashSet<A2021Day20.Point>();
-		System.out.println(map);
 		for(int i=0;i<50;i++) {
+		//	System.out.println(map);
 			nextEnhance=enhance(map.pts,decode);
 		//	nextEnhance=clean(nextEnhance);
 			
 			System.out.println("i :"+i);
 	//	    System.out.println(new Maps(nextEnhance));
             System.out.println(nextEnhance.stream().filter(p->p.pixel.equals("#")).count());
-            System.out.println();
 		    map.setPts(nextEnhance);
 		}
-		
+		System.out.println(map);
 		return nextEnhance.stream().filter(p->p.pixel.equals("#")).count();
 	}
 	
@@ -106,7 +79,25 @@ public class A2021Day20 extends A2021 {
 				map.add(np);
 			}
 		}
-		return map;
+		Set<Point> nextEnhance= new HashSet<A2021Day20.Point>();
+		int ymin = MesOutils.getMinIntegerFromList(map.pts.stream().map(Point::getY).collect(Collectors.toList()));
+		int xmin = MesOutils.getMinIntegerFromList(map.pts.stream().map(Point::getX).collect(Collectors.toList()));
+		int ymax = MesOutils.getMaxIntegerFromList(map.pts.stream().map(Point::getY).collect(Collectors.toList()));
+		int xmax = MesOutils.getMaxIntegerFromList(map.pts.stream().map(Point::getX).collect(Collectors.toList()));
+		for(int i=xmin-3;i<=xmax+3;i++) {
+			for(int j=ymin-3;j<=ymax+3;j++) {
+				Optional<Point> p=Point.getPoint(map.pts, i, j);
+				Point np;
+				if(p.isPresent()) {
+					np=p.get();
+				} else {
+					np=new Point(i,j,".");
+				}
+				nextEnhance.add(new Point(np.x,np.y,np.pixel));
+				
+			}
+		}	
+		return new Maps(nextEnhance);
 	}
 
 	
@@ -119,19 +110,21 @@ public class A2021Day20 extends A2021 {
 		int xmin = MesOutils.getMinIntegerFromList(pts.stream().map(Point::getX).collect(Collectors.toList()));
 		int ymax = MesOutils.getMaxIntegerFromList(pts.stream().map(Point::getY).collect(Collectors.toList()));
 		int xmax = MesOutils.getMaxIntegerFromList(pts.stream().map(Point::getX).collect(Collectors.toList()));
-		for(Point p:pts) {
-			if(p.x ==xmin || p.x==xmax || p.y==ymin || p.y==ymax) {
-				for(Point pa:getAdj(pts, p)) {
-					code=getStringFromVoisins(pts,pa);
-					valCode=getValueFromCode(code);
-					firstEnhance.add(new Point(pa.x,pa.y,decoder(valCode,decode)));
+		for(int i=xmin-2;i<=xmax+2;i++) {
+			for(int j=ymin-2;j<=ymax+2;j++) {
+				Optional<Point> p=Point.getPoint(pts, i, j);
+				Point np;
+				if(p.isPresent()) {
+					np=p.get();
+				} else {
+					np=new Point(i,j,".");
 				}
+					code=getStringFromVoisins(pts,np);
+					valCode=getValueFromCode(code);
+					firstEnhance.add(new Point(np.x,np.y,decoder(valCode,decode)));
+				
 			}
-			code=getStringFromVoisins(pts,p);
-			valCode=getValueFromCode(code);
-			firstEnhance.add(new Point(p.x,p.y,decoder(valCode,decode)));
-		}
-		
+		}	
 		return firstEnhance;
 	}
 
