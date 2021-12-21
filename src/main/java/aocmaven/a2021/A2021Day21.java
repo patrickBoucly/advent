@@ -2,13 +2,16 @@ package aocmaven.a2021;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class A2021Day21 extends A2021 {
+	final static int nbVic = 21;
 
 	public A2021Day21(int day) {
 		super(day);
@@ -21,10 +24,94 @@ public class A2021Day21 extends A2021 {
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-		System.out.println(d.s2(false));
+		System.out.println(d.s2(true));
 		endTime = System.currentTimeMillis();
 		System.out.println("Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took "
 				+ (endTime - startTime) + " milliseconds");
+	}
+
+	private long s2(boolean b) {
+		HashMap<Integer, Integer> joueurPose = new HashMap<>();
+		if (b) {
+			joueurPose.put(1, 4);
+			joueurPose.put(2, 7);
+		} else {
+			joueurPose.put(1, 4);
+			joueurPose.put(2, 8);
+		}
+		HashMap<Integer, Long> scores = new HashMap<>();
+		scores.put(1, 0L);
+		scores.put(2, 0L);
+		Jeu2 j = new Jeu2(scores, joueurPose);
+		HashMap<Jeu2, Long> c = j.jouer();
+		List<Situation> ls = new ArrayList<>();
+		for (Jeu2 g : c.keySet()) {
+			ls.add(new Situation(g.scores.get(1), g.scores.get(2), c.get(g), c.get(g),g.joueurPose.get(1),g.joueurPose.get(2)));
+		}
+		Long v1 = 0L;
+		Long v2 = 0L;
+		for (Situation s : ls) {
+			if (s.s1 >= nbVic) {
+				v1 += s.cpt1;
+			} else if (s.s2 >= nbVic) {
+				v2 += s.cpt2;
+			}
+		}
+		System.out.println(ls);
+		ls = ls.stream().filter(s -> s.s1 < nbVic && s.s2 < nbVic).collect(Collectors.toList());
+		System.out.println(ls);
+		int cur = 2;
+		while (!ls.isEmpty()) {
+			ls = jouerLS(ls, cur);
+			for (Situation s : ls) {
+				if (s.s1 >= nbVic) {
+					v1 += s.cpt1;
+				} else if (s.s2 >= nbVic) {
+					v2 += s.cpt2;
+				}
+			}
+			ls = ls.stream().filter(s -> s.s1 < nbVic && s.s2 < nbVic).collect(Collectors.toList());
+			cur = (cur == 1) ? 2 : 1;
+		}
+		Long w = v1;
+		if (v2 > v1) {
+			w = v2;
+		}
+		System.out.println(v1);
+		System.out.println(v2);
+		return w;
+	}
+
+	private List<Situation> jouerLS(List<Situation> ls, int cur) {
+		List<Situation> nls = new ArrayList<>();
+		for (Situation s : ls) {
+			for (Integer sum : Jeu2.sumFreq.keySet()) {
+				
+				if (cur == 2) {
+					int np=-1;
+					String newPose = String.valueOf(s.p2 + sum);
+					if (newPose.substring(newPose.length() - 1).equals("0")) {
+						np=10;
+					} else {
+						np=Integer.parseInt(newPose.substring(newPose.length() - 1));
+					}
+					nls.add(new Situation(s.s1, s.s2 + np, s.cpt1 * Jeu2.sumFreq.get(sum),
+							s.cpt2 * Jeu2.sumFreq.get(sum),s.p1,np));
+				} else {
+					int np=-1;
+					String newPose = String.valueOf(s.p1 + sum);
+					if (newPose.substring(newPose.length() - 1).equals("0")) {
+						np=10;
+					} else {
+						np=Integer.parseInt(newPose.substring(newPose.length() - 1));
+					}
+					nls.add(new Situation(s.s1 + np, s.s2, s.cpt1 * Jeu2.sumFreq.get(sum),
+							s.cpt2 * Jeu2.sumFreq.get(sum),np,s.p2));
+
+				}
+			}
+		}
+		return nls;
 	}
 
 	private long s1(boolean b) {
@@ -52,7 +139,7 @@ public class A2021Day21 extends A2021 {
 		return scoreMin * j.de;
 	}
 
-	private Long s2(boolean b) {
+	private Long s2b(boolean b) {
 		HashMap<Integer, Integer> joueurPose = new HashMap<>();
 		if (b) {
 			joueurPose.put(1, 4);
@@ -70,7 +157,6 @@ public class A2021Day21 extends A2021 {
 		HashMap<Jeu2, Long> res = new HashMap<>();
 		HashMap<Jeu2, Long> newRes = new HashMap<>();
 		HashMap<Jeu2, Long> unRes = new HashMap<>();
-
 		Set<Jeu2> allGames = initAllGame(j);
 		for (Jeu2 jeu : allGames) {
 			corres.put(jeu, jeu.jouer());
@@ -87,7 +173,12 @@ public class A2021Day21 extends A2021 {
 		HashMap<Jeu2, Long> nbChemins = new HashMap<>();
 
 		for (Jeu2 g : corres.keySet()) {
-			Long nb=cheminsVers(g, corres, nbChemins);
+
+			System.out.println(corres.get(g));
+		}
+
+		for (Jeu2 g : corres.keySet()) {
+			Long nb = cheminsVers(g, corres, nbChemins);
 			nbChemins.put(g, nb);
 			if (nbChemins.size() % 10 == 0) {
 				System.out.println(nbChemins.size());
@@ -163,8 +254,8 @@ public class A2021Day21 extends A2021 {
 
 	private Set<Jeu2> initAllGame2(Jeu2 j) {
 		Set<Jeu2> res = new HashSet<>();
-		for (Long s1 = 0L; s1 < 21; s1++) {
-			for (Long s2 = 0L; s2 < 21; s2++) {
+		for (Long s1 = 0L; s1 < nbVic; s1++) {
+			for (Long s2 = 0L; s2 < nbVic; s2++) {
 				for (int pos1 = 0; pos1 < 11; pos1++) {
 					for (int pos2 = 0; pos2 < 11; pos2++) {
 						for (int cur = 1; cur <= 2; cur++) {
@@ -182,6 +273,31 @@ public class A2021Day21 extends A2021 {
 			}
 		}
 		return res;
+	}
+
+	public static class Situation {
+		Long s1;
+		Long s2;
+		Long cpt1;
+		Long cpt2;
+		int p1;
+		int p2;
+
+		public Situation(Long s1, Long s2, Long cpt1, Long cpt2,int p1,int p2) {
+			super();
+			this.s1 = s1;
+			this.s2 = s2;
+			this.cpt1 = cpt1;
+			this.cpt2 = cpt2;
+			this.p1=p1;
+			this.p2=p2;
+		}
+
+		@Override
+		public String toString() {
+			return "Situation [s1=" + s1 + ", s2=" + s2 + ", cpt1=" + cpt1 + ", cpt2=" + cpt2 + "]";
+		}
+
 	}
 
 	public static class Jeu1 {
@@ -333,17 +449,7 @@ public class A2021Day21 extends A2021 {
 					}
 					j.scores.put(j.currentP, j.scores.get(j.currentP) + j.joueurPose.get(j.currentP));
 					j.currentP = (j.currentP == 1) ? 2 : 1;
-					if (j.fini()) {
-						if (j.j1w()) {
-							j.winner = 1;
-						} else {
-							j.winner = 2;
-						}
-						j.joueurPose = null;
-						j.scores = null;
-						j.currentP = 0;
 
-					}
 					if (res.containsKey(j)) {
 						res.put(j, res.get(j) + sumFreq.get(sum));
 					} else {
@@ -357,7 +463,7 @@ public class A2021Day21 extends A2021 {
 		}
 
 		public boolean fini() {
-			if (scores.values().stream().anyMatch(p -> p >= 21)) {
+			if (scores.values().stream().anyMatch(p -> p >= nbVic)) {
 				return true;
 			}
 			return false;
@@ -391,6 +497,10 @@ public class A2021Day21 extends A2021 {
 			this.currentP = j.currentP;
 			this.joueurPose = new HashMap(j.joueurPose);
 			this.winner = 0;
+		}
+
+		public Long tot() {
+			return scores.get(1) + scores.get(2);
 		}
 
 		public Jeu2(HashMap<Integer, Long> scores, HashMap<Integer, Integer> joueurPose, int cur) {
