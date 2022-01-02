@@ -52,8 +52,10 @@ public class A2021Day25 extends A2021 {
 		int xmax = MesOutils.getMaxIntegerFromList(seacs.stream().map(SeaC::getX).collect(Collectors.toList()));
 		int ymax = MesOutils.getMaxIntegerFromList(seacs.stream().map(SeaC::getY).collect(Collectors.toList()));
 		while (s.abouge) {
-			s.nextStep(xmax, ymax);
+			s.nextStepE(xmax, ymax);
+			s.nextStepS(xmax, ymax);
 			System.out.println(s.nbStep);
+			System.out.println(SeaC.listString(seacs));
 		}
 
 		return s.nbStep;
@@ -74,23 +76,31 @@ public class A2021Day25 extends A2021 {
 			this.nbStep = i;
 		}
 
-		public void nextStep(int xmax, int ymax) {
-			List<SeaC> newSeacs = new ArrayList<>();
+		public void nextStepE(int xmax, int ymax) {
+			System.out.println(SeaC.listString(seacs));
+			List<SeaC> newSeacs = seacs.stream().filter(y->y.type.equals("v")).collect(Collectors.toList());
+			System.out.println(SeaC.listString(newSeacs));
 			List<SeaC> canMove = canMove(">", seacs, xmax, ymax);
 			List<SeaC> canTMove = canTMove(">", seacs, xmax, ymax);
 			newSeacs.addAll(canTMove);
+			System.out.println(SeaC.listString(newSeacs));
+
 			for (SeaC sc : canMove) {
 				newSeacs.add(sc.move(xmax, ymax));
 			}
+			System.out.println(SeaC.listString(newSeacs));
 			if (canMove.isEmpty()) {
 				abouge = false;
 			}
-			newSeacs.addAll(seacs.stream().filter(y->y.type.equals("v")).collect(Collectors.toList()));
-			this.seacs = newSeacs;
-			//System.out.println(SeaC.listString(seacs));
-			newSeacs = seacs.stream().filter(y->y.type.equals(">")).collect(Collectors.toList());
-			canMove = canMove("v", seacs, xmax, ymax);
-			canTMove = canTMove("v", seacs, xmax, ymax);
+			this.seacs=newSeacs;
+			System.out.println(SeaC.listString(seacs));
+			}
+
+		public void nextStepS(int xmax, int ymax) {
+			System.out.println(SeaC.listString(seacs));
+			List<SeaC> newSeacs = seacs.stream().filter(y->y.type.equals(">")).collect(Collectors.toList());
+			List<SeaC> canMove = canMove("v", seacs, xmax, ymax);
+			List<SeaC> canTMove = canTMove("v", seacs, xmax, ymax);
 			newSeacs.addAll(canTMove);
 			for (SeaC sc : canMove) {
 				newSeacs.add(sc.move(xmax, ymax));
