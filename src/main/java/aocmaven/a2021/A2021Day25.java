@@ -2,6 +2,7 @@ package aocmaven.a2021;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -19,7 +20,7 @@ public class A2021Day25 extends A2021 {
 	public static void main(String[] args0) {
 		A2021Day25 d = new A2021Day25(25);
 		long startTime = System.currentTimeMillis();
-		System.out.println(d.s1(false));
+		System.out.println(d.s1(true));
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
@@ -38,24 +39,20 @@ public class A2021Day25 extends A2021 {
 			int max = l.length();
 			for (int pos = 0; pos < max; pos++) {
 				if (l.substring(pos, pos + 1).equals(">")) {
-					seacs.add(new SeaC(pos, j, ">"));
+					seacs.add(new SeaC(pos, j, ">", false));
 				} else if (l.substring(pos, pos + 1).equals("v")) {
-					seacs.add(new SeaC(pos, j, "v"));
+					seacs.add(new SeaC(pos, j, "v", false));
 				} else if (l.substring(pos, pos + 1).equals(".")) {
-					seacs.add(new SeaC(pos, j, "."));
+					seacs.add(new SeaC(pos, j, ".", false));
 				}
 			}
 			j++;
 		}
 		Situation s = new Situation(seacs, true, 0);
-		System.out.println(SeaC.listString(seacs));
-		int xmax = MesOutils.getMaxIntegerFromList(seacs.stream().map(SeaC::getX).collect(Collectors.toList()));
-		int ymax = MesOutils.getMaxIntegerFromList(seacs.stream().map(SeaC::getY).collect(Collectors.toList()));
 		while (s.abouge) {
-			s.nextStepE(xmax, ymax);
-			s.nextStepS(xmax, ymax);
+			s.move();
+			//System.out.println(SeaC.listString(s.seacs));
 			System.out.println(s.nbStep);
-			System.out.println(SeaC.listString(seacs));
 		}
 
 		return s.nbStep;
@@ -68,109 +65,71 @@ public class A2021Day25 extends A2021 {
 	public static class Situation {
 
 		public int nbStep;
+		int xmax;
+		int ymax;
 
 		public Situation(List<SeaC> seacs, boolean abouge, int i) {
 			super();
 			this.seacs = seacs;
 			this.abouge = abouge;
 			this.nbStep = i;
+			this.xmax = MesOutils.getMaxIntegerFromList(seacs.stream().map(SeaC::getX).collect(Collectors.toList()));
+			this.ymax = MesOutils.getMaxIntegerFromList(seacs.stream().map(SeaC::getY).collect(Collectors.toList()));
+
 		}
 
-		public void nextStepE(int xmax, int ymax) {
-			System.out.println(SeaC.listString(seacs));
-			List<SeaC> newSeacs = seacs.stream().filter(y->y.type.equals("v")).collect(Collectors.toList());
-			System.out.println(SeaC.listString(newSeacs));
-			List<SeaC> canMove = canMove(">", seacs, xmax, ymax);
-			List<SeaC> canTMove = canTMove(">", seacs, xmax, ymax);
-			newSeacs.addAll(canTMove);
-			System.out.println(SeaC.listString(newSeacs));
+		public void move() {
+			List<SeaC> newSeacs = new ArrayList<>();
+			List<SeaC> newSeacsTMP = new ArrayList<>();
 
-			for (SeaC sc : canMove) {
-				newSeacs.add(sc.move(xmax, ymax));
+			for (SeaC sc : seacs.stream().filter(d -> d.type.equals(">")).collect(Collectors.toList())) {
+
+				if (sc.x == xmax) {
+					if (!(seacs.contains(new SeaC(0, sc.y, ">", false))
+							|| seacs.contains(new SeaC(0, sc.y, "v", false)))) {
+						newSeacsTMP.add(new SeaC(0, sc.y, sc.type, true));
+					} else {
+						sc.moved = false;
+						newSeacsTMP.add(sc);
+					}
+				} else {
+					if (!(seacs.contains(new SeaC(sc.x + 1, sc.y, ">", false))
+							|| seacs.contains(new SeaC(sc.x + 1, sc.y, "v", false)))) {
+						newSeacsTMP.add(new SeaC(sc.x + 1, sc.y, sc.type, true));
+					} else {
+						sc.moved = false;
+						newSeacsTMP.add(sc);
+					}
+
+				}
 			}
-			System.out.println(SeaC.listString(newSeacs));
-			if (canMove.isEmpty()) {
-				abouge = false;
-			}
-			this.seacs=newSeacs;
-			System.out.println(SeaC.listString(seacs));
+			newSeacsTMP.addAll(seacs.stream().filter(d -> d.type.equals("v")).collect(Collectors.toList()));
+			newSeacs.addAll(newSeacsTMP.stream().filter(d -> d.type.equals(">")).collect(Collectors.toList()));
+			
+			for (SeaC sc : newSeacsTMP.stream().filter(d -> d.type.equals("v")).collect(Collectors.toList())) {
+
+				if (sc.y == ymax) {
+					if (!(newSeacsTMP.contains(new SeaC(sc.x, 0, ">", false))
+							|| newSeacsTMP.contains(new SeaC(sc.x, 0, "v", false)))) {
+						newSeacs.add(new SeaC(sc.x, 0, sc.type, true));
+					} else {
+						sc.moved = false;
+						newSeacs.add(sc);
+					}
+				} else {
+					if (!(newSeacsTMP.contains(new SeaC(sc.x, sc.y + 1, ">", false))
+							|| newSeacsTMP.contains(new SeaC(sc.x, sc.y + 1, "v", false)))) {
+						newSeacs.add(new SeaC(sc.x, sc.y + 1, sc.type, true));
+					} else {
+						sc.moved = false;
+						newSeacs.add(sc);
+					}
+				}
 			}
 
-		public void nextStepS(int xmax, int ymax) {
-			System.out.println(SeaC.listString(seacs));
-			List<SeaC> newSeacs = seacs.stream().filter(y->y.type.equals(">")).collect(Collectors.toList());
-			List<SeaC> canMove = canMove("v", seacs, xmax, ymax);
-			List<SeaC> canTMove = canTMove("v", seacs, xmax, ymax);
-			newSeacs.addAll(canTMove);
-			for (SeaC sc : canMove) {
-				newSeacs.add(sc.move(xmax, ymax));
-			}
-			System.out.println(SeaC.listString(newSeacs));
-			if (canMove.isEmpty() && !abouge) {
-				abouge = false;
-			}
 			this.seacs = newSeacs;
 			this.nbStep++;
-		}
-
-		private List<SeaC> canTMove(String type, List<SeaC> cc, int xmax, int ymax) {
-			List<SeaC> canTMove = new ArrayList<>();
-			for (SeaC sc : cc) {
-				if (sc.type.equals(type)) {
-					if (sc.type.equals(">")) {
-						if (sc.x == xmax) {
-							if ((cc.contains(new SeaC(0, sc.y, ">")) || cc.contains(new SeaC(0, sc.y, "v")))) {
-								canTMove.add(sc);
-							}
-						} else {
-							if ((cc.contains(new SeaC(sc.x + 1, sc.y, ">"))|| cc.contains(new SeaC(sc.x + 1, sc.y, "v")))) {
-								canTMove.add(sc);
-							}
-						}
-					} else if (sc.type.equals("v")) {
-						if (sc.y == ymax) {
-							if ((cc.contains(new SeaC(sc.x, 0, ">"))||cc.contains(new SeaC(sc.x, 0, "v")))) {
-								canTMove.add(sc);
-							}
-						} else {
-							if ((cc.contains(new SeaC(sc.x, sc.y + 1, ">"))|| cc.contains(new SeaC(sc.x, sc.y + 1, "v")))) {
-								canTMove.add(sc);
-							}
-						}
-					}
-				}
-			}
-			return canTMove;
-		}
-
-		private List<SeaC> canMove(String type, List<SeaC> cc, int xmax, int ymax) {
-			List<SeaC> canMove = new ArrayList<>();
-			for (SeaC sc : cc) {
-				if (sc.type.equals(type)) {
-					if (sc.type.equals(">")) {
-						if (sc.x == xmax) {
-							if (!(cc.contains(new SeaC(0, sc.y, ">")) || cc.contains(new SeaC(0, sc.y, "v")))) {
-								canMove.add(sc);
-							}
-						} else {
-							if (!(cc.contains(new SeaC(sc.x + 1, sc.y, ">"))|| cc.contains(new SeaC(sc.x + 1, sc.y, "v")))) {
-								canMove.add(sc);
-							}
-						}
-					} else if (sc.type.equals("v")) {
-						if (sc.y == ymax) {
-							if (!(cc.contains(new SeaC(sc.x, 0, ">"))||cc.contains(new SeaC(sc.x, 0, "v")))) {
-								canMove.add(sc);
-							}
-						} else {
-							if (!(cc.contains(new SeaC(sc.x, sc.y + 1, ">"))|| cc.contains(new SeaC(sc.x, sc.y + 1, "v")))) {
-								canMove.add(sc);
-							}
-						}
-					}
-				}
-			}
-			return canMove;
+			this.abouge = seacs.stream().anyMatch(x -> x.moved);
 		}
 
 		List<SeaC> seacs;
@@ -180,6 +139,15 @@ public class A2021Day25 extends A2021 {
 	public static class SeaC {
 		int x;
 		int y;
+		boolean moved;
+
+		public boolean isMove() {
+			return moved;
+		}
+
+		public void setMove(boolean moved) {
+			this.moved = moved;
+		}
 
 		@Override
 		public String toString() {
@@ -190,23 +158,6 @@ public class A2021Day25 extends A2021 {
 
 		public int getX() {
 			return x;
-		}
-
-		public SeaC move(int xmax, int ymax) {
-			if (type.equals(">")) {
-				if (x == xmax) {
-					return new SeaC(0, y, type);
-				} else {
-					return new SeaC(x + 1, y, type);
-				}
-			} else if (type.equals("v")) {
-				if (y == ymax) {
-					return new SeaC(0, y, type);
-				} else {
-					return new SeaC(x, y + 1, type);
-				}
-			}
-			return null;
 		}
 
 		public void setX(int x) {
@@ -229,11 +180,12 @@ public class A2021Day25 extends A2021 {
 			this.type = type;
 		}
 
-		public SeaC(int x, int y, String type) {
+		public SeaC(int x, int y, String type, boolean b) {
 			super();
 			this.x = x;
 			this.y = y;
 			this.type = type;
+			this.moved = b;
 		}
 
 		@Override
@@ -274,7 +226,7 @@ public class A2021Day25 extends A2021 {
 			SeaC p = null;
 			for (SeaC i : sc) {
 				if (x == i.x && y == i.y) {
-					p = new SeaC(x, y, i.type);
+					p = new SeaC(x, y, i.type, false);
 				}
 			}
 			return Optional.ofNullable(p);
