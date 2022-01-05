@@ -3,6 +3,7 @@ package aocmaven.a2021;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -31,9 +32,16 @@ public class A2021Day22 extends A2021 {
 	}
 
 	private long s1(boolean b) {
+	return 0L;
+	}
+
+	private BigInteger s2(boolean b) {
 		List<String> lignes = Arrays.asList(getInput(b).split("\n")).stream().map(String::trim)
 				.collect(Collectors.toList());
 		List<Instruction> instructions = new ArrayList<>();
+		Set<Integer> lx = new HashSet<>();
+		Set<Integer> ly = new HashSet<>();
+		Set<Integer> lz = new HashSet<>();
 		for (String l : lignes) {
 			String[] sp1 = l.split(" ");
 			String[] sp2 = sp1[1].split(",");
@@ -43,87 +51,115 @@ public class A2021Day22 extends A2021 {
 			} else {
 				ins = false;
 			}
-			int xmin = 0;
-			int xmax = 0;
-			int ymin = 0;
-			int ymax = 0;
-			int zmin = 0;
-			int zmax = 0;
+			String xmin = "";
+			String xmax = "";
+			String ymin = "";
+			String ymax = "";
+			String zmin = "";
+			String zmax = "";
 			String v = sp2[0];
 			int pos = 2;
 			while (!v.substring(pos, pos + 1).equals(".")) {
-				xmin = Integer.parseInt(v.substring(pos, pos + 1));
+				xmin += v.substring(pos, pos + 1);
 				pos++;
 			}
+			lx.add(Integer.parseInt(xmin));
 			pos += 2;
 			for (int j = pos; j < v.length(); j++) {
-				xmax = Integer.parseInt(v.substring(pos, pos + 1));
+				xmax += v.substring(pos, pos + 1);
 				pos++;
 			}
+
+			lx.add(Integer.parseInt(xmax));
 			v = sp2[1];
 			pos = 2;
 			while (!v.substring(pos, pos + 1).equals(".")) {
-				ymin = Integer.parseInt(v.substring(pos, pos + 1));
+				ymin += v.substring(pos, pos + 1);
 				pos++;
 			}
+			ly.add(Integer.parseInt(ymin));
 			pos += 2;
 			for (int j = pos; j < v.length(); j++) {
-				ymax = Integer.parseInt(v.substring(pos, pos + 1));
+				ymax += v.substring(pos, pos + 1);
 				pos++;
 			}
+			ly.add(Integer.parseInt(ymax));
 			v = sp2[2];
 			pos = 2;
 			while (!v.substring(pos, pos + 1).equals(".")) {
-				zmin = Integer.parseInt(v.substring(pos, pos + 1));
+				zmin += v.substring(pos, pos + 1);
 				pos++;
 			}
+			lz.add(Integer.parseInt(zmin));
 			pos += 2;
 			for (int j = pos; j < v.length(); j++) {
-				zmax = Integer.parseInt(v.substring(pos, pos + 1));
+				zmax += v.substring(pos, pos + 1);
 				pos++;
 			}
-			instructions.add(new Instruction(ins, xmin, xmax, ymin, ymax, zmin, zmax));
+			lz.add(Integer.parseInt(zmax));
+			instructions.add(new Instruction(ins, Integer.parseInt(xmin), Integer.parseInt(xmax),
+					Integer.parseInt(ymin), Integer.parseInt(ymax), Integer.parseInt(zmin), Integer.parseInt(zmax)));
 		}
-		Set<Point> cube = new HashSet<>();
-		for (int i = -50; i <= 50; i++) {
-			for (int j = -50; j <= 50; j++) {
-				for (int k = -50; k <= 50; k++) {
-					cube.add(new Point(i, j, k, false));
+		List<Integer> llx = new ArrayList<>(lx);
+		List<Integer> lly = new ArrayList<>(ly);
+		List<Integer> llz = new ArrayList<>(lz);
+		Collections.sort(llx);
+		Collections.sort(lly);
+		Collections.sort(llz);
+		Cube bigCube = new Cube(llx.get(0), llx.get(llx.size() - 1), lly.get(0), lly.get(lly.size() - 1), llz.get(0),
+				llz.get(llz.size() - 1));
+
+		Set<Cube> cubes = new HashSet<>();
+		cubes.add(bigCube);
+		for (Instruction ins : instructions) {
+			Cube cubeIns = new Cube(ins);
+			cubes.add(cubeIns);
+			boolean splitrestant = false;
+			boolean start = true;
+			while (start || splitrestant) {
+				Set<Cube> newCubes = new HashSet<>();
+				splitrestant = false;
+				start = false;
+				for (Cube c1 : cubes) {
+					for (Cube c2 : cubes) {
+						if (!c1.equals(c2)) {
+							if (c1.seTouche(c2)) {
+								newCubes.addAll(c1.split(c2));
+								splitrestant = true;
+							}
+						}
+					}
 				}
+				if (splitrestant) {
+					cubes = new HashSet<>(newCubes);
+				}
+
 			}
+			cubes = new HashSet<>(cubes);
 		}
 		int cpt = 0;
-		System.out.println(instructions.size());
+		List<Cube> lcubes = new ArrayList<>(cubes);
+		lcubes.sort(Comparator.comparingInt(Cube::getXmin).thenComparing(Comparator.comparing(Cube::getXmax))
+				.thenComparing(Comparator.comparing(Cube::getYmin)).thenComparing(Comparator.comparing(Cube::getYmax))
+				.thenComparing(Comparator.comparing(Cube::getZmin)).thenComparing(Comparator.comparing(Cube::getZmax)));
+
 		for (Instruction ins : instructions) {
-			System.out.println(cpt);
-			cube = applyIns1(cube, ins);
+			for (Cube cu : lcubes) {
+				if (ins.contient(cu)) {
+					cu.setOn(ins.isOn);
+				}
+			}
 			cpt++;
 		}
-		System.out.println("s1 res : " + cube.stream().filter(Point::isOn).count());
-		return cube.stream().filter(Point::isOn).count();
-	}
 
-	private Set<Point> applyIns1(Set<Point> cube, Instruction ins) {
-		if (!ins.isOn) {
-			cube.removeIf(p -> ins.contient(p));
-		} else {
-			cube.removeIf(p -> ins.contient(p) && !p.isOn);
-			cube.addAll(ins.pointsConcernes1());
+		BigInteger res = BigInteger.ZERO;
+		for (Cube cu : cubes.stream().filter(cu -> cu.isOn).collect(Collectors.toList())) {
+			res = res.add(cu.getnbCube());
 		}
-		return cube;
+		return res;
 	}
 
-	private Set<Point> applyIns2(Set<Point> cube, Instruction ins) {
-		if (!ins.isOn) {
-			cube.removeIf(p -> ins.contient(p));
-		} else {
-			cube.removeIf(p -> ins.contient(p) && !p.isOn);
-			cube.addAll(ins.pointsConcernes2());
-		}
-		return cube;
-	}
-
-	private BigInteger s2(boolean b) {
+	private BigInteger s2s(boolean b) {
 		List<String> lignes = Arrays.asList(getInput(b).split("\n")).stream().map(String::trim)
 				.collect(Collectors.toList());
 		List<Instruction> instructions = new ArrayList<>();
@@ -209,59 +245,56 @@ public class A2021Day22 extends A2021 {
 		Collections.sort(llx);
 		Collections.sort(lly);
 		Collections.sort(llz);
-		List<Integer> lcubes = new ArrayList<>();
+		List<Cube> cubes = new ArrayList<>();
 
 		for (int i = 0; i < llx.size() - 1; i++) {
+			System.out.println(i);
 			for (int j = 0; j < lly.size() - 1; j++) {
 				for (int k = 0; k < llz.size() - 1; k++) {
-					System.out.println(lcubes.size());
+
 					Cube c = new Cube(llx.get(i) + 1, llx.get(i + 1) - 1, lly.get(j) + 1, lly.get(j + 1) - 1,
 							llz.get(k) + 1, llz.get(k + 1) - 1);
 					if (c.bienForme()) {
-						lcubes.addAll(Arrays.asList(c.xmin,c.xmax,c.ymin,c.ymax,c.zmin,c.zmax));
+						cubes.add(c);
 					}
-					//cubes.add(new Cube(llx.get(i), llx.get(i), lly.get(j), lly.get(j), llz.get(k), llz.get(k)));
-					c=new Cube(llx.get(i), llx.get(i), lly.get(j), lly.get(j), llz.get(k), llz.get(k));
-						lcubes.addAll(Arrays.asList(c.xmin,c.xmax,c.ymin,c.ymax,c.zmin,c.zmax));
+					cubes.add(new Cube(llx.get(i), llx.get(i), lly.get(j), lly.get(j), llz.get(k), llz.get(k)));
+
 					c = new Cube(llx.get(i) + 1, llx.get(i + 1) - 1, lly.get(j), lly.get(j), llz.get(k), llz.get(k));
 					if (c.bienForme()) {
-						lcubes.addAll(Arrays.asList(c.xmin,c.xmax,c.ymin,c.ymax,c.zmin,c.zmax));
+						cubes.add(c);
 					}
 					c = new Cube(llx.get(i), llx.get(i), lly.get(j) + 1, lly.get(j + 1) - 1, llz.get(k), llz.get(k));
 
 					if (c.bienForme()) {
-						lcubes.addAll(Arrays.asList(c.xmin,c.xmax,c.ymin,c.ymax,c.zmin,c.zmax));
+						cubes.add(c);
 					}
 					c = new Cube(llx.get(i), llx.get(i), lly.get(j), lly.get(j), llz.get(k) + 1, llz.get(k + 1) - 1);
 
 					if (c.bienForme()) {
-						lcubes.addAll(Arrays.asList(c.xmin,c.xmax,c.ymin,c.ymax,c.zmin,c.zmax));
+						cubes.add(c);
 					}
 
 					c = new Cube(llx.get(i) + 1, llx.get(i + 1) - 1, lly.get(j) + 1, lly.get(j + 1) - 1, llz.get(k),
 							llz.get(k));
 					if (c.bienForme()) {
-						lcubes.addAll(Arrays.asList(c.xmin,c.xmax,c.ymin,c.ymax,c.zmin,c.zmax));
+						cubes.add(c);
 					}
 					c = new Cube(llx.get(i) + 1, llx.get(i + 1) - 1, lly.get(j), lly.get(j), llz.get(k) + 1,
 							llz.get(k + 1) - 1);
 					if (c.bienForme()) {
-						lcubes.addAll(Arrays.asList(c.xmin,c.xmax,c.ymin,c.ymax,c.zmin,c.zmax));
+						cubes.add(c);
 					}
 					c = new Cube(llx.get(i), llx.get(i), lly.get(j) + 1, lly.get(j + 1) - 1, llz.get(k) + 1,
 							llz.get(k + 1) - 1);
 					if (c.bienForme()) {
-						lcubes.addAll(Arrays.asList(c.xmin,c.xmax,c.ymin,c.ymax,c.zmin,c.zmax));
+						cubes.add(c);
 					}
 				}
 			}
 		}
-		List<Cube> cubes = new ArrayList<>();
-		for(int i=0;i<lcubes.size();i=i+6) {
-			cubes.add(new Cube(lcubes.get(i),lcubes.get(i+1),lcubes.get(i+2),lcubes.get(i+3),lcubes.get(i+4),lcubes.get(i+5)));
-		}
+
 		int cpt = 0;
-		//List<Cube> cubes = new ArrayList<>(cubes);
+		// List<Cube> cubes = new ArrayList<>(cubes);
 		cubes.sort(Comparator.comparingInt(Cube::getXmin).thenComparing(Comparator.comparing(Cube::getXmax))
 				.thenComparing(Comparator.comparing(Cube::getYmin)).thenComparing(Comparator.comparing(Cube::getYmax))
 				.thenComparing(Comparator.comparing(Cube::getZmin)).thenComparing(Comparator.comparing(Cube::getZmax)));
@@ -309,11 +342,179 @@ public class A2021Day22 extends A2021 {
 		int ymax;
 		int zmin;
 		int zmax;
+		String nom;
 		BigInteger nbCube;
 		boolean isOn;
 
+		public String getNom() {
+			return nom;
+		}
+
+		public void setNom(String nom) {
+			this.nom = nom;
+		}
+
 		public BigInteger getNbCube() {
 			return nbCube;
+		}
+
+		public Collection<? extends Cube> split(Cube c2) {
+			List<Cube> splitted = new ArrayList<A2021Day22.Cube>();
+			RepInclusion repinc = inclusion(this, c2);
+			if (repinc.res) {
+				return spliIncl(repinc);
+			}
+			List<Point> s1 = getSommets();
+			List<Point> s2 = c2.getSommets();
+			if (s1.stream().filter(p -> c2.contient(p)).count() == 2) {
+				splitted=splitDeuxCoins(this,c2);
+			}
+			if (s2.stream().filter(p -> contient(p)).count() == 2) {
+				splitted=splitDeuxCoins(c2,this);
+			}
+			if (s1.stream().filter(p -> c2.contient(p)).count() == 1) {
+				splitted=splitUnCoin(this,c2);
+			}
+			if (s2.stream().filter(p -> contient(p)).count() == 1) {
+				splitted=splitUnCoin(c2,this);
+			}
+			if (s1.stream().filter(p -> c2.contient(p)).count() == 4) {
+				splitted=split4Coin(this,c2);
+			}
+			if (s2.stream().filter(p -> contient(p)).count() == 4) {
+				splitted=split4Coin(c2,this);
+			}
+			return splitted;
+		}
+
+		private List<Cube> split4Coin(Cube c1, Cube c2) {
+			List<Cube> splitted = new ArrayList<>();
+			List<Point> s1 = c1.getSommets();
+			List<Point> s2 = c2.getSommets();
+			List<Point> pts=s2.stream().filter(p -> c2.contient(p)).collect(Collectors.toList());
+			Point p1DeC2DansC1=pts.get(0);
+			Point p2DeC2DansC1=pts.get(1);
+			return splitted;
+		
+		}
+
+		private List<Cube> splitUnCoin(Cube c1, Cube c2) {
+			List<Cube> splitted = new ArrayList<>();
+			List<Point> s1 = c1.getSommets();
+			List<Point> s2 = c2.getSommets();
+			Point pDeC2DansC1=s2.stream().filter(p -> c2.contient(p)).findFirst().get();
+			if(pDeC2DansC1.type==1) {
+				splitted=splitT1(c1,c2,1);
+			} else if(pDeC2DansC1.type==7) {
+				splitted=splitT1(c1,c2,7);
+			} else if(pDeC2DansC1.type==2) {
+				splitted=splitT1(c1,c2,2);
+			} else if(pDeC2DansC1.type==8) {
+				splitted=splitT1(c1,c2,8);
+			} else if(pDeC2DansC1.type==3) {
+				splitted=splitT1(c1,c2,3);
+			} else if(pDeC2DansC1.type==5) {
+				splitted=splitT1(c1,c2,5);
+			} else if(pDeC2DansC1.type==4) {
+				splitted=splitT1(c1,c2,4);
+			} else if(pDeC2DansC1.type==6) {
+				splitted=splitT1(c1,c2,6);
+			}
+			return splitted;
+		}
+
+		private List<Cube> splitT4(Cube c1, Cube c2, int i) {
+			List<Cube> splitted = new ArrayList<>();
+			splitted.add(new Cube(c2.xmin,c1.xmax,c2.ymin,c1.ymax,c2.zmin,c1.zmax,"inter_t"+i));
+			splitted.add(new Cube(c1.xmin,c2.xmin-1,c1.ymin,c1.ymax,c1.zmin,c1.zmax,"bas_c1_t"+i));
+			splitted.add(new Cube(c2.xmin,c1.xmax,c1.ymin,c1.ymax,c1.zmin,c2.zmin-1,"gauche_c1_t"+i));
+			splitted.add(new Cube(c2.xmin,c1.xmax,c1.ymin,c2.ymin-1,c1.zmin,c1.zmax,"devant_c1_t"+i));
+			splitted.add(new Cube(c2.xmin+1,c2.xmax,c2.ymin,c2.ymax,c2.zmin,c2.zmax,"haut_c2_t"+i));
+			splitted.add(new Cube(c2.xmin,c1.xmax,c2.ymin,c2.ymax,c1.zmax+1,c2.zmax,"droite_c2_t"+i));
+			splitted.add(new Cube(c2.xmin,c1.xmax,c1.ymax+1,c2.ymax,c2.zmin,c2.zmax,"der_c2_t"+i));
+		return splitted;
+		}
+
+		private List<Cube> splitT3(Cube c1, Cube c2, int i) {
+			List<Cube> splitted = new ArrayList<>();
+			splitted.add(new Cube(c2.xmin,c1.xmax,c2.ymin,c1.ymax,c2.zmin,c1.zmax,"inter_t"+i));
+			splitted.add(new Cube(c1.xmin,c2.xmin-1,c1.ymin,c1.ymax,c1.zmin,c1.zmax,"bas_c1_t"+i));
+			splitted.add(new Cube(c2.xmin,c1.xmax,c1.ymin,c1.ymax,c1.zmin,c2.zmin-1,"gauche_c1_t"+i));
+			splitted.add(new Cube(c2.xmin,c1.xmax,c1.ymin,c2.ymin-1,c1.zmin,c1.zmax,"devant_c1_t"+i));
+			splitted.add(new Cube(c2.xmin+1,c2.xmax,c2.ymin,c2.ymax,c2.zmin,c2.zmax,"haut_c2_t"+i));
+			splitted.add(new Cube(c2.xmin,c1.xmax,c2.ymin,c2.ymax,c1.zmax+1,c2.zmax,"droite_c2_t"+i));
+			splitted.add(new Cube(c2.xmin,c1.xmax,c1.ymax+1,c2.ymax,c2.zmin,c2.zmax,"der_c2_t"+i));
+		return splitted;
+		}
+
+		private List<Cube> splitT2(Cube c1, Cube c2, int i) {
+			List<Cube> splitted = new ArrayList<>();
+			splitted.add(new Cube(c2.xmin,c1.xmax,c2.ymin,c1.ymax,c2.zmin,c1.zmax,"inter_t"+i));
+			splitted.add(new Cube(c1.xmin,c2.xmin-1,c1.ymin,c1.ymax,c1.zmin,c1.zmax,"bas_c1_t"+i));
+			splitted.add(new Cube(c2.xmin,c1.xmax,c1.ymin,c1.ymax,c1.zmin,c2.zmin-1,"gauche_c1_t"+i));
+			splitted.add(new Cube(c2.xmin,c1.xmax,c1.ymin,c2.ymin-1,c1.zmin,c1.zmax,"devant_c1_t"+i));
+			splitted.add(new Cube(c2.xmin+1,c2.xmax,c2.ymin,c2.ymax,c2.zmin,c2.zmax,"haut_c2_t"+i));
+			splitted.add(new Cube(c2.xmin,c1.xmax,c2.ymin,c2.ymax,c1.zmax+1,c2.zmax,"droite_c2_t"+i));
+			splitted.add(new Cube(c2.xmin,c1.xmax,c1.ymax+1,c2.ymax,c2.zmin,c2.zmax,"der_c2_t"+i));
+		return splitted;
+		}
+
+		private List<Cube> splitT1(Cube c1, Cube c2, int i) {
+			List<Cube> splitted = new ArrayList<>();
+				splitted.add(new Cube(c2.xmin,c1.xmax,c2.ymin,c1.ymax,c2.zmin,c1.zmax,"inter_t"+i));
+				splitted.add(new Cube(c1.xmin,c2.xmin-1,c1.ymin,c1.ymax,c1.zmin,c1.zmax,"bas_c1_t"+i));
+				splitted.add(new Cube(c2.xmin,c1.xmax,c1.ymin,c1.ymax,c1.zmin,c2.zmin-1,"gauche_c1_t"+i));
+				splitted.add(new Cube(c2.xmin,c1.xmax,c1.ymin,c2.ymin-1,c1.zmin,c1.zmax,"devant_c1_t"+i));
+				splitted.add(new Cube(c2.xmin+1,c2.xmax,c2.ymin,c2.ymax,c2.zmin,c2.zmax,"haut_c2_t"+i));
+				splitted.add(new Cube(c2.xmin,c1.xmax,c2.ymin,c2.ymax,c1.zmax+1,c2.zmax,"droite_c2_t"+i));
+				splitted.add(new Cube(c2.xmin,c1.xmax,c1.ymax+1,c2.ymax,c2.zmin,c2.zmax,"der_c2_t"+i));
+			return splitted;
+		}
+
+		private List<Cube> splitDeuxCoins(Cube c2, Cube c1) {
+			List<Cube> splitted = new ArrayList<>();
+			List<Point> s1 = c1.getSommets();
+			List<Point> s2 = c2.getSommets();
+			List<Point> pts=s2.stream().filter(p -> c2.contient(p)).collect(Collectors.toList());
+			Point p1DeC2DansC1=pts.get(0);
+			Point p2DeC2DansC1=pts.get(1);
+			return splitted;
+		}
+
+		private List<Cube> spliIncl(RepInclusion repinc) {
+			List<Cube> splitted = new ArrayList<A2021Day22.Cube>();
+			repinc.petit.setNom("centre");
+			splitted.add(repinc.petit);
+			splitted.add(new Cube(repinc.grand.xmin, repinc.petit.xmin - 1, repinc.grand.ymin, repinc.petit.ymin - 1,
+					repinc.grand.zmin, repinc.grand.zmax, "dvt"));
+			splitted.add(new Cube(repinc.petit.xmax + 1, repinc.grand.xmax, repinc.petit.ymax + 1, repinc.grand.ymax,
+					repinc.grand.zmin, repinc.grand.zmax, "der"));
+			splitted.add(new Cube(repinc.petit.xmin, repinc.petit.xmax, repinc.petit.ymin, repinc.petit.ymax,
+					repinc.petit.zmax + 1, repinc.grand.zmax, "dr"));
+			splitted.add(new Cube(repinc.petit.xmin, repinc.petit.xmax, repinc.petit.ymin, repinc.petit.ymax,
+					repinc.grand.zmin, repinc.petit.zmin - 1, "ga"));
+			splitted.add(new Cube(repinc.petit.xmin, repinc.petit.xmax, repinc.grand.ymin, repinc.petit.ymin - 1,
+					repinc.grand.zmin, repinc.grand.zmax, "bas"));
+			splitted.add(new Cube(repinc.petit.xmin, repinc.petit.xmax, repinc.petit.ymax + 1, repinc.grand.ymax,
+					repinc.grand.zmin, repinc.grand.zmax, "ht"));
+			return splitted;
+		}
+
+		private RepInclusion inclusion(Cube c1, Cube c2) {
+			if (c1.xmax < c2.xmax && c1.xmin > c2.xmin && c1.ymax < c2.ymax && c1.ymin > c2.ymin && c1.zmax < c2.zmax
+					&& c1.zmin > c2.zmin) {
+				return new RepInclusion(true, c1, c2);
+			} else if (c2.xmax < c1.xmax && c2.xmin > c1.xmin && c2.ymax < c1.ymax && c2.ymin > c1.ymin
+					&& c2.zmax < c1.zmax && c2.zmin > c1.zmin) {
+				return new RepInclusion(true, c2, c1);
+			}
+			return new RepInclusion(false, null, null);
+		}
+
+		public boolean seTouche(Cube c2) {
+			List<Point> s1 = getSommets();
+			List<Point> s2 = c2.getSommets();
+			return s1.stream().anyMatch(p -> c2.contient(p)) || s2.stream().anyMatch(p -> contient(p));
 		}
 
 		public boolean bienForme() {
@@ -402,6 +603,44 @@ public class A2021Day22 extends A2021 {
 			this.isOn = false;
 		}
 
+		public Cube(Instruction ins) {
+			super();
+			this.xmin = ins.xmin;
+			this.xmax = ins.xmax;
+			this.ymin = ins.ymin;
+			this.ymax = ins.ymax;
+			this.zmin = ins.zmin;
+			this.zmax = ins.zmax;
+			this.nbCube = BigInteger.ZERO;
+			this.isOn = false;
+		}
+
+		public Cube(int xmin, int xmax, int ymin, int ymax, int zmin, int zmax, String nom) {
+			super();
+			this.xmin = xmin;
+			this.xmax = xmax;
+			this.ymin = ymin;
+			this.ymax = ymax;
+			this.zmin = zmin;
+			this.zmax = zmax;
+			this.nbCube = BigInteger.ZERO;
+			this.nom = nom;
+			this.isOn = false;
+		}
+
+		public List<Point> getSommets() {
+			List<Point> sommets = new ArrayList<A2021Day22.Point>();
+			sommets.add(new Point(xmin, ymin, zmin, 1));
+			sommets.add(new Point(xmin, ymin, zmax, 2));
+			sommets.add(new Point(xmin, ymax, zmax, 3));
+			sommets.add(new Point(xmin, ymax, zmin, 4));
+			sommets.add(new Point(xmax, ymin, zmin, 5));
+			sommets.add(new Point(xmax, ymin, zmax, 6));
+			sommets.add(new Point(xmax, ymax, zmax, 7));
+			sommets.add(new Point(xmax, ymax, zmin, 8));
+			return sommets;
+		}
+
 		@Override
 		public String toString() {
 			return "Cube [xmin=" + xmin + ", xmax=" + xmax + ", ymin=" + ymin + ", ymax=" + ymax + ", zmin=" + zmin
@@ -458,18 +697,64 @@ public class A2021Day22 extends A2021 {
 
 	}
 
+	public static class RepInclusion {
+		boolean res;
+		Cube petit;
+		Cube grand;
+
+		public boolean isRes() {
+			return res;
+		}
+
+		public void setRes(boolean res) {
+			this.res = res;
+		}
+
+		public Cube getPetit() {
+			return petit;
+		}
+
+		public void setPetit(Cube petit) {
+			this.petit = petit;
+		}
+
+		public Cube getGrand() {
+			return grand;
+		}
+
+		public void setGrand(Cube grand) {
+			this.grand = grand;
+		}
+
+		public RepInclusion(boolean res, Cube petit, Cube grand) {
+			super();
+			this.res = res;
+			this.petit = petit;
+			this.grand = grand;
+		}
+
+	}
+
 	public static class Point {
 		int x;
 		int y;
 		int z;
-		boolean isOn;
+		int type;
 
-		public Point(int x, int y, int z, boolean isOn) {
+		public Point(int x, int y, int z, int type) {
 			super();
 			this.x = x;
 			this.y = y;
 			this.z = z;
-			this.isOn = isOn;
+			this.type = type;
+		}
+
+		public int getType() {
+			return type;
+		}
+
+		public void setType(int type) {
+			this.type = type;
 		}
 
 		@Override
@@ -513,18 +798,7 @@ public class A2021Day22 extends A2021 {
 			this.z = z;
 		}
 
-		public boolean isOn() {
-			return isOn;
-		}
-
-		public void setOn(boolean isOn) {
-			this.isOn = isOn;
-		}
-
-		@Override
-		public String toString() {
-			return "Point [x=" + x + ", y=" + y + ", z=" + z + ", isOn=" + isOn + "]";
-		}
+		
 
 	}
 
@@ -549,36 +823,7 @@ public class A2021Day22 extends A2021 {
 			return false;
 		}
 
-		public Set<Point> pointsConcernes1() {
-			Set<Point> cube = new HashSet<>();
-			if (xmin < -50 || xmax > 50 || ymin < -50 || ymax > 50 || zmin < -50 || zmax > 50) {
-
-			} else {
-				for (int i = xmin; i <= xmax; i++) {
-					for (int j = ymin; j <= ymax; j++) {
-						for (int k = zmin; k <= zmax; k++) {
-							cube.add(new Point(i, j, k, true));
-						}
-					}
-				}
-			}
-			return cube;
-		}
-
-		public Set<Point> pointsConcernes2() {
-			Set<Point> cube = new HashSet<>();
-
-			for (int i = xmin; i <= xmax; i++) {
-				for (int j = ymin; j <= ymax; j++) {
-					for (int k = zmin; k <= zmax; k++) {
-						cube.add(new Point(i, j, k, true));
-					}
-				}
-			}
-
-			return cube;
-		}
-
+		
 		public boolean contient(Point p) {
 			if (p.x >= xmin && p.x <= xmax && p.y >= ymin && p.y <= ymax && p.z >= zmin && p.z <= zmax) {
 				return true;
