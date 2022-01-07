@@ -26,7 +26,7 @@ public class A2021Day22 extends A2021 {
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-		System.out.println(d.s2(true));
+		System.out.println(d.s2(false));
 		endTime = System.currentTimeMillis();
 		System.out.println("Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took "
 				+ (endTime - startTime) + " milliseconds");
@@ -443,6 +443,14 @@ public class A2021Day22 extends A2021 {
 		return res;
 	}
 
+	private List<Cube> get2Zones(Cube c) {
+		List<Cube> zones = new ArrayList<A2021Day22.Cube>();
+		zones.add(new Cube(50, c.xmax, c.ymin, c.ymax, c.zmin, c.zmax, ">100000"));
+		zones.add(new Cube(-10, 49, c.ymin, c.ymax, c.zmin, c.zmax, "<100000"));
+		zones.add(new Cube(c.xmin, -11, c.ymin, c.ymax, c.zmin, c.zmax, "<100000"));
+		return splitZ(splitY(zones));
+	}
+
 	private BigInteger calculerOnHZ(List<Cube> zones, List<Instruction> instructions, List<Integer> llx,
 			List<Integer> lly, List<Integer> llz) {
 		System.out.println("HZ");
@@ -561,10 +569,9 @@ public class A2021Day22 extends A2021 {
 		int lastValue=0;
 		while (100001 - k * pas > -80001) {
 			k++;
-			String signe = (100001 - k * pas > 0) ? "" : "-";
-			Cube zone = new Cube(100001 - k * pas, 100000 - (k - 1) * pas, c.ymin, c.ymax, c.zmin, c.zmax,signe + String.valueOf(100000 - k * pas) + ":" + String.valueOf(100000 - (k-1 ) * pas));
+			Cube zone = new Cube(100001 - k * pas, 100000 - (k - 1) * pas, c.ymin, c.ymax, c.zmin, c.zmax, String.valueOf(100000 - k * pas) + ":" + String.valueOf(100000 - (k-1 ) * pas));
 			zones.add(zone);
-			lastValue=100000 - (k - 1) * pas;
+			lastValue=100001 - k * pas;
 		}
 		zones.add(new Cube(c.xmin, lastValue-1, c.ymin, c.ymax, c.zmin, c.zmax, "<"+lastValue));
 		return splitZ(splitY(zones));
@@ -665,7 +672,6 @@ public class A2021Day22 extends A2021 {
 				}
 			}
 		}
-		System.out.println("fin attribution on/off, debut du calcule en zone "+zone);
 		BigInteger res = BigInteger.ZERO;
 		for (Cube cu : cubes.stream().filter(cu -> cu.isOn).collect(Collectors.toList())) {
 			res = res.add(cu.getnbCube());
