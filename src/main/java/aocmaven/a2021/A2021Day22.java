@@ -26,7 +26,7 @@ public class A2021Day22 extends A2021 {
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-		System.out.println(d.s2(false));
+		System.out.println(d.s2(true));
 		endTime = System.currentTimeMillis();
 		System.out.println("Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took "
 				+ (endTime - startTime) + " milliseconds");
@@ -567,7 +567,7 @@ public class A2021Day22 extends A2021 {
 		int pas =10000;
 		int k = 0;
 		int lastValue=0;
-		while (100001 - k * pas > -80001) {
+		while (100001 - k * pas > c.xmin+pas) {
 			k++;
 			Cube zone = new Cube(100001 - k * pas, 100000 - (k - 1) * pas, c.ymin, c.ymax, c.zmin, c.zmax, String.valueOf(100000 - k * pas) + ":" + String.valueOf(100000 - (k-1 ) * pas));
 			zones.add(zone);
