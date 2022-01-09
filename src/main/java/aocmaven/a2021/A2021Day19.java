@@ -47,23 +47,16 @@ public class A2021Day19 extends A2021 {
 				scans.add(sc);
 			}
 		}
-		List<Integer> sumabsSc0 = new ArrayList<Integer>();
-		for (Scanner scan : scans) {
-			if (scan.num == 0) {
-				sumabsSc0 = scan.balisesDetectee.stream().map(Balise::getPoseBal).map(Position::sumabs)
-						.collect(Collectors.toList());
-			}
-		}
+
 		for (Scanner scan : scans) {
 			if (scan.num != 0) {
-				int pos=0;
 				for (Scanner scanP : scan.allPermutation()) {
-				List<Integer> common = new ArrayList<Integer>(sumabsSc0);
-				List<Integer> sumabsSc = scanP.balisesDetectee.stream().map(Balise::getPoseBal).map(Position::sumabs)
-						.collect(Collectors.toList());
-				common.retainAll(sumabsSc);
-				System.out.println(scanP.num + ","+"pos  "+pos+" common size  :" + common.size());
-				pos++;
+					List<Position> possiblePosDep = new ArrayList<A2021Day19.Position>();
+					for (Balise bal : scanP.balisesDetectee) {
+						for (Balise bal0 : scans.get(0).balisesDetectee) {
+							possiblePosDep.add(new Position(bal0.poseBal.moins(bal.poseBal)));
+						}
+					}
 				}
 			}
 		}
@@ -373,6 +366,11 @@ public class A2021Day19 extends A2021 {
 			this.x = x;
 			this.y = y;
 			this.z = z;
+		}
+
+		public int moins(Position poseBal) {
+			// TODO Auto-generated method stub
+			return 0;
 		}
 
 		public int sumabs() {

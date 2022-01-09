@@ -15,11 +15,11 @@ public class A2021Day23 extends A2021 {
 	public static void main(String[] args0) {
 		A2021Day23 d = new A2021Day23(23);
 		long startTime = System.currentTimeMillis();
-		// System.out.println(d.s1(true));
+		System.out.println(d.s1(true));
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-		System.out.println(d.s2(true));
+		//System.out.println(d.s2(true));
 		endTime = System.currentTimeMillis();
 		System.out.println("Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took "
 				+ (endTime - startTime) + " milliseconds");
@@ -27,7 +27,10 @@ public class A2021Day23 extends A2021 {
 
 	private int s1(boolean b) {
 		Game g = initGame(b);
-
+		for(Amphipods amp:g.amph) {
+			System.out.println(amp);
+			System.out.println(g.posAccess(amp));
+		}
 		return 0;
 	}
 
@@ -129,57 +132,59 @@ public class A2021Day23 extends A2021 {
 					new Position(z.p.x, z.p.y + 1), new Position(z.p.x + 1, z.p.y - 1));
 			for (Position np : nps) {
 				if (posDisp().contains(np)) {
-					if(np.isO()) {
-						List<Position> nps2 = Arrays.asList(new Position(np.x + 1, np.y), new Position(np.x - 1, z.p.y),new Position(np.x, np.y - 1));
-						boolean ok=false;
+					if (np.isO()) {
+						List<Position> nps2 = Arrays.asList(new Position(np.x + 1, np.y), new Position(np.x - 1, z.p.y),
+								new Position(np.x, np.y - 1));
+						boolean ok = false;
 						for (Position np2 : nps2) {
 							if (posDisp().contains(np2) && !ok) {
 								posAccess.add(np);
-								ok=true;
+								ok = true;
 							}
 						}
 					} else {
-					posAccess.add(np);
+						posAccess.add(np);
 					}
 				}
 			}
 			return posAccess;
 		}
-		public void move(Amphipods z,Position dest) {
-			int i=z.p.x;
-			int j=z.p.y;
-			int cptMvt=0;
-			if(j != dest.y) {
-				if(j> dest.y) {
+
+		public void move(Amphipods z, Position dest) {
+			int i = z.p.x;
+			int j = z.p.y;
+			int cptMvt = 0;
+			if (j != dest.y) {
+				if (j > dest.y) {
 					j--;
 					cptMvt++;
-					if(j> dest.y) {
+					if (j > dest.y) {
 						j--;
 						cptMvt++;
 					}
 				} else {
 					j++;
 					cptMvt++;
-					if(j< dest.y) {
+					if (j < dest.y) {
 						j++;
 						cptMvt++;
 					}
 				}
-			} 
-			if(i != dest.x) {
-				if(i<dest.x) {
-					while(i !=dest.x) {
+			}
+			if (i != dest.x) {
+				if (i < dest.x) {
+					while (i != dest.x) {
 						i++;
 						cptMvt++;
 					}
 				} else {
-					while(i !=dest.x) {
+					while (i != dest.x) {
 						i--;
 						cptMvt++;
 					}
 				}
 			}
-			costTot+=cptMvt*z.moveCost;
+			costTot += cptMvt * z.moveCost;
 			z.setP(dest);
 		}
 
