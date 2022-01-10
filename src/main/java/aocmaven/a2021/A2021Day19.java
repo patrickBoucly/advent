@@ -19,22 +19,50 @@ public class A2021Day19 extends A2021 {
 	public static void main(String[] args0) {
 		A2021Day19 d = new A2021Day19(19);
 		long startTime = System.currentTimeMillis();
-		System.out.println(d.s1(false));
+		//System.out.println(d.s1(true));
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-		// System.out.println(d.s2(true));
+		System.out.println(d.s2(true));
 		endTime = System.currentTimeMillis();
 		System.out.println("Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took "
 				+ (endTime - startTime) + " milliseconds");
 	}
 
 	private int s1(boolean b) {
+		return s0(b).detected.size();
+	}
+
+	private long s2(boolean b) {
+		Game g = s0(b);
+		long maxmanat = 0;
+		for (Scanner s1 : g.scans) {
+
+			for (Scanner s2 : g.scans) {
+				long dist= manat(s1,s2);
+				if(dist>maxmanat) {
+					maxmanat=dist;
+				}
+			}
+		}
+		return maxmanat;
+	}
+
+	private long manat(Scanner s1, Scanner s2) {
+		return (Math.abs(s1.poseScan.x-s2.poseScan.x)+Math.abs(s1.poseScan.y-s2.poseScan.y)+Math.abs(s1.poseScan.z-s2.poseScan.z));
+		
+	}
+
+	private Game s0(boolean b) {
 		Game g = getGame(b);
+		g.detected.addAll(g.scans.get(0).balisesDetectee);
+		System.out.println(g.detected);
 		while (g.scans.stream().anyMatch(sc -> sc.poseScan == null)) {
 			g.findNextScan();
+			System.out.println(g.scans.stream().filter(s -> s.poseScan != null).count());
+			System.out.println("nb balise detectees :" + g.detected.size());
 		}
-		return g.detected.size();
+		return g;
 	}
 
 	private Game getGame(boolean b) {
@@ -63,6 +91,8 @@ public class A2021Day19 extends A2021 {
 				scans.add(sc);
 			}
 		}
+		sc.setBalisesDetectee(lb);
+		scans.add(sc);
 		scansClean.add(scans.get(0));
 		g.setDetected(detected);
 		g.setScans(scans);
@@ -77,78 +107,101 @@ public class A2021Day19 extends A2021 {
 	private static Scanner reorientation(Scanner scanP) {
 		List<Position> newPos = new ArrayList<>();
 		List<Balise> newBal = new ArrayList<>();
+		System.out.println(scanP);
+		System.out.println(scanP.balisesDetectee.stream().map(Balise::t13).collect(Collectors.toList()));
 		switch (scanP.permutation) {
 		case "0":
 			return scanP;
 		case "1":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t1).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t1).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "2":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t2).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t2).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "3":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t3).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t3).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "4":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t4).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t4).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "5":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t7).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t7).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "6":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t6).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t6).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "7":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t5).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t5).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "8":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t12).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t12).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "9":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t11).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t11).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "10":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t10).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t10).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "11":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t9).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t9).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "12":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t8).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t8).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "13":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t13).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t13).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "14":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t15).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t15).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "15":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t14).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t14).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "16":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t16).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t16).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "17":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t19).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t19).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "18":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t18).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t18).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "19":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t17).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t17).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "20":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t20).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t20).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "21":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t21).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t24).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "22":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t22).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t22).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 		case "23":
-			newBal=scanP.balisesDetectee.stream().map(Balise::t23).collect(Collectors.toList());
-			return new Scanner(scanP.num, scanP.poseScan, newBal,scanP.permutation);
+			newBal = scanP.balisesDetectee.stream().map(Balise::t23).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
+		case "24":
+			newBal = scanP.balisesDetectee.stream().map(Balise::t21).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
+		case "25":
+			newBal = scanP.balisesDetectee.stream().map(Balise::t26).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
+		case "26":
+			newBal = scanP.balisesDetectee.stream().map(Balise::t25).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
+		case "27":
+			newBal = scanP.balisesDetectee.stream().map(Balise::t28).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
+		case "28":
+			newBal = scanP.balisesDetectee.stream().map(Balise::t27).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
+		case "29":
+			newBal = scanP.balisesDetectee.stream().map(Balise::t29).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
+		case "30":
+			newBal = scanP.balisesDetectee.stream().map(Balise::t30).collect(Collectors.toList());
+			return new Scanner(scanP.num, scanP.poseScan, newBal, "0");
 
 		}
 
@@ -174,20 +227,20 @@ public class A2021Day19 extends A2021 {
 			for (Balise b0 : scanner.balisesDetectee) {
 				for (Balise bx : scanP.balisesDetectee) {
 					if (bx.poseBal.equals(b0.poseBal.moins(posinit))) {
-						lb.add(b0);
+						lb.add(bx);
 					}
 				}
 				if (lb.size() == 12) {
 					res.put(posinit, lb);
+					return res;
+
 				}
 			}
 		}
 		return res;
 	}
 
-	private int s2(boolean b) {
-		return 0;
-	}
+	
 
 	public static class Bilan {
 		Scanner sc1;
@@ -200,6 +253,7 @@ public class A2021Day19 extends A2021 {
 			this.sc1 = sc1;
 			this.sc2 = sc2;
 		}
+
 		public Scanner getSc1() {
 			return sc1;
 		}
@@ -244,27 +298,39 @@ public class A2021Day19 extends A2021 {
 		}
 
 		public void findNextScan() {
+			boolean stop = false;
 			for (Scanner scan : scans) {
 				if (scan.poseScan != null) {
 					for (Scanner scan2 : scans) {
-						if (scan2.poseScan == null && scan.num != scan2.num) {
+						if (scan2.poseScan == null && scan.num != scan2.num && !stop) {
+							// System.out.println("source :" + scan.num + " scanne recherché :" +
+							// scan2.num);
 							for (Scanner scanP : scan2.allPermutation()) {
-								List<Position> possiblePosDep = new ArrayList<>();
-								for (Balise bal2 : scanP.balisesDetectee) {
-									for (Balise bal1 : scan.balisesDetectee) {
-										possiblePosDep.add(bal1.poseBal.moins(bal2.poseBal).plus(scan.poseScan));
+								if (!stop) {
+									List<Position> possiblePosDep = new ArrayList<>();
+									for (Balise bal2 : scanP.balisesDetectee) {
+										for (Balise bal1 : scan.balisesDetectee) {
+											possiblePosDep.add(bal1.poseBal.moins(bal2.poseBal));
+										}
+									}
+									HashMap<Position, Set<Balise>> goodPos = getGoodPos(scan, scanP, possiblePosDep);
+									if (!goodPos.keySet().isEmpty()) {
+										Position gp = goodPos.keySet().stream().findFirst().get();
+										scanP.setPoseScan(gp);
+										for (Scanner s : scans) {
+											if (s.num == scanP.num) {
+												s.setPoseScan(gp);
+												scanP.setPoseScan(gp);
+												// Scanner sReor=reorientation(scanP);
+												s.setBalisesDetectee(changementBase(scanP).balisesDetectee);
+												s.setPermutation(scanP.permutation);
+												detected.addAll(s.getBalisesDetectee());
+												stop = true;
+												break;
+											}
+										}
 									}
 								}
-								HashMap<Position, Set<Balise>> goodPos = getGoodPos(scans.get(0), scanP,
-										possiblePosDep);
-								if (!goodPos.keySet().isEmpty()) {
-									Position gp = goodPos.keySet().stream().findFirst().get();
-									scanP.setPoseScan(gp);
-									Scanner cleanScan = clean(scanP);
-									detected.addAll(cleanBalise(goodPos.get(gp), scanP));
-									scansClean.add(cleanScan);
-								}
-
 							}
 						}
 					}
@@ -273,9 +339,11 @@ public class A2021Day19 extends A2021 {
 
 		}
 
-		private Collection<? extends Balise> cleanBalise(Set<Balise> b, Scanner s) {
-			Scanner sc=new Scanner(s.num,s.poseScan,new ArrayList<>(b),s.permutation);
-			return clean(sc).balisesDetectee;
+		private Set<Balise> cleanBalise(Set<Balise> b, Scanner s) {
+			Scanner sc = new Scanner(s.num, s.poseScan, new ArrayList<>(b), s.permutation);
+			// sc=reorientation(sc);
+			sc = changementBase(sc);
+			return sc.balisesDetectee.stream().collect(Collectors.toSet());
 		}
 
 		public void setScans(List<Scanner> scans) {
@@ -306,7 +374,7 @@ public class A2021Day19 extends A2021 {
 		}
 
 		public Game() {
-			// TODO Auto-generated constructor stub
+			super();
 		}
 
 	}
@@ -370,6 +438,7 @@ public class A2021Day19 extends A2021 {
 
 		public List<Scanner> allPermutation() {
 			List<Scanner> allPermut = new ArrayList<>();
+			List<Scanner> allPermutMax = new ArrayList<>();
 			setPermutation("0");
 			allPermut.add(this);
 			allPermut.add(new Scanner(num, poseScan,
@@ -418,7 +487,44 @@ public class A2021Day19 extends A2021 {
 					balisesDetectee.stream().map(Balise::t22).collect(Collectors.toList()), "22"));
 			allPermut.add(new Scanner(num, poseScan,
 					balisesDetectee.stream().map(Balise::t23).collect(Collectors.toList()), "23"));
-			return allPermut;
+			allPermut.add(new Scanner(num, poseScan,
+					balisesDetectee.stream().map(Balise::t24).collect(Collectors.toList()), "24"));
+			allPermut.add(new Scanner(num, poseScan,
+					balisesDetectee.stream().map(Balise::t25).collect(Collectors.toList()), "25"));
+			allPermut.add(new Scanner(num, poseScan,
+					balisesDetectee.stream().map(Balise::t26).collect(Collectors.toList()), "26"));
+			allPermut.add(new Scanner(num, poseScan,
+					balisesDetectee.stream().map(Balise::t27).collect(Collectors.toList()), "27"));
+			allPermut.add(new Scanner(num, poseScan,
+					balisesDetectee.stream().map(Balise::t28).collect(Collectors.toList()), "28"));
+			allPermut.add(new Scanner(num, poseScan,
+					balisesDetectee.stream().map(Balise::t29).collect(Collectors.toList()), "29"));
+			allPermut.add(new Scanner(num, poseScan,
+					balisesDetectee.stream().map(Balise::t30).collect(Collectors.toList()), "30"));
+			allPermut.add(new Scanner(num, poseScan,
+					balisesDetectee.stream().map(Balise::t31).collect(Collectors.toList()), "31"));
+			for (Scanner s : allPermut) {
+				allPermutMax.add(s);
+				allPermutMax.add(intervXY(s));
+				allPermutMax.add(intervXZ(s));
+				allPermutMax.add(intervYZ(s));
+			}
+			return allPermutMax;
+		}
+
+		private Scanner intervYZ(Scanner s) {
+			return new Scanner(s.num, s.poseScan,
+					s.balisesDetectee.stream().map(Balise::intervYZ).collect(Collectors.toList()));
+		}
+
+		private Scanner intervXZ(Scanner s) {
+			return new Scanner(s.num, s.poseScan,
+					s.balisesDetectee.stream().map(Balise::intervXZ).collect(Collectors.toList()));
+		}
+
+		private Scanner intervXY(Scanner s) {
+			return new Scanner(s.num, s.poseScan,
+					s.balisesDetectee.stream().map(Balise::intervXY).collect(Collectors.toList()));
 		}
 
 		@Override
@@ -526,7 +632,7 @@ public class A2021Day19 extends A2021 {
 		}
 
 		public Balise t21() {
-			return new Balise(new Position(poseBal.y, poseBal.x, poseBal.z));
+			return new Balise(new Position(-poseBal.y, -poseBal.z, poseBal.x));
 		}
 
 		public Balise t22() {
@@ -537,12 +643,48 @@ public class A2021Day19 extends A2021 {
 			return new Balise(new Position(poseBal.z, poseBal.y, poseBal.x));
 		}
 
-		public Position intervYZ(Position p) {
-			return new Position(p.x, p.z, p.y);
+		public Balise t24() {
+			return new Balise(new Position(poseBal.z, -poseBal.x, -poseBal.y));
 		}
 
-		public Position intervXZ(Position p) {
-			return new Position(p.z, p.y, p.x);
+		public Balise t25() {
+			return new Balise(new Position(poseBal.z, poseBal.x, poseBal.y));
+		}
+
+		public Balise t26() {
+			return new Balise(new Position(poseBal.y, poseBal.z, poseBal.x));
+		}
+
+		public Balise t27() {
+			return new Balise(new Position(-poseBal.z, poseBal.x, poseBal.y));
+		}
+
+		public Balise t28() {
+			return new Balise(new Position(poseBal.y, poseBal.z, -poseBal.x));
+		}
+
+		public Balise t29() {
+			return new Balise(new Position(poseBal.y, -poseBal.z, -poseBal.x));
+		}
+
+		public Balise t30() {
+			return new Balise(new Position(-poseBal.y, -poseBal.z, -poseBal.x));
+		}
+
+		public Balise t31() {
+			return new Balise(new Position(-poseBal.y, poseBal.z, poseBal.x));
+		}
+
+		public static Balise intervYZ(Balise b) {
+			return new Balise(new Position(b.poseBal.x, b.poseBal.z, b.poseBal.y));
+		}
+
+		public static Balise intervXZ(Balise b) {
+			return new Balise(new Position(b.poseBal.z, b.poseBal.y, b.poseBal.x));
+		}
+
+		public static Balise intervXY(Balise b) {
+			return new Balise(new Position(b.poseBal.z, b.poseBal.y, b.poseBal.x));
 		}
 
 		public Balise(Position poseBal) {
@@ -553,6 +695,23 @@ public class A2021Day19 extends A2021 {
 		public Balise(int i, int j, int k) {
 			super();
 			this.poseBal = new Position(i, j, k);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(poseBal);
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Balise other = (Balise) obj;
+			return Objects.equals(poseBal, other.poseBal);
 		}
 
 	}
