@@ -2,7 +2,6 @@ package a2017;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class A2017Day1 extends A2017 {
