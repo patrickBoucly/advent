@@ -17,11 +17,11 @@ public class A2017Day13 extends A2017 {
 		A2017Day13 d = new A2017Day13(13);
 		// d.s1(true);
 		long startTime = System.currentTimeMillis();
-		//System.out.println(d.s1(true));
+		// System.out.println(d.s1(true));
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-		System.out.println(d.s2(false));
+		System.out.println(d.s2(true));
 		endTime = System.currentTimeMillis();
 		System.out.println("Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took "
 				+ (endTime - startTime) + " milliseconds");
@@ -37,13 +37,12 @@ public class A2017Day13 extends A2017 {
 			String[] sp = l.split(":");
 			scans.add(new Scanner(Integer.parseInt(sp[0].trim()), Integer.parseInt(sp[1].trim())));
 		}
-		System.out.println(scans);
 		int ps = 0;
 		int maxS = MesOutils.getMaxIntegerFromList(scans.stream().map(Scanner::getDepth).collect(Collectors.toList()));
 		int cost = 0;
 		for (int k = 0; k <= maxS; k++) {
-			Scanner s=getScanP(scans,ps);
-			if (s !=null && s.pos == 1) {
+			Scanner s = getScanP(scans, ps);
+			if (s != null && s.pos == 1) {
 				cost += s.depth * s.range;
 			}
 			ps++;
@@ -54,8 +53,8 @@ public class A2017Day13 extends A2017 {
 	}
 
 	private Scanner getScanP(List<Scanner> scans, int ps) {
-		for(Scanner s:scans) {
-			if(s.depth==ps) {
+		for (Scanner s : scans) {
+			if (s.depth == ps) {
 				return s;
 			}
 		}
@@ -85,20 +84,24 @@ public class A2017Day13 extends A2017 {
 
 	public int s2(boolean b) {
 		int cost = 0;
-		for(int w=0;w>=-10000;w--) {
-			cost=getCost(getScans(b),w);
-			System.out.println(w+" "+cost);
-			if(cost==0) {
+		b=true;
+		for (int w = -1140000; w >= -100000000; w--) {
+			if (w % 10000 == 0) {
+				System.out.println(w);
+			}
+			cost = getCost2(getScans(b), w);
+			if (cost == 0) {
 				return w;
 			}
 		}
+
 		return cost;
 	}
 
 	private List<Scanner> getScans(boolean b) {
 		List<String> lignes = Arrays.asList(getInput(b).split("\n")).stream().map(String::trim)
 				.collect(Collectors.toList());
-		List<Scanner> scans =new ArrayList<>();
+		List<Scanner> scans = new ArrayList<>();
 
 		for (String l : lignes) {
 			String[] sp = l.split(":");
@@ -109,17 +112,28 @@ public class A2017Day13 extends A2017 {
 
 	private int getCost(List<Scanner> scans, int w) {
 		int maxS = MesOutils.getMaxIntegerFromList(scans.stream().map(Scanner::getDepth).collect(Collectors.toList()));
-		int cost=0;
-		while(w<=maxS) {
-		
-			Scanner s=getScanP(scans,w);
-			if (s !=null && s.pos == 1) {
+		int cost = 0;
+		while (w <= maxS) {
+			Scanner s = getScanP(scans, w);
+			if (s != null && s.pos == 1) {
+				if (s.depth == 0) {
+					cost += 1;
+				}
 				cost += s.depth * s.range;
 			}
 			move(scans);
 			w++;
 		}
 		return cost;
+	}
+
+	private int getCost2(List<Scanner> scans, int w) {
+		for (Scanner s : scans) {
+			if ((w - s.depth) % (2 * (s.range - 1)) == 0) {
+				return 1;
+			}
+		}
+		return 0;
 	}
 
 	public static class Scanner {

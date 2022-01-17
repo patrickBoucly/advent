@@ -17,7 +17,7 @@ public class A2017Day10 extends A2017 {
 		A2017Day10 d = new A2017Day10(10);
 		// d.s1(true);
 		long startTime = System.currentTimeMillis();
-		// System.out.println(d.s1(true));
+		//System.out.println(d.s1(true));
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
@@ -45,7 +45,6 @@ public class A2017Day10 extends A2017 {
 	public String s2(boolean b) {
 		// String input = getInput(b);
 		List<String> inputs=Arrays.asList("1,2,3","1,2,4","","AoC 2017",getInput(b));
-		String input = "1,2,3";
 		String res="";
 		for(String s:inputs) {
 			res=getSol2(s);
@@ -54,31 +53,13 @@ public class A2017Day10 extends A2017 {
 		return res;
 	}
 
-	private String getSol2(String input) {
+	public String getSol2(String input) {
 		List<Integer> asciiFromInput = getAsciiFromInput(input);
 		List<Integer> suffix = Arrays.asList(17, 31, 73, 47, 23);
 		asciiFromInput.addAll(suffix);
-		System.out.println(asciiFromInput);
 		List<Integer> sparseHash = getSparseHash(asciiFromInput);
 		List<Integer> denseHash = getDenseHash(sparseHash);
 		String res = getKnotHash(denseHash);
-		System.out.println(res);
-		if (input.equals("1,2,3")) {
-			System.out.println("3efbe78a8d82f29979031a4aa0b16a9d");
-			System.out.println(res.equals("3efbe78a8d82f29979031a4aa0b16a9d"));
-		}
-		if (input.equals("1,2,4")) {
-			System.out.println("63960835bcdc130f0b66d7ff4f6a5a8e");
-			System.out.println(res.equals("63960835bcdc130f0b66d7ff4f6a5a8e"));
-		}
-		if (input.equals("AoC 2017")) {
-			System.out.println("33efeb34ea91902bb2f59c9920caa6cd");
-			System.out.println(res.equals("33efeb34ea91902bb2f59c9920caa6cd"));
-		}
-		if (input.equals("")) {
-			System.out.println("a2582a3a0e66e6e86e3812dcb672a272");
-			System.out.println(res.equals("a2582a3a0e66e6e86e3812dcb672a272"));
-		}
 		return res;
 	}
 
@@ -88,7 +69,6 @@ public class A2017Day10 extends A2017 {
 			int asciiChar = input.subSequence(i, i + 1).charAt(0);
 			ascii.add(asciiChar);
 		}
-		System.out.println(input +"==ascii==> "+ascii);
 		return ascii;
 	}
 
@@ -103,7 +83,7 @@ public class A2017Day10 extends A2017 {
 				g.pl=i;
 				g.transf(i);
 			}
-		g.decaler(g.getLn(),10);
+		g.finalDec();
 		return g.getLn();
 	}
 
@@ -153,27 +133,30 @@ public class A2017Day10 extends A2017 {
 		}
 
 		public int res1() {
+			finalDec();
+			return getLn().get(0) * getLn().get(1);
+		}
+		public void finalDec() {
 			int dec = pos0 % getLn().size();
 			int poz0 = getLn().size() - dec;
-			return getLn().get(poz0) * getLn().get(poz0 + 1);
+			List<Integer> nln=new ArrayList<>();
+			int i=0;
+			while(nln.size()<getLn().size()) {
+				nln.add((getLn().get((poz0+i)%getLn().size())));
+				i++;
+			}
+			setLn(nln);
 		}
 		
 		public void transf(Integer i) {
 			List<Integer> avDec = new ArrayList<>();
 			List<Integer> in = new ArrayList<>(ln.subList(curPos, curPos + i));
 			List<Integer> ap = new ArrayList<>(ln.subList(curPos + i, ln.size()));
-
 			avDec.addAll(rev(in));
 			avDec.addAll(ap);
-			if(!(step==64 && pl==167)) {
 			ln = decaler(avDec, (i + skipSize) % ln.size());
 			pos0 += i + skipSize;
 			skipSize++;
-			} else {
-				ln=avDec;
-			}
-			
-
 		}
 
 		private List<Integer> decaler(List<Integer> avDec, int i) {
