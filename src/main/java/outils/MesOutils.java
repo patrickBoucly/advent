@@ -1,23 +1,23 @@
 package outils;
 
 import java.util.List;
-import java.util.NoSuchElementException;
+
 
 public class MesOutils {
 	public static Integer getMaxIntegerFromList(List<Integer> listOfIntegers) {
-		return listOfIntegers.stream().mapToInt(v -> v).max().orElseThrow(NoSuchElementException::new);
+		return listOfIntegers.stream().mapToInt(v -> v).max().getAsInt();
 	}
 
 	public static Integer getMinIntegerFromList(List<Integer> listOfIntegers) {
-		return listOfIntegers.stream().mapToInt(v -> v).min().orElseThrow(NoSuchElementException::new);
+		return listOfIntegers.stream().mapToInt(v -> v).min().getAsInt();
 	}
 
 
 	public static long getMinLongFromList(List<Long> listOfLongs) {
-		return listOfLongs.stream().mapToLong(v -> v).min().orElseThrow(NoSuchElementException::new);
+		return listOfLongs.stream().mapToLong(v -> v).min().getAsLong();
 		}
 	public static long getMaxLongFromList(List<Long> listOfLongs) {
-		return listOfLongs.stream().mapToLong(v -> v).max().orElseThrow(NoSuchElementException::new);
+		return listOfLongs.stream().mapToLong(v -> v).max().getAsLong();
 		}
 	/*
 	public static long getMinOccuredLetter(String line) {

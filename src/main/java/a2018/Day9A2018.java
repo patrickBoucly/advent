@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.NoSuchElementException;
+
 
 public class Day9A2018 {
 
@@ -28,7 +28,7 @@ public class Day9A2018 {
 			}
 		}
 		System.out.println(p.scores);
-		int max=p.scores.values().stream().mapToInt(v -> v).max().orElseThrow(NoSuchElementException::new);
+		int max=p.scores.values().stream().mapToInt(v -> v).max().getAsInt();
 		System.out.println(max);
 		
 	}
