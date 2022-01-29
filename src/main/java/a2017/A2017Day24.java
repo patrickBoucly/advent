@@ -14,8 +14,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import outils.MesOutils;
-
 public class A2017Day24 extends A2017 {
 	private static int autoid = 0;
 
@@ -39,6 +37,37 @@ public class A2017Day24 extends A2017 {
 	}
 
 	public int s1(boolean b) {
+		List<String> lignes = Arrays.asList(getInput(b).split("\n")).stream().map(String::trim)
+				.collect(Collectors.toList());
+		List<ElementPont> l = new ArrayList<>();
+
+		for (String li : lignes) {
+			String[] sp = li.split("/");
+			l.add(new ElementPont(Integer.parseInt(sp[0]), Integer.parseInt(sp[1])));
+
+		}
+		int max=0;
+		System.out.println(l);
+		int thisMax = -1;
+		List<ElementPont> fp = l.stream().filter(e -> e.vg == 0 || e.vd == 0).collect(Collectors.toList());
+		for (ElementPont fpi : fp) {
+		
+			List<ElementPont> els = new ArrayList<>(
+					l.stream().filter(e -> !(e.id==fpi.id)).collect(Collectors.toList()));
+			Entry<Integer, Pont> ceRes = getPontsFromElementBase(fpi, els);
+			thisMax = ceRes.getKey();
+			if (thisMax > max) {
+				System.out.println(ceRes.getValue());
+				max = thisMax;
+			}
+
+		}
+	
+	return max;
+		
+	}
+	
+	public int s1b(boolean b) {
 		List<String> lignes = Arrays.asList(getInput(b).split("\n")).stream().map(String::trim)
 				.collect(Collectors.toList());
 		List<ElementPont> elementsPont = new ArrayList<>();
@@ -900,17 +929,16 @@ public class A2017Day24 extends A2017 {
 	 * return allPont; }
 	 */
 	private Entry<Integer, Pont> getPontsFromElementBase(ElementPont fpi, List<ElementPont> els) {
-		if (fpi.vg == 0) {
-			fpi.setUsed("g");
-		} else {
-			fpi.setUsed("d");
+		if (fpi.vd == 0) {
+			fpi.flip();
 		}
 		Set<Pont> pont = new HashSet<>();
 		// System.out.println(els);
 		List<ElementPont> ajoutable = new ArrayList<>();
 		for (ElementPont e : els) {
-			if (e.match(fpi)) {
-				ajoutable.add(e);
+			ElementPont ajouter=match(fpi,e);
+			if(ajouter != null) {
+				ajoutable.add(ajouter);
 			}
 		}
 		for (ElementPont nextE : ajoutable) {
@@ -919,13 +947,14 @@ public class A2017Day24 extends A2017 {
 			p.addElement(nextE);
 			pont.add(p);
 		}
+		for(Pont p:pont) {
+			System.out.println(p);
+		}
 		int max = 0;
 		Pont ppmax = null;
 		HashMap<Boolean, Set<Pont>> npont = new HashMap<>();
 		npont.put(true, pont);
-		npont = addNewElement(npont, els);
-		HashMap<Boolean, Set<Pont>> npont3 = new HashMap<>();
-		int it = 0;
+		//npont = addNewElement(npont, els);
 		while (npont.containsKey(true) ) {
 			npont = addNewElement(npont, els);
 		}
@@ -940,29 +969,18 @@ public class A2017Day24 extends A2017 {
 		return res;
 	}
 
-	private Entry<Integer, Pont> resLV3(Pont p3, List<ElementPont> els) {
-		int max = 0;
-		Pont ppmax = null;
-		Set<Pont> lv3 = new HashSet<>();
-		lv3.add(p3);
-		HashMap<Boolean, Set<Pont>> npont3 = new HashMap<>();
-		npont3.put(true, lv3);
-		while (npont3.containsKey(true)) {
-			npont3 = addNewElement(npont3, els);
-
+	private ElementPont match(ElementPont lastE, ElementPont next) {
+		if(!(lastE.vd == next.vd || lastE.vd == next.vg)) {
+			return null;
+		} else {
+			if(lastE.vd==next.vd) {
+				return new ElementPont(next.vd,next.vg,next.id);
+			}	
+			return new ElementPont(next.vg,next.vd,next.id);
 		}
-		for (Pont pp : npont3.get(false)) {
-			if (pp.getValeur() > max) {
-				max = pp.getValeur();
-				ppmax = pp;
-
-				for (ElementPont e : ppmax.elements) {
-					// System.out.println(e.id);
-				}
-			}
-		}
-		return new AbstractMap.SimpleEntry<>(max, ppmax);
 	}
+
+	
 
 	private HashMap<Boolean, Set<Pont>> addNewElement(HashMap<Boolean, Set<Pont>> npont, List<ElementPont> els) {
 		HashMap<Boolean, Set<Pont>> res = new HashMap<>();
@@ -974,8 +992,11 @@ public class A2017Day24 extends A2017 {
 			List<ElementPont> ajoutable = new ArrayList<>();
 
 			for (ElementPont e : els) {
-				if (e.match(p.lastE()) && !p.elements.contains(e)) {
-					ajoutable.add(e);
+				if (!p.elements.contains(e)) {
+					ElementPont ajouter=match(p.lastE(),e);
+					if(ajouter != null) {
+						ajoutable.add(ajouter);
+					}
 				}
 			}
 
@@ -992,6 +1013,8 @@ public class A2017Day24 extends A2017 {
 		}
 		if (continuer) {
 			res.put(continuer, nset);
+			System.out.println(nset.stream().collect(Collectors.toList()).get(0));
+			System.out.println(nset.size());
 		} else {
 			res.put(false, npont.get(true));
 		}
@@ -1057,27 +1080,6 @@ public class A2017Day24 extends A2017 {
 		}
 
 		public void addElement(ElementPont e) {
-			if (elements.size()==0) {
-				if(e.vg==0) {
-					e.setUsed("g");
-				} else {
-					e.setUsed("d");
-				}
-			}else {
-			if(	this.lastE().used.equals("g")){
-				if(this.lastE().vd==e.vd) {
-					e.setUsed("d");
-				}else {
-					e.setUsed("g");
-				}
-			} else {
-				if(this.lastE().vg==e.vd) {
-					e.setUsed("d");
-				}else {
-					e.setUsed("g");
-				}
-			}
-			}
 			List<ElementPont> nelements = new ArrayList<>(elements);
 			if (!nelements.contains(e)) {
 				nelements.add(e);
@@ -1122,15 +1124,13 @@ public class A2017Day24 extends A2017 {
 		int vd;
 		int id;
 		int fusionValeur;
-		String used;
 
-		public String getUsed() {
-			return used;
+		public void flip() {
+		int tmp=vg;
+		this.setVg(vd);
+		this.setVd(tmp);
 		}
 
-		public void setUsed(String used) {
-			this.used = used;
-		}
 
 		public void setId(int id) {
 			this.id = id;
@@ -1148,15 +1148,7 @@ public class A2017Day24 extends A2017 {
 			return id;
 		}
 
-		public boolean match(ElementPont lastE) {
-			if (lastE.used.equals("g")) {
-				return (lastE.vd == vd || lastE.vd == vg );
 
-			} else {
-				return (lastE.vg == vd || lastE.vg == vg);
-
-			}
-		}
 
 		public int getVg() {
 			return vg;
@@ -1185,12 +1177,12 @@ public class A2017Day24 extends A2017 {
 			this.vd = vd;
 		}
 
-		public ElementPont(int vg, int vd, int fv) {
+		public ElementPont(int vg, int vd, int id) {
 			super();
-			this.id = autoid++;
+			this.id = id;
 			this.vg = vg;
 			this.vd = vd;
-			this.fusionValeur = fv;
+
 		}
 
 		@Override
@@ -1212,7 +1204,7 @@ public class A2017Day24 extends A2017 {
 
 		@Override
 		public String toString() {
-			return vg + "/" + vd + "  " + getVT();
+			return vg + "/" + vd + "  " + id;
 		}
 
 	}
