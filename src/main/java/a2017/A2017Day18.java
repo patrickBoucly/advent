@@ -3,7 +3,10 @@ package a2017;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 public class A2017Day18 extends A2017 {
@@ -28,6 +31,14 @@ public class A2017Day18 extends A2017 {
 	}
 
 	public long s1(boolean b) {
+		Game g = new Game(getInsts(b), "", 0L);
+		g.play();
+		return g.LastPlayedValue;
+	}
+
+	
+
+	private List<Inst> getInsts(boolean b) {
 		List<String> lignes = Arrays.asList(getInput(b).split("\n")).stream().map(String::trim)
 				.collect(Collectors.toList());
 		List<Inst> insts = new ArrayList<>();
@@ -39,17 +50,73 @@ public class A2017Day18 extends A2017 {
 				insts.add(new Inst(sp[0].trim(), sp[1].trim(), null));
 			}
 		}
-		Game g = new Game(insts, "", 0L);
-		g.play();
-		return g.LastPlayedValue;
+		return insts;
 	}
-
-	
 
 	public int s2(boolean b) {
+		Queue<Integer> sends0=new LinkedList<>();
+		sends0.addAll(Arrays.asList(1,2,0));
+		Program p0=new Program(0,sends0);
+		Queue<Integer> sends1=new LinkedList<>();
+		sends1.addAll(Arrays.asList(1,2,1));
+		Program p1=new Program(1,sends1);
+		Game2 g=new Game2(p0,p1,getInsts(b));
+		
+		
 		return 0;
 	}
-
+	public static class Program {
+		int id;
+		Queue<Integer> sends;
+		public Program(int id, Queue<Integer> sends) {
+			super();
+			this.id = id;
+			this.sends = sends;
+		}
+		public int getId() {
+			return id;
+		}
+		public void setId(int id) {
+			this.id = id;
+		}
+		public Queue<Integer> getSends() {
+			return sends;
+		}
+		public void setSends(Queue<Integer> sends) {
+			this.sends = sends;
+		}
+		
+	}
+	public static class Game2 {
+		Program p0;
+		Program p1;
+		List<Inst> insts;
+		public Game2(Program p0, Program p1, List<Inst> insts) {
+			super();
+			this.p0 = p0;
+			this.p1 = p1;
+			this.insts = insts;
+		}
+		public Program getP0() {
+			return p0;
+		}
+		public void setP0(Program p0) {
+			this.p0 = p0;
+		}
+		public Program getP1() {
+			return p1;
+		}
+		public void setP1(Program p1) {
+			this.p1 = p1;
+		}
+		public List<Inst> getInsts() {
+			return insts;
+		}
+		public void setInsts(List<Inst> insts) {
+			this.insts = insts;
+		}
+		
+	}
 	public static class Game {
 		List<Inst> insts;
 		String lastPlayed;
