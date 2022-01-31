@@ -61,17 +61,18 @@ public class A2017Day18 extends A2017 {
 		sends1.addAll(Arrays.asList(1,2,1));
 		Program p1=new Program(1,sends1);
 		Game2 g=new Game2(p0,p1,getInsts(b));
-		
-		
-		return 0;
+		return g.solve();
 	}
 	public static class Program {
 		int id;
 		Queue<Integer> sends;
+		boolean isWaiting;
+		HashMap<String, Long> record;
 		public Program(int id, Queue<Integer> sends) {
 			super();
 			this.id = id;
 			this.sends = sends;
+			this.isWaiting=false;
 		}
 		public int getId() {
 			return id;
@@ -85,6 +86,11 @@ public class A2017Day18 extends A2017 {
 		public void setSends(Queue<Integer> sends) {
 			this.sends = sends;
 		}
+		public void start() {
+			// TODO Auto-generated method stub
+			
+		}
+		
 		
 	}
 	public static class Game2 {
@@ -96,6 +102,12 @@ public class A2017Day18 extends A2017 {
 			this.p0 = p0;
 			this.p1 = p1;
 			this.insts = insts;
+		}
+		public int solve() {
+			p1.start();
+			p0.start();
+			
+			return 0;
 		}
 		public Program getP0() {
 			return p0;
