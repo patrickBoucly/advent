@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -149,54 +147,92 @@ public class A2016Day1 extends A2016 {
 
 	public long s2(boolean b) {
 		String dir="N";
-		Map<Position,Integer> posCpt=new HashMap<>();
+		List<Position> posCpt=new ArrayList<>();
 		Position lastP=new Position(0L, 0L);
-		posCpt.put(new Position(0L, 0L), 1);
+		posCpt.add(new Position(0L, 0L));
 		List<String> input = Arrays.asList(getInput(b).trim().split(",")).stream().map(s -> s.trim())
 				.collect(Collectors.toList());
+		Long rep=0L;
+		HashMap<Long,Position> repLastPos=new HashMap<>();
+		repLastPos.put(0L, lastP);
 		for (String s : input) {
 			dir = tourner(dir,s.substring(0, 1));
-			lastP=avancer2(dir,posCpt,s,lastP);
-			if(posCpt.containsValue(2)) {
-				for(Entry<Position, Integer> e:posCpt.entrySet() ) {
-					if(e.getValue()==2) {
-						return Math.abs(e.getKey().a)+Math.abs(e.getKey().o);
+			repLastPos=avancer2(dir,posCpt,s,repLastPos);
+			if(repLastPos.size()>1) {
+				for(Long l:repLastPos.keySet()) {
+					if(l!=0L) {
+						return l;
 					}
 				}
 				
 			}
 		}
-		return 0L;
+		return rep;
 	}
-	private Position avancer2(String dir, Map<Position, Integer> posCpt, String s, Position lastP) {
-		Position newPos=new Position(lastP.a,lastP.o);
+	private HashMap<Long, Position> avancer2(String dir, List<Position> posCpt, String s, HashMap<Long, Position> repLastPos) {
+		Long rep=0L;
+		Position newPos=new Position(repLastPos.get(0L).a,repLastPos.get(0L).o);
 		switch(dir){
 	       case "N": 
-	    	   newPos.o=lastP.o+Long.valueOf(s.substring(1));
+	    	   for(int i=1;i<=Long.valueOf(s.substring(1));i++) {
+	    		   newPos=new Position(repLastPos.get(0L).a,repLastPos.get(0L).o+i);
+	    		   if(posCpt.contains(newPos)) {
+	    			   rep=Math.abs(newPos.a)+Math.abs(newPos.o);
+	    		   } else {
+	    			   posCpt.add(newPos);
+	    		   }
+	    	   }
 	          break;
 	       case "E":
-	    	   newPos.a=lastP.a+Long.valueOf(s.substring(1));
+	    	   for(int i=1;i<=Long.valueOf(s.substring(1));i++) {
+	    		   newPos=new Position(repLastPos.get(0L).a+i,repLastPos.get(0L).o);
+	    		   if(posCpt.contains(newPos)) {
+	    			   rep=Math.abs(newPos.a)+Math.abs(newPos.o);
+	    		   }else {
+	    			   posCpt.add(newPos);
+	    		   }
+	    	   }
+	
 	           break;
 	   
 	       case "W":
-	    	   newPos.a=lastP.a-Long.valueOf(s.substring(1));
+	    	   for(int i=1;i<=Long.valueOf(s.substring(1));i++) {
+	    		   newPos=new Position(repLastPos.get(0L).a-i,repLastPos.get(0L).o);
+	    		   if(posCpt.contains(newPos)) {
+	    			   rep=Math.abs(newPos.a)+Math.abs(newPos.o);
+	    		   }else {
+	    			   posCpt.add(newPos);
+	    		   }
+	    	   }
+	    	   
 	           break;
 	       case "S":
-	    	   newPos.o=lastP.o-Long.valueOf(s.substring(1));
+	    	   for(int i=1;i<=Long.valueOf(s.substring(1));i++) {
+	    		   newPos=new Position(repLastPos.get(0L).a,repLastPos.get(0L).o-i);
+
+	    		   if(posCpt.contains(newPos)) {
+	    			   rep=Math.abs(newPos.a)+Math.abs(newPos.o);
+	    		   }else {
+	    			   posCpt.add(newPos);
+	    		   }
+	    	   }
 	           break;
 	   }
-		if(posCpt.containsKey(newPos)) {
-			posCpt.put(newPos, 2);
-		} else {
-		posCpt.put(newPos, 1);
-		}
-		return new Position(newPos.a,newPos.o);
+		repLastPos.put(rep,newPos);
+	return repLastPos;
 		
 	}
 
 	public static List<Long> getDuration() {
-		// TODO Auto-generated method stub
-		return null;
+		A2016Day1 d = new A2016Day1(1);
+		long startTime = System.currentTimeMillis();
+		d.s1(true);
+		long endTime = System.currentTimeMillis();
+		long timeS1 = endTime - startTime;
+		startTime = System.currentTimeMillis();
+		d.s2(true);
+		endTime = System.currentTimeMillis();
+		return Arrays.asList(timeS1,endTime - startTime);
 	}
 
 }

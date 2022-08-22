@@ -51,6 +51,7 @@ public class A2016  {
 		int cpt=0;
 		res+=getColoredLine(A2016Day1.getDuration(),1);
 		System.out.println(cpt++);
+		/*
 		res+=getColoredLine(A2016Day2.getDuration(),2);
 
 		System.out.println(cpt++);
@@ -62,7 +63,7 @@ public class A2016  {
 		System.out.println(cpt++);
 		res+=getColoredLine(A2016Day6.getDuration(),6);
 		System.out.println(cpt++);
-		/*
+		
 		res+=getColoredLine(A2016Day7.getDuration(),7);
 		System.out.println(cpt++);
 		res+=getColoredLine(A2016Day8.getDuration(),8);
