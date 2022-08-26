@@ -28,7 +28,7 @@ public class A2016Day2 extends A2016 {
 		List<String> input = Arrays.asList(getInput(b).trim().split("\n")).stream().map(s -> s.trim())
 				.collect(Collectors.toList());
 		String res="";
-		System.out.println(input);
+		
 		for(String s:input) {
 			String lastNumber =res.equals("") ? "5": res.substring(res.length()-1,res.length());
 			res+=this.getCodeFromLine2(s,lastNumber);
@@ -39,7 +39,6 @@ public class A2016Day2 extends A2016 {
 		List<String> input = Arrays.asList(getInput(b).trim().split("\n")).stream().map(s -> s.trim())
 				.collect(Collectors.toList());
 		String res="";
-		System.out.println(input);
 		for(String s:input) {
 			String lastNumber =res.equals("") ? "5": res.substring(res.length()-1,res.length());
 			res+=this.getCodeFromLine(s,lastNumber);

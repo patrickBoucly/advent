@@ -36,7 +36,6 @@ public class A2016Day1 extends A2016 {
 			dir = tourner(dir,s.substring(0, 1));
 			avancer(dir,pos,s);
 		}
-		System.out.println(input);
 		return Math.abs(pos.a)+Math.abs(pos.o);
 	}
 	private class Position{

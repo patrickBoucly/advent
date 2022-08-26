@@ -50,56 +50,57 @@ public class A2016  {
 		res+="\n";
 		int cpt=0;
 		res+=getColoredLine(A2016Day1.getDuration(),1);
-		System.out.println(cpt++);
-		/*
+		
+		
 		res+=getColoredLine(A2016Day2.getDuration(),2);
 
-		System.out.println(cpt++);
+		
 		res+=getColoredLine(A2016Day3.getDuration(),3);
-		System.out.println(cpt++);
+		
 		res+=getColoredLine(A2016Day4.getDuration(),4);
-		System.out.println(cpt++);
+		
 		res+=getColoredLine(A2016Day5.getDuration(),5);
-		System.out.println(cpt++);
+		
+		/*
 		res+=getColoredLine(A2016Day6.getDuration(),6);
-		System.out.println(cpt++);
+		
 		
 		res+=getColoredLine(A2016Day7.getDuration(),7);
-		System.out.println(cpt++);
+		
 		res+=getColoredLine(A2016Day8.getDuration(),8);
-		System.out.println(cpt++);
+		
 		res+=getColoredLine(A2016Day9.getDuration(),9);
-		System.out.println(cpt++);
+		
 		res+=getColoredLine(A2016Day10.getDuration(),10);
-		System.out.println(cpt++);
+		
 		res+=getColoredLine(A2016Day11.getDuration(),11);
-		System.out.println(cpt++);
+		
 		res+=getColoredLine(A2016Day12.getDuration(),12);
-		System.out.println(cpt++);
+		
 		res+=getColoredLine(A2016Day13.getDuration(),13);
-		System.out.println(cpt++);
+		
 		res+=getColoredLine(A2016Day14.getDuration(),14);
-		System.out.println(cpt++);
+		
 		res+=getColoredLine(A2016Day15.getDuration(),15);
-		System.out.println(cpt++);
+		
 		res+=getColoredLine(A2016Day16.getDuration(),16);
-		System.out.println(cpt++);
+		
 		res+=getColoredLine(A2016Day17.getDuration(),17);
-		System.out.println(cpt++);
+		
 		res+=getColoredLine(A2016Day18.getDuration(),18);
-		System.out.println(cpt++);
+		
 		res+=getColoredLine(A2016Day19.getDuration(),19);
-		System.out.println(cpt++);
+		
 		res+=getColoredLine(A2016Day20.getDuration(),20);
-		System.out.println(cpt++);
+		
 		res+=getColoredLine(A2016Day17.getDuration(),17);
-		System.out.println(cpt++);
+		
 		res+=getColoredLine(A2016Day22.getDuration(),22);
-		System.out.println(cpt++);
+		
 		res+=getColoredLine(A2016Day23.getDuration(),23);
-		System.out.println(cpt++);
+		
 		res+=getColoredLine(A2016Day24.getDuration(),24);
-		System.out.println(cpt++);
+		
 		res+=getColoredLine(A2016Day25.getDuration(),25);
 		*/
 		System.out.println(res);
