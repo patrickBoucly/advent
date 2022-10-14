@@ -19,11 +19,11 @@ public class A2016Day11 extends A2016 {
 	public static void main(String[] args0) {
 		A2016Day11 d = new A2016Day11(11);
 		long startTime = System.currentTimeMillis();
-		System.out.println(d.s1(true));
+		// System.out.println(d.s1(true));
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-		// System.out.println(d.s2(true));
+		System.out.println(d.s2(true));
 		endTime = System.currentTimeMillis();
 		System.out.println("Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took "
 				+ (endTime - startTime) + " milliseconds");
@@ -33,12 +33,27 @@ public class A2016Day11 extends A2016 {
 	public Integer s1(boolean b) {
 		List<String> input = Arrays.asList(getInput(b).trim().split("\n")).stream().map(String::trim)
 				.collect(Collectors.toList());
-		List<Machine> f1 = listerMachine(input.get(0), b);
-		List<Machine> f2 = listerMachine(input.get(1), b);
-		List<Machine> f3 = listerMachine(input.get(2), b);
-		List<Machine> f4 = listerMachine(input.get(3), b);
+		Set<Machine> f1 = listerMachine(input.get(0), b);
+		Set<Machine> f2 = listerMachine(input.get(1), b);
+		Set<Machine> f3 = listerMachine(input.get(2), b);
+		Set<Machine> f4 = listerMachine(input.get(3), b);
 		Situation s = new Situation(new Elevator(), f1, f2, f3, f4, 0);
-		Game g = new Game(List.of(s));
+		Game g = new Game(Set.of(s));
+		Boolean fini = false;
+		while (!fini) {
+			fini = nextStep(g);
+		}
+		return 1;
+	}
+	public Integer s2(boolean b) {
+		List<String> input = Arrays.asList(getInput(false).trim().split("\n")).stream().map(String::trim)
+				.collect(Collectors.toList());
+		Set<Machine> f1 = listerMachine(input.get(0), b);
+		Set<Machine> f2 = listerMachine(input.get(1), b);
+		Set<Machine> f3 = listerMachine(input.get(2), b);
+		Set<Machine> f4 = listerMachine(input.get(3), b);
+		Situation s = new Situation(new Elevator(), f1, f2, f3, f4, 0);
+		Game g = new Game(Set.of(s));
 		Boolean fini = false;
 		while (!fini) {
 			fini = nextStep(g);
@@ -47,7 +62,7 @@ public class A2016Day11 extends A2016 {
 	}
 
 	private Boolean nextStep(Game g) {
-		List<Situation> nextStepSituations = new ArrayList<>();
+		Set<Situation> nextStepSituations = new HashSet<>();
 		for (Situation s : g.getSituations()) {
 			nextStepSituations.addAll(g.getNextSituations(s));
 		}
@@ -58,13 +73,13 @@ public class A2016Day11 extends A2016 {
 			}
 		}
 		g.setSituations(nextStepSituations);
-		System.out.println(g.getSituations().size());
+		System.out.println("nbmvt " +g.situations.stream().findFirst().get().nbMvt+" size "+ g.getSituations().size());
 		return false;
 	}
 
-	private List<Machine> listerMachine(String l, Boolean b) {
+	private Set<Machine> listerMachine(String l, Boolean b) {
 		if (b) {
-			List<Machine> res = new ArrayList<>();
+			Set<Machine> res = new HashSet<>();
 			String s1 = "";
 			if (!l.contains(",")) {
 				if (l.contains("nothing")) {
@@ -104,7 +119,7 @@ public class A2016Day11 extends A2016 {
 			}
 			return res;
 		}
-		List<Machine> res = new ArrayList<>();
+		Set<Machine> res = new HashSet<>();
 		if (l.contains("nothing")) {
 			return res;
 		} else if (l.contains("and")) {
@@ -119,19 +134,19 @@ public class A2016Day11 extends A2016 {
 	}
 
 	private class Game {
-		List<Situation> situations;
+		Set<Situation> situations;
 
-		public Game(List<Situation> situations) {
+		public Game(Set<Situation> situations) {
 			super();
 			this.situations = situations;
 		}
 
 
-		public List<Situation> getSituations() {
+		public Set<Situation> getSituations() {
 			return situations;
 		}
 
-		public void setSituations(List<Situation> situations) {
+		public void setSituations(Set<Situation> situations) {
 			this.situations = situations;
 		}
 
@@ -190,15 +205,18 @@ public class A2016Day11 extends A2016 {
 			for (Move m : moveEnvisageable) {
 				Situation ns = getNextSituationAfterMove(s, m);
 				if (allFloorOk(ns)) {
-					nextSituations=majNextSituation(nextSituations,ns);
+					nextSituations =majNextSituation(nextSituations,ns);
 				}
 			}
 			return nextSituations;
 		}
 
 		private List<Situation> majNextSituation(List<Situation> nextSituations, Situation ns) {
+			if(ns.f1.contains(new Machine("g","thulium")) || ns.f1.contains(new Machine("m","thulium"))) {
+				//return nextSituations;
+			}
 			if(nextSituations.contains(ns)) {
-				int nbMvtDansListe=MesOutils.getMinIntegerFromList(nextSituations.stream().filter(s2 -> ns.identique(s2))
+				int nbMvtDansListe=MesOutils.getMinIntegerFromList(nextSituations.stream().filter(ns::identique)
 						.map(Situation::getNbMvt).collect(Collectors.toList()));
 				if(ns.nbMvt<nbMvtDansListe) {
 					nextSituations.remove(ns);
@@ -213,10 +231,10 @@ public class A2016Day11 extends A2016 {
 		}
 
 		private Situation getNextSituationAfterMove(Situation s, Move m) {
-			List<Machine> nf1 = new ArrayList<>(s.f1);
-			List<Machine> nf2 = new ArrayList<>(s.f2);
-			List<Machine> nf3 = new ArrayList<>(s.f3);
-			List<Machine> nf4 = new ArrayList<>(s.f4);
+			Set<Machine> nf1 = new HashSet<>(s.f1);
+			Set<Machine> nf2 = new HashSet<>(s.f2);
+			Set<Machine> nf3 = new HashSet<>(s.f3);
+			Set<Machine> nf4 = new HashSet<>(s.f4);
 			Elevator el = new Elevator();
 			el.position = s.elevator.position + m.deplacement;
 			el.contenu = new ArrayList<>();
@@ -239,14 +257,15 @@ public class A2016Day11 extends A2016 {
 		private boolean allFloorOk(Situation ns) {
 			return floorOk(ns.f1) && floorOk(ns.f2) && floorOk(ns.f3) && floorOk(ns.f4);
 		}
+	
 
-		boolean floorOk(List<Machine> f) {
-			if (f.isEmpty()) {
+		boolean floorOk(Set<Machine> f1) {
+			if (f1.isEmpty()) {
 				return true;
 			}
-			for (Machine m : f) {
-				if (m.type.equals("m") && !f.contains(new Machine("g", m.element))
-						&& f.stream().filter(k -> !k.element.equals(m.element) && k.type.equals("g")).count() > 0) {
+			for (Machine m : f1) {
+				if (m.type.equals("m") && !f1.contains(new Machine("g", m.element))
+						&& f1.stream().filter(k -> !k.element.equals(m.element) && k.type.equals("g")).count() > 0) {
 					return false;
 				}
 			}
@@ -256,15 +275,11 @@ public class A2016Day11 extends A2016 {
 
 	private class Situation {
 		private Integer nbMvt;
-		List<Machine> f1;
-		List<Machine> f2;
-		List<Machine> f3;
-		List<Machine> f4;
+		Set<Machine> f1;
+		Set<Machine> f2;
+		Set<Machine> f3;
+		Set<Machine> f4;
 		private Elevator elevator;
-
-		public List<Machine> getF1() {
-			return f1;
-		}
 
 		public Boolean identique(Situation s2) {
 			return f1.equals(s2.f1) && f2.equals(s2.f2) && f3.equals(s2.f3) & f4.equals(s2.f4)
@@ -280,35 +295,8 @@ public class A2016Day11 extends A2016 {
 							&& f3.stream().filter(m -> m.type.equals("g")).count() == 0L;
 		}
 
-		public void setF1(List<Machine> f1) {
-			this.f1 = f1;
-		}
 
-		public List<Machine> getF2() {
-			return f2;
-		}
-
-		public void setF2(List<Machine> f2) {
-			this.f2 = f2;
-		}
-
-		public List<Machine> getF3() {
-			return f3;
-		}
-
-		public void setF3(List<Machine> f3) {
-			this.f3 = f3;
-		}
-
-		public List<Machine> getF4() {
-			return f4;
-		}
-
-		public void setF4(List<Machine> f4) {
-			this.f4 = f4;
-		}
-
-		public Situation(Elevator elevator, List<Machine> f1, List<Machine> f2, List<Machine> f3, List<Machine> f4,
+		public Situation(Elevator elevator, Set<Machine> f1, Set<Machine> f2, Set<Machine> f3, Set<Machine> f4,
 				Integer nbMvt) {
 			super();
 			this.elevator = elevator;
@@ -321,10 +309,6 @@ public class A2016Day11 extends A2016 {
 
 		public Integer getNbMvt() {
 			return nbMvt;
-		}
-
-		public void setNbMvt(Integer nbMvt) {
-			this.nbMvt = nbMvt;
 		}
 
 		@Override
@@ -418,14 +402,6 @@ public class A2016Day11 extends A2016 {
 			return res.toString();
 		}
 
-		public Elevator getElevator() {
-			return elevator;
-		}
-
-		public void setElevator(Elevator elevator) {
-			this.elevator = elevator;
-		}
-
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -454,28 +430,12 @@ public class A2016Day11 extends A2016 {
 			return A2016Day11.this;
 		}
 
+		
 	}
 
 	private class Move {
 		Integer deplacement;
 		Set<Machine> chargement;
-
-		public Integer getDeplacement() {
-			return deplacement;
-		}
-
-		public void setDeplacement(Integer deplacement) {
-			this.deplacement = deplacement;
-		}
-
-		public Set<Machine> getChargement() {
-			return chargement;
-		}
-
-		public void setChargement(Set<Machine> chargement) {
-			this.chargement = chargement;
-		}
-
 		public Move(Integer deplacement, Set<Machine> chargement) {
 			super();
 			this.deplacement = deplacement;
@@ -526,28 +486,7 @@ public class A2016Day11 extends A2016 {
 			this.contenu = new ArrayList<>();
 		}
 
-		public Integer getPosition() {
-			return position;
-		}
-
-		public void setPosition(Integer position) {
-			this.position = position;
-		}
-
-		public List<Machine> getContenu() {
-			return contenu;
-		}
-
-		public void setContenu(List<Machine> contenu) {
-			this.contenu = contenu;
-		}
-
-		public Elevator(Integer position, List<Machine> contenu) {
-			super();
-			this.position = position;
-			this.contenu = contenu;
-		}
-
+	
 		@Override
 		public String toString() {
 			return "Elevator [position=" + position + ", contenu=" + contenu + "]";
@@ -586,22 +525,6 @@ public class A2016Day11 extends A2016 {
 		String type;
 		String element;
 
-		public String getType() {
-			return type;
-		}
-
-		public void setType(String type) {
-			this.type = type;
-		}
-
-		public String getElement() {
-			return element;
-		}
-
-		public void setElement(String element) {
-			this.element = element;
-		}
-
 		public Machine(String type, String element) {
 			super();
 			this.type = type;
@@ -634,6 +557,11 @@ public class A2016Day11 extends A2016 {
 		private A2016Day11 getEnclosingInstance() {
 			return A2016Day11.this;
 		}
+		
+
+		public String getElement() {
+			return element;
+		}
 
 		@Override
 		public String toString() {
@@ -642,10 +570,7 @@ public class A2016Day11 extends A2016 {
 
 	}
 
-	public long s2(boolean b) {
-
-		return 0L;
-	}
+	
 
 	public static List<Long> getDuration() {
 		A2016Day11 d = new A2016Day11(11);
