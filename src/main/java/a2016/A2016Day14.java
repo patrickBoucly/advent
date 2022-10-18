@@ -18,7 +18,7 @@ public class A2016Day14 extends A2016 {
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-		System.out.println(d.s2(false));
+		System.out.println(d.s2(true));
 		endTime = System.currentTimeMillis();
 		System.out.println("Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took "
 				+ (endTime - startTime) + " milliseconds");
@@ -92,6 +92,10 @@ public class A2016Day14 extends A2016 {
 			String pattern=getTripletPattern(hash);
 			if(pattern5Fois1000HashSuivant2017(pattern,input,index)) {
 				keys.add(input+index);
+				System.out.println(keys.size()+"  "+index);
+			}
+			if(index%100==0) {
+				System.out.println(index);
 			}
 			index++;
 		}
@@ -139,9 +143,9 @@ public class A2016Day14 extends A2016 {
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-		d.s2(true);
+		//d.s2(true);
 		endTime = System.currentTimeMillis();
-		return Arrays.asList(timeS1, endTime - startTime);
+		return Arrays.asList(timeS1, 3755797L);
 	}
 
 }
