@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import outils.MesOutils;
-
 public class A2016Day3 extends A2016 {
 
 	public A2016Day3(int day) {

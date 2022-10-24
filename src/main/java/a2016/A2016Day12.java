@@ -2,14 +2,8 @@ package a2016;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
-
-import outils.MesOutils;
 
 public class A2016Day12 extends A2016 {
 	public A2016Day12(int day) {
