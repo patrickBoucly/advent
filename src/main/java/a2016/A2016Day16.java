@@ -4,12 +4,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
 public class A2016Day16 extends A2016 {
 	String input = "10001001100000001";
-
+	final Map<String, String> mapObj = extracted();
 	public A2016Day16(int day) {
 		super(day);
 	}
@@ -17,7 +19,7 @@ public class A2016Day16 extends A2016 {
 	public static void main(String[] args0) {
 		A2016Day16 d = new A2016Day16(16);
 		long startTime = System.currentTimeMillis();
-		///System.out.println(d.s1(true));
+		//System.out.println(d.s1(true));
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
@@ -28,22 +30,6 @@ public class A2016Day16 extends A2016 {
 
 	}
 
-
-	public static String getNext(String next, String l, String lb) {
-		String res = next + "0";
-
-		for (int i = 0; i < next.length(); i++) {
-			if (next.substring(i, i + 1).equals(l)) {
-				res += lb;
-			} else if (next.substring(i, i + 1).equals("0")) {
-				res += "0";
-			} else {
-				res += l;
-			}
-		}
-		return res;
-
-	}
 
 	public String s1(boolean b) {
 		int size=272;
@@ -72,17 +58,20 @@ public class A2016Day16 extends A2016 {
 	}
 
 	private String aChecksum(String dragonCurved) {
-		String[] split=dragonCurved.split("(?<=\\G.{2})");
+		Stream<String> split=Stream.of(dragonCurved.split("(?<=\\G.{2})"));
+		
+		String res="";
+		res=split.map(e->mapObj.get(e)).collect(Collectors.joining(""));
+		return res;
+	}
+
+	private Map<String, String> extracted() {
 		Map<String,String> mapObj =new HashMap<>(); 
 		mapObj.put("00","1");
 		mapObj.put("01","0");
 		mapObj.put("10","0");
 		mapObj.put("11","1");
-		String res="";
-		for (int i = 0; i < split.length;i++) {
-			res+=mapObj.get(split[i]);
-		}
-		return res;
+		return mapObj;
 	}
 
 	
