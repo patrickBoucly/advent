@@ -19,7 +19,7 @@ public class A2016Day16 extends A2016 {
 	public static void main(String[] args0) {
 		A2016Day16 d = new A2016Day16(16);
 		long startTime = System.currentTimeMillis();
-		//System.out.println(d.s1(true));
+		System.out.println(d.s1(true));
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
@@ -38,32 +38,20 @@ public class A2016Day16 extends A2016 {
 			size=20;
 			dragonCurve="10000";
 		}
-		int tour=0;
 		while(dragonCurve.length()<size) {
 			dragonCurve=aDragonCurved(dragonCurve);
-			tour++;
-			System.out.println(tour +" "+dragonCurve.length());
 		}
 		return checksum(dragonCurve.substring(0,size));
 	}
 
 	private String checksum(String dragonCurved) {
-		System.out.println("checksum "+dragonCurved.length());
 		if (dragonCurved.length() % 2 != 0) {
 			return dragonCurved;
 		} else {
-			dragonCurved = aChecksum(dragonCurved);
-			return checksum(dragonCurved);
+			return checksum(Stream.of(dragonCurved.split("(?<=\\G.{2})")).map(e->mapObj.get(e)).collect(Collectors.joining("")));
 		}
 	}
-
-	private String aChecksum(String dragonCurved) {
-		Stream<String> split=Stream.of(dragonCurved.split("(?<=\\G.{2})"));
-		
-		String res="";
-		res=split.map(e->mapObj.get(e)).collect(Collectors.joining(""));
-		return res;
-	}
+	
 
 	private Map<String, String> extracted() {
 		Map<String,String> mapObj =new HashMap<>(); 
@@ -92,11 +80,8 @@ public class A2016Day16 extends A2016 {
 			size=20;
 			dragonCurve="10000";
 		}
-		int tour=0;
 		while(dragonCurve.length()<size) {
 			dragonCurve=aDragonCurved(dragonCurve);
-			tour++;
-			System.out.println(tour +" "+dragonCurve.length());
 		}
 		return checksum(dragonCurve.substring(0,size));
 	}
@@ -108,7 +93,7 @@ public class A2016Day16 extends A2016 {
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-		// d.s2(true);
+		d.s2(true);
 		endTime = System.currentTimeMillis();
 		return Arrays.asList(timeS1, 3755797L);
 	}
