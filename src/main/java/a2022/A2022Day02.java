@@ -9,14 +9,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class A2022Day2 extends A2022 {
+public class A2022Day02 extends A2022 {
 
-	public A2022Day2(int day) {
+	public A2022Day02(int day) {
 		super(day);
 	}
 
 	public static void main(String[] args0) {
-		A2022Day2 d = new A2022Day2(2);
+		A2022Day02 d = new A2022Day02(2);
 		//System.out.println(d.s1(true));
 		long startTime = System.currentTimeMillis();
 		d.s1(true);
@@ -199,8 +199,8 @@ public class A2022Day2 extends A2022 {
 			return "Round [actionP1=" + actionP1 + ", actionP2=" + actionP2 + ", pointP1=" + pointP1 + ", pointP2="
 					+ pointP2 + "]";
 		}
-		private A2022Day2 getEnclosingInstance() {
-			return A2022Day2.this;
+		private A2022Day02 getEnclosingInstance() {
+			return A2022Day02.this;
 		}
 		public void evalRound2() {
 			if(actionP1.equals("A")) {
@@ -267,7 +267,7 @@ public class A2022Day2 extends A2022 {
 		return r.stream().mapToLong(t -> t.pointP2).sum();
 	}
 	public static List<Long> getDuration() {
-		A2022Day2 d = new A2022Day2(2);
+		A2022Day02 d = new A2022Day02(2);
 		long startTime = System.currentTimeMillis();
 		d.s1(true);
 		long endTime = System.currentTimeMillis();

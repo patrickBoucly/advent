@@ -7,14 +7,14 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-public class A2022Day5 extends A2022 {
+public class A2022Day05 extends A2022 {
 
-	public A2022Day5(int day) {
+	public A2022Day05(int day) {
 		super(day);
 	}
 
 	public static void main(String[] args0) {
-		A2022Day5 d = new A2022Day5(5);
+		A2022Day05 d = new A2022Day05(5);
 		//System.out.println(d.s1(true));
 		long startTime = System.currentTimeMillis();
 		d.s1(true);
@@ -190,7 +190,7 @@ public class A2022Day5 extends A2022 {
 	}
 	
 	public static List<Long> getDuration() {
-		A2022Day5 d = new A2022Day5(5);
+		A2022Day05 d = new A2022Day05(5);
 		long startTime = System.currentTimeMillis();
 		d.s1(true);
 		long endTime = System.currentTimeMillis();

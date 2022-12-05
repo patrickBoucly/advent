@@ -5,14 +5,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class A2022Day1 extends A2022 {
+public class A2022Day01 extends A2022 {
 
-	public A2022Day1(int day) {
+	public A2022Day01(int day) {
 		super(day);
 	}
 
 	public static void main(String[] args0) {
-		A2022Day1 d = new A2022Day1(1);
+		A2022Day01 d = new A2022Day01(1);
 		System.out.println(d.s1(true));
 		long startTime = System.currentTimeMillis();
 		d.s1(true);
@@ -65,7 +65,7 @@ public class A2022Day1 extends A2022 {
 		
 	}
 	public static List<Long> getDuration() {
-		A2022Day1 d = new A2022Day1(1);
+		A2022Day01 d = new A2022Day01(1);
 		long startTime = System.currentTimeMillis();
 		d.s1(true);
 		long endTime = System.currentTimeMillis();
