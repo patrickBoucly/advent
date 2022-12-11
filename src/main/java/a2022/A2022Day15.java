@@ -11,7 +11,7 @@ public class A2022Day15 extends A2022 {
 	}
 
 	public static void main(String[] args0) {
-		A2022Day15 d = new A2022Day15(6);
+		A2022Day15 d = new A2022Day15(15);
 		System.out.println(d.s1(true));
 		long startTime = System.currentTimeMillis();
 		d.s1(true);
@@ -35,7 +35,7 @@ public class A2022Day15 extends A2022 {
 	}
 
 	public static List<Long> getDuration() {
-		A2022Day15 d = new A2022Day15(6);
+		A2022Day15 d = new A2022Day15(15);
 		long startTime = System.currentTimeMillis();
 		d.s1(true);
 		long endTime = System.currentTimeMillis();
