@@ -8,6 +8,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import outils.MesOutils;
+
 public class A2022Day24 extends A2022 {
 
 	public A2022Day24(int day) {
@@ -18,20 +20,94 @@ public class A2022Day24 extends A2022 {
 		A2022Day24 d = new A2022Day24(24);
 
 		long startTime = System.currentTimeMillis();
-		System.out.println(d.s1(true));
+		//System.out.println(d.s1(true));
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-		// System.out.println(d.s2(true));
+		System.out.println(d.s2(true));
 		endTime = System.currentTimeMillis();
 		System.out.println("Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took "
 				+ (endTime - startTime) + " milliseconds");
 
 	}
 
-	public String s2(boolean b) {
+	public int s2(boolean b) {
 		List<String> input = Arrays.asList(getInput(b).split("\n")).stream().collect(Collectors.toList());
-		return null;
+		Situation s0 = getSituation(input);
+		List<Situation> situs = new ArrayList<>();
+		List<Situation> nextSitu = new ArrayList<>();
+		situs.add(s0);
+		while (situs.stream().noneMatch(Situation::isOver)) {
+			nextSitu = getNextSitu(situs);
+			situs = new ArrayList<>(nextSitu);
+		}
+		Situation finAller=situs.stream().filter(Situation::isOver).findAny().get();
+		System.out.println("finAller :"+finAller.time);
+		situs = new ArrayList<>();
+		nextSitu = new ArrayList<>();
+		situs.add(finAller);
+		while (situs.stream().noneMatch(Situation::isStart)) {
+			nextSitu = getNextSituForStart(situs);
+			situs = new ArrayList<>(nextSitu);
+		}
+		Situation finRetour=situs.stream().filter(Situation::isStart).findAny().get();
+		System.out.println("finRetour :"+finRetour.time);
+		situs = new ArrayList<>();
+		nextSitu = new ArrayList<>();
+		situs.add(finRetour);
+		while (situs.stream().noneMatch(Situation::isOver)) {
+			nextSitu = getNextSitu(situs);
+			situs = new ArrayList<>(nextSitu);
+		}
+		return situs.stream().filter(Situation::isOver).findAny().get().time;
+	}
+
+	private List<Situation> getNextSituForStart(List<Situation> situs) {
+		List<Situation> nextSitu = new ArrayList<>();
+		for (Situation s : situs) {
+			Situation ns=getNextSituSansPos(s);
+			if (ns.p.equals(new Position(1, 1))) {
+				ns.setP(new Position(1, 0));
+				nextSitu = new ArrayList<>();
+				nextSitu.add(ns);
+				return nextSitu;
+			}
+			if (ns.v.blizzards.stream().filter(bl -> bl.i == ns.p.x && bl.j == ns.p.y).count() < 1L) {
+				nextSitu.add(new Situation(ns.v, new Position(ns.p.x, ns.p.y), ns.time));
+			}
+			Position pn = new Position(ns.p.x, ns.p.y - 1);
+			Position ps = new Position(ns.p.x, ns.p.y + 1);
+			Position pe = new Position(ns.p.x - 1, ns.p.y);
+			Position po = new Position(ns.p.x + 1, ns.p.y);
+			List<Position> pos = List.of(pn, ps, pe, po);
+			for (Position position : pos) {
+				if (position.x > 0 && position.y > 0 && position.x < ns.v.xmax && position.y < ns.v.ymax) {
+					if (ns.v.blizzards.stream().filter(bl -> bl.i == position.x && bl.j == position.y).count() < 1L) {
+						nextSitu.add(new Situation(ns.v, position, ns.time));
+					}
+				}
+			}
+		}
+		List<Situation> nextSituC = new ArrayList<>();
+		for (Situation st : nextSitu) {
+			if (!(st.v.blizzards.stream().filter(bl -> bl.i == st.p.x && bl.j == st.p.y).count() > 0L)) {
+				nextSituC.add(st);
+			}
+		}
+		
+		Set<Situation> nextSituC2 = new HashSet<>();
+		List<Position> lesPositions=nextSituC.stream().map(Situation::getP).toList();
+		
+		for (Position po : lesPositions) {
+			List<Situation> sitCettePos=getSitCetPos(nextSituC,po);
+			int bestTime=MesOutils.getMinIntegerFromList(sitCettePos.stream().map(Situation::getTime).toList());
+			nextSituC2.add(sitCettePos.stream().filter(s->s.time==bestTime ).findFirst().get());
+		}
+		
+		for (Situation st : nextSituC2) {
+			//System.out.println(st);
+		}
+		return new ArrayList<A2022Day24.Situation>(nextSituC2);
 	}
 
 	public int s1(boolean b) {
@@ -43,6 +119,7 @@ public class A2022Day24 extends A2022 {
 		while (situs.stream().noneMatch(Situation::isOver)) {
 			nextSitu = getNextSitu(situs);
 			situs = new ArrayList<>(nextSitu);
+			System.out.println(situs.size()+"   "+situs.get(0).time);
 		}
 		return situs.stream().filter(Situation::isOver).findAny().get().time;
 	}
@@ -79,7 +156,24 @@ public class A2022Day24 extends A2022 {
 				nextSituC.add(st);
 			}
 		}
-		return nextSituC;
+		
+		Set<Situation> nextSituC2 = new HashSet<>();
+		List<Position> lesPositions=nextSituC.stream().map(Situation::getP).toList();
+		
+		for (Position po : lesPositions) {
+			List<Situation> sitCettePos=getSitCetPos(nextSituC,po);
+			int bestTime=MesOutils.getMinIntegerFromList(sitCettePos.stream().map(Situation::getTime).toList());
+			nextSituC2.add(sitCettePos.stream().filter(s->s.time==bestTime ).findFirst().get());
+		}
+		
+		for (Situation st : nextSituC2) {
+			//System.out.println(st);
+		}
+		return new ArrayList<A2022Day24.Situation>(nextSituC2);
+	}
+
+	private List<Situation> getSitCetPos(List<Situation> nextSituC, Position po) {
+		return nextSituC.stream().filter(s->s.p.x ==po.x && s.p.y ==po.y ).toList();
 	}
 
 	private Situation getNextSituSansPos(Situation s) {
@@ -121,6 +215,9 @@ public class A2022Day24 extends A2022 {
 
 		public boolean isOver() {
 			return (p.x == v.xmax - 1 && p.y == v.ymax);
+		}
+		public boolean isStart() {
+			return (p.x == 1 && p.y == 0);
 		}
 
 		public Valley getV() {
