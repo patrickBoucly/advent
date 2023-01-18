@@ -5,7 +5,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
+import outils.MesOutils;
 
+@Getter
+@Setter
 public class A2022  {
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_BLACK = "\u001B[30m";
@@ -23,6 +28,23 @@ public class A2022  {
 	}
 	public String getInput(boolean donnesComplete ) {
 		return read(donnesComplete,day);
+	}
+	public String getExtraInput(boolean donnesComplete,int parametre ) {
+		return readExtra(donnesComplete,day,parametre);
+	}
+	
+	public String readExtra(boolean donnesComplete, int day,int parametre) {
+		String filePath = "src/main/resources/A2022/input" + day+"_extra_"+parametre;
+		String suffixe = (donnesComplete ? "" : "_s");
+		String content = "";
+		Path path = Paths.get(filePath + suffixe);
+		try {
+			content = Files.readString(path);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return content;
+
 	}
 	
 	public String read(boolean donnesComplete, int day) {
