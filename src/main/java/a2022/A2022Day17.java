@@ -1,5 +1,6 @@
 package a2022;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -9,9 +10,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 
+import lombok.Getter;
+import lombok.Setter;
 import outils.MesOutils;
-
+@Getter
+@Setter
 public class A2022Day17 extends A2022 {
 
 	public A2022Day17(int day) {
@@ -22,26 +27,96 @@ public class A2022Day17 extends A2022 {
 		A2022Day17 d = new A2022Day17(17);
 
 		long startTime = System.currentTimeMillis();
-		System.out.println(d.s1(false));
+		// System.out.println(d.s1(true));
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-		// System.out.println(d.s2(true));
+		System.out.println(d.s2(true));
 		endTime = System.currentTimeMillis();
 		System.out.println("Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took "
 				+ (endTime - startTime) + " milliseconds");
 
 	}
 
-	public String s2(boolean b) {
-		List<String> input = Arrays.asList(getInput(b).split("\n")).stream().collect(Collectors.toList());
-		return null;
+	public long s2(boolean b) {
+		if (!b) {
+			Game g = getGame(b, null);
+			Long totalRock = 1000000000000L;
+			int taillePattern = 7 * 20;
+			long nbPattern = (totalRock - 20) / taillePattern;
+			Long reste = (totalRock - 20) - nbPattern * taillePattern;
+
+			Long res = 0L;
+			int dec = 20 + reste.intValue();
+			res += (s1(b, taillePattern + 20) - s1(b, 20)) * nbPattern + s1(b, dec);
+
+			return res;
+		}
+		Game g = getGame(b, null);
+		Long totalRock = 1000000000000L;
+		int taillePattern = 1705;
+		int deb=1870;
+		//s1(b,1200);
+		long nbPattern = (totalRock - deb) / taillePattern;
+		Long reste = (totalRock - deb) - nbPattern * taillePattern;
+		Long res = 0L;
+		int dec = deb + reste.intValue();
+		res += (s1(b, taillePattern + deb) - s1(b, deb)) * nbPattern +  s1(b, dec);
+		return res;
+//too low 1498113207559
 	}
 
-	public String s1(boolean b) {
+	private int s1(boolean b, int nbRockMax) {
+		Game g = getGame(b, null);
+		g.setPieces(new HashSet<>());
+		int nbRocks = 0;
+		while (nbRocks < nbRockMax + 1) {
+			String type = String.valueOf(nbRocks % 5);
+			int sup = type.equals("1") ? 1 : 0;
+			int ymax = MesOutils.getMaxIntegerFromList(g.getPlateau().stream()
+					.filter(p -> p.x > 0 && p.x < 8 && !p.element.equals(".")).map(Point::getY).toList());
+			if (nbRocks == nbRockMax) {
+				return ymax;
+			}
+
+			//System.out.println(nbRocks + " " + ymax);
+
+			if (nbRocks == 43618) {
+			//	System.out.println(nbRocks + " " + ymax);
+			}
+			int bordMax = MesOutils.getMaxIntegerFromList(
+					g.plateau.stream().filter(p -> p.x == 0 && p.element.equals("b")).map(Point::getY).toList());
+			if (bordMax < ymax + 7) {
+				for (int j = bordMax + 1; j < bordMax + 10; j++) {
+					g.plateau.add(new Point(0, j, "b"));
+					g.plateau.add(new Point(8, j, "b"));
+				}
+			}
+			Piece p = new Piece(type, new Point(3, ymax + 4 + sup, "r"));
+			g.pieces.add(p);
+			g.faireTomberPiece(p);
+			// System.out.println(g);
+			nbRocks++;
+
+		}
+		System.out.println(g);
+		return MesOutils.getMaxIntegerFromList(
+				g.plateau.stream().filter(p -> p.x > 0 && p.x < 8 && !p.element.equals(".")).map(Point::getY).toList());
+	}
+
+	public static BigInteger lcm(BigInteger number1, BigInteger number2) {
+		BigInteger gcd = number1.gcd(number2);
+		BigInteger absProduct = number1.multiply(number2).abs();
+		return absProduct.divide(gcd);
+	}
+
+	public Integer s1(boolean b) {
+		return s1(b, 2023);
+	}
+
+	private Game getGame(boolean b, BigInteger windSize) {
 		String winds = getInput(b);
-		List<String> typesPiece = List.of("0", "1", "2", "3", "4");
-		int tmax=10;
+		int tmax = 10;
 		Set<Point> bord = new HashSet<>();
 		for (int i = 0; i < 9; i++) {
 			bord.add(new Point(i, 0, "b"));
@@ -54,153 +129,149 @@ public class A2022Day17 extends A2022 {
 			bord.add(new Point(1, j, "."));
 			bord.add(new Point(7, j, "."));
 		}
-		Game g = new Game(bord, winds, 0);
-		int nbRocks = 0;
-		while (nbRocks < 2023) {
-			String type = String.valueOf(nbRocks % 5);
-			int ymax = MesOutils.getMaxIntegerFromList(
-					g.plateau.stream().filter(p -> p.x > 0 && p.x < 8 && !p.element.equals(".")).map(Point::getY).toList());
-			Piece p = new Piece(type, new Point(3, ymax + 4, "r"));
-			g.faireTomberPiece(p);
-			System.out.println(g);
-
+		if (windSize == null) {
+			return new Game(bord, winds, 0);
 		}
-		System.out.println(g);
-		return null;
+		return new Game(bord, winds.substring(tmax, windSize.intValue()), 0);
 	}
-
+	@Getter
+	@Setter
 	private class Game {
 		Set<Point> plateau;
+		Set<Piece> pieces;
 		String winds;
 		int wp;
 
-		public Set<Point> getPlateau() {
-			return plateau;
-		}
 		private Set<Point> changeElement(int x, int y, String e, Set<Point> newPlateau) {
-			newPlateau.remove(new Point(x,y,""));
-			newPlateau.add(new Point(x,y,e));
+			newPlateau.remove(new Point(x, y, ""));
+			newPlateau.add(new Point(x, y, e));
 			return newPlateau;
 		}
+
 		private Point getPts(int x, int y) {
-			for(Point pt:plateau) {
+			for (Point pt : plateau) {
 				if (x == pt.x && y == pt.y) {
 					return pt;
 				}
 			}
 			return null;
-			
+
 		}
 
-
 		public void faireTomberPiece(Piece p) {
+			for (Point pt : p.points) {
+				plateau.add(pt);
+			}
 			boolean descend = true;
+
 			while (descend) {
-				plateau.removeAll(p.points);
-				for (Point pt : p.points) {
-					plateau.add(pt);
+				wp = wp % winds.length();
+				String vent = "";
+				if (wp == winds.length()) {
+					vent = winds.substring(wp);
+				} else {
+					vent = winds.substring(wp, wp + 1);
 				}
-				System.out.println(this);
-				Piece pj = jetIfPossible(p, winds.substring(wp, wp + 1));
-				Point pq=getPts(4, 4);
-				System.out.println(this);
-				descend = fallIfPossible(pj);
+				Piece pj = jetIfPossible(p, vent);
+				wp++;
+				Pair<Boolean, Piece> fall = fallIfPossible(pj);
+				descend = fall.getLeft();
+				p = fall.getRight();
 			}
 		}
 
-		private boolean fallIfPossible(Piece pj) {
-			// TODO Auto-generated method stub
-			return false;
+		private Pair<Boolean, Piece> fallIfPossible(Piece p) {
+			Piece np = new Piece();
+			np.setPoints(new ArrayList<>());
+			np.setType(p.type);
+			boolean canMove = true;
+			Set<Point> newPlateau = new HashSet<>();
+			for (Point pt : plateau) {
+				if (!p.points.contains(pt)) {
+					newPlateau.add(new Point(pt.x, pt.y, pt.element));
+				}
+			}
+			for (Point pt : p.points) {
+				Point ptb = Point.getPoint(plateau, pieces, pt.x, pt.y - 1).get();
+				if (!(ptb.element.equals("r") || ptb.element.equals("."))) {
+					canMove = false;
+				}
+			}
+			if (canMove) {
+				for (Point pt : p.points) {
+					Point npb1 = new Point(pt.x, pt.y - 1, pt.element);
+					Point npb2 = new Point(pt.x, pt.y - 1, pt.element);
+					Point oldP = new Point(pt.x, pt.y - 1, pt.element);
+					newPlateau.remove(oldP);
+					newPlateau.add(npb1);
+					np.points.add(npb2);
+				}
+				pieces.add(np);
+			} else {
+				for (Point pt : p.points) {
+					pt.setElement("s");
+					newPlateau.add(pt);
+				}
+				this.setPlateau(newPlateau);
+				return Pair.of(canMove, p);
+			}
+			this.setPlateau(newPlateau);
+			return Pair.of(canMove, np);
 		}
 
 		private Piece jetIfPossible(Piece p, String w) {
-			Piece np=new Piece();
+			Piece np = new Piece();
 			np.setPoints(new ArrayList<>());
 			np.setType(p.type);
-			Set<Point> newPlateau=new HashSet<>();
-			for(Point pt:plateau) {
-				newPlateau.add(new Point(pt.x,pt.y,pt.element));
+			boolean canMove = true;
+			Set<Point> newPlateau = new HashSet<>();
+			for (Point pt : plateau) {
+				if (!p.points.contains(pt)) {
+					newPlateau.add(new Point(pt.x, pt.y, pt.element));
+				}
 			}
-		//	Piece oldP=new Piece();
-			//oldP.setPoints(new ArrayList<>());
-			//oldP.setType(p.type);
-			boolean canMove=true;
-			if(w.equals("<")) {
-				for(Point pt:p.points) {
-					Point ptg=new Point(pt.x-1,pt.y,".");
-					if(plateau.contains(ptg) && Point.getPoint(plateau, pt.x-1, pt.y).get().element.equals(".")) {
-						canMove=false;
+			if (w.equals("<")) {
+				for (Point pt : p.points) {
+					Point ptg = Point.getPoint(plateau, pieces, pt.x - 1, pt.y).get();
+					if (!(ptg.element.equals("r") || ptg.element.equals("."))) {
+						canMove = false;
 					}
 				}
-				if(canMove) {
-					for(Point pt:p.points) {
-						for(Point q:plateau) {
-						
-							if(pt.x==q.x && pt.y ==q.y) {
-								newPlateau=changeElement(q.x, q.y, ".",newPlateau);
-								
-							}
-							if(pt.x-1==q.x && pt.y ==q.y) {
-								System.out.println(pt.x);
-								System.out.println(q.x);
-								System.out.println(q.x);
-								System.out.println(q.y);
-								np.points.add(new Point(q.x,q.y,"r"));
-								newPlateau=changeElement(q.x, q.y, "r",newPlateau);
-							}
-						}
+				if (canMove) {
+					plateau.removeAll(p.points);
+					for (Point pt : p.points) {
+						newPlateau.remove(new Point(pt.x - 1, pt.y, pt.element));
+						newPlateau.add(new Point(pt.x - 1, pt.y, pt.element));
+						np.points.add(new Point(pt.x - 1, pt.y, pt.element));
 					}
 				}
 			} else {
-				for(Point pt:p.points) {
-					Point ptd=Point.getPoint(plateau, pt.x+1, pt.y).get();
-					if(!(ptd.element.equals("r") || ptd.element.equals("."))) {
-						canMove=false;
+				for (Point pt : p.points) {
+					Point ptd = Point.getPoint(plateau, pieces, pt.x + 1, pt.y).get();
+					if (!(ptd.element.equals("r") || ptd.element.equals("."))) {
+						canMove = false;
 					}
 				}
-				if(canMove) {
-					for(Point pt:p.points) {
-						for(Point q:plateau) {
-							if(pt.x==q.x && pt.y ==q.y) {
-								newPlateau=changeElement(q.x, q.y, ".",newPlateau);
-								
-							}
-							if(pt.x+1==q.x && pt.y ==q.y) {
-								np.points.add(new Point(q.x,q.y,"r"));
-								newPlateau=changeElement(q.x, q.y, "r",newPlateau);
-							}
-						}
+				if (canMove) {
+					plateau.removeAll(p.points);
+					for (Point pt : p.points) {
+						newPlateau.remove(new Point(pt.x + 1, pt.y, pt.element));
+						newPlateau.add(new Point(pt.x + 1, pt.y, pt.element));
+						np.points.add(new Point(pt.x + 1, pt.y, pt.element));
 					}
 				}
-			}	
-			this.setPlateau(newPlateau);
-			if(canMove) {
-			//	plateau.removeAll(oldP.points);
-			//	plateau.addAll(np.points);
-				return np;
 			}
-			return p;
+			if (!canMove) {
+				for (Point pt : p.points) {
+					newPlateau.remove(new Point(pt.x, pt.y, pt.element));
+					newPlateau.add(new Point(pt.x, pt.y, pt.element));
+					np.points.add(new Point(pt.x, pt.y, pt.element));
+				}
+			}
+			this.setPlateau(newPlateau);
+			return np;
 		}
 
-		public String getWinds() {
-			return winds;
-		}
-
-		public void setWinds(String winds) {
-			this.winds = winds;
-		}
-
-		public int getWp() {
-			return wp;
-		}
-
-		public void setWp(int wp) {
-			this.wp = wp;
-		}
-
-		public void setPlateau(Set<Point> plateau) {
-			this.plateau = plateau;
-		}
 
 		public Game(Set<Point> plateau, String winds, int wp) {
 			super();
@@ -221,7 +292,7 @@ public class A2022Day17 extends A2022 {
 
 			for (int j = omax; j >= 0; j--) {
 				for (int i = amin; i <= amax; i++) {
-					Point.getPoint(plateau, i, j).ifPresentOrElse(pt -> res.append(pt.toString()),
+					Point.getPoint(plateau, pieces, i, j).ifPresentOrElse(pt -> res.append(pt.toString()),
 							() -> res.append("."));
 				}
 				res.append("\n");
@@ -354,7 +425,13 @@ public class A2022Day17 extends A2022 {
 			this.element = element;
 		}
 
-		
+		public Point(Point pt) {
+			super();
+			this.x = pt.x;
+			this.y = pt.y;
+			this.element = pt.element;
+		}
+
 		@Override
 		public int hashCode() {
 			return Objects.hash(x, y);
@@ -374,7 +451,7 @@ public class A2022Day17 extends A2022 {
 
 		@Override
 		public String toString() {
-			
+
 			if (element.equals("b")) {
 				return "*";
 			}
@@ -403,14 +480,15 @@ public class A2022Day17 extends A2022 {
 			this.y = y;
 		}
 
-		public static Optional<Point> getPoint(Set<Point> pts, int x, int y) {
+		public static Optional<Point> getPoint(Set<Point> pts, Set<Piece> pieces, int x, int y) {
 			Point p = null;
 			for (Point pt : pts) {
 				if (x == pt.x && y == pt.y) {
 					return Optional.ofNullable(pt);
 				}
 			}
-			return Optional.ofNullable(p);
+			Point a = new Point(x, y, ".");
+			return Optional.ofNullable(a);
 		}
 
 	}

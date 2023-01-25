@@ -37,7 +37,7 @@ public class A2022Day22 extends A2022 {
 	}
 
 	public Integer s2(boolean b) {
-		for(int i=0;i<getGame2(b).sequence.size()/2;i++) {
+		for(int i=2550;i<2550;i++) {
 			Game2 g = getGame2(b);
 			g.setSequence(g.sequence.subList(0, i));
 			System.out.println(i+1+" instruction :");

@@ -13,6 +13,8 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import outils.MesOutils;
+
 public class A2022Day19 extends A2022 {
 
 	public A2022Day19(int day) {
@@ -22,33 +24,52 @@ public class A2022Day19 extends A2022 {
 	public static void main(String[] args0) {
 		A2022Day19 d = new A2022Day19(19);
 		long startTime = System.currentTimeMillis();
-		System.out.println(d.s1(false));
+		// System.out.println(d.s1(true));
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-		// System.out.println(d.s2(true));
+		System.out.println(d.s2(true));
 		endTime = System.currentTimeMillis();
 		System.out.println("Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took "
 				+ (endTime - startTime) + " milliseconds");
 
 	}
 
-	public String s2(boolean b) {
-		List<String> input = Arrays.asList(getInput(b).split("\n")).stream().collect(Collectors.toList());
-		return null;
+	public int s2(boolean b) {
+		Set<Blueprint> prints = getPrints(b);
+		int res = 1;
+		int timeMax = 32;
+		Map<Integer, Integer> reponses = new HashMap<>();
+		for (Blueprint print : prints) {
+			if (print.id <=3) {
+				int r = bfs(print, timeMax);
+				System.out.println(print.id + " : " + r + " geodes");
+				reponses.put(print.id, r);
+			}
+		}
+		for (Entry<Integer, Integer> i : reponses.entrySet()) {
+			res *= i.getValue();
+		}
+		return res;
 	}
 
 	public Integer s1(boolean b) {
 		Set<Blueprint> prints = getPrints(b);
 		int res = 0;
+		int maxTime = 24;
+		Map<Integer, Integer> reponses = new HashMap<>();
 		for (Blueprint print : prints) {
-			res += bfs(print);
+			int r = bfs(print, maxTime);
+			System.out.println(print.id + " : " + r + " geodes");
+			reponses.put(print.id, r);
+		}
+		for (Entry<Integer, Integer> i : reponses.entrySet()) {
+			res += i.getKey() * i.getValue();
 		}
 		return res;
 	}
 
-	private int bfs(Blueprint print) {
-		int maxTime = 24;
+	private int bfs(Blueprint print, int maxTime) {
 		int maxGeode = 0;
 		State stateInitial = new State(print, 0, 1, 0, 0, 0, 0, 0, 0, 0);
 		Queue<State> queue = new LinkedList<>();
@@ -56,68 +77,152 @@ public class A2022Day19 extends A2022 {
 		queue.add(stateInitial);
 		Set<State> visitedStates = new HashSet<>();
 		visitedStates.add(stateInitial);
+		int mi = 0;
 		while (!queue.isEmpty()) {
 			State stateActuel = queue.poll();
+			if (mi != stateActuel.getMinute()) {
+				if (mi > maxTime-7)
+					System.out.println(stateActuel.getMinute());
+				mi = stateActuel.getMinute();
+			}
 			if (stateActuel.getMinute() >= maxTime) {
 				if (stateActuel.getGeode() > maxGeode) {
 					System.out.println(stateActuel);
 					maxGeode = stateActuel.getGeode();
 				}
 			} else {
-				if(stateActuel.print.id==1 && stateActuel.getMinute() >  20 && stateActuel.getGeode() < 2) {
-					
-				}else if(stateActuel.print.id==2 && stateActuel.getMinute() >  21 && stateActuel.getGeode() < 2) {
-					// hypothese: ce chemin est moisi: on ne l'emprunte pas
-				} else {
-				
-				if (stateActuel.canBuildGeodeRobot()) {
-					State nextState=new State();
-					nextState = getNextStateBuildGeodeRobot(stateActuel);
-					if (nextState.print!=null&& !visitedStates.contains(nextState)) {
-						queue.add(nextState);
-						visitedStates.add(nextState);
-					}
-				} 
-				if (stateActuel.canBuildObsidianRobot()) {
-					State nextState=new State();
-					nextState = getNextStateBuildObsidianRobot(stateActuel);
-					if (nextState.print!=null&& !visitedStates.contains(nextState)) {
-						queue.add(nextState);
-						visitedStates.add(nextState);
-					}
-				} 
-				if (stateActuel.canBuildClayRobot()) {
-					State nextState=new State();
-					nextState = getNextStateBuildClayRobot(stateActuel);
-					if (nextState.print!=null&& !visitedStates.contains(nextState)) {
-						queue.add(nextState);
-						visitedStates.add(nextState);
-					}
-					
-				} else if (stateActuel.canBuildOreRobot()) {
-					State nextState=new State();
-					nextState = getNextStateBuildOreRobot(stateActuel);
-					if (nextState.print!=null&& !visitedStates.contains(nextState)) {
-						queue.add(nextState);
-						visitedStates.add(nextState);
-					}
+				if (print.id==2 && maxTime == 32 && stateActuel.getMinute() >= 29 && stateActuel.getGeode() < 2) {
+
+				}else if (print.id==2 && maxTime == 32 && stateActuel.getMinute() >= 28 && stateActuel.getGeode() < 1) {
+
+				} else if (print.id==1 && maxTime == 32 && stateActuel.getMinute() >= 29 && stateActuel.getGeode() < 3) {
+
+				}else if (print.id==3 && maxTime == 32 && stateActuel.getMinute() >= 26 && stateActuel.getGeode() < 3) {
+
+				}else if (print.id==3 && maxTime == 32 && stateActuel.getMinute() >= 27 && stateActuel.getGeode() < 5) {
+
 				}
-				
-				State nextState = getNextStateWait(stateActuel);
-				if (!visitedStates.contains(nextState)) {
-					queue.add(nextState);
-					visitedStates.add(nextState);
+				else if (print.id==3 && maxTime == 32 && stateActuel.getMinute() >= 28 && stateActuel.getGeode() < 9) {
+
+				}else if (print.id==3 && maxTime == 32 && stateActuel.getMinute() >= 30 && stateActuel.getGeode() < 13) {
+
+				}else if (print.id==3 && maxTime == 32 && stateActuel.getMinute() >= 31 && stateActuel.getGeode() < 16) {
+
 				}
-			} // fin else
-		}
+				else {
+					if (stateActuel.canBuildRobot("geode", print)) {
+						State nextState = new State();
+						nextState = getNextStateBuildGeodeRobot(stateActuel);
+						if (nextState.print != null && !visitedStates.contains(nextState)) {
+							queue.add(nextState);
+							visitedStates.add(nextState);
+						}
+					} else {
+						if (stateActuel.canBuildRobot("obsidian", print)) {
+							State nextState = new State();
+							nextState = getNextStateBuildObsidianRobot(stateActuel);
+							if (nextState.print != null && !visitedStates.contains(nextState)) {
+								queue.add(nextState);
+								visitedStates.add(nextState);
+							}
+						}
+						if (stateActuel.canBuildRobot("clay", print)) {
+							State nextState = new State();
+							nextState = getNextStateBuildClayRobot(stateActuel);
+							if (nextState.print != null && !visitedStates.contains(nextState)) {
+								queue.add(nextState);
+								visitedStates.add(nextState);
+							}
+
+						}
+						if (stateActuel.canBuildRobot("ore", print)) {
+							State nextState = new State();
+							nextState = getNextStateBuildOreRobot(stateActuel);
+							if (nextState.print != null && !visitedStates.contains(nextState)) {
+								queue.add(nextState);
+								visitedStates.add(nextState);
+							}
+						}
+
+						State nextState = getNextStateWait(stateActuel);
+						if (!visitedStates.contains(nextState)) {
+							queue.add(nextState);
+							visitedStates.add(nextState);
+						}
+
+					}
+				} // fin else
+			}
 		} // fin while
 		System.out.println(maxGeode);
 		return maxGeode;
+
+	}
+
+	private boolean queueContainsBetter(Queue<State> queue, State s) {
+		int o = s.nbOre;
+		int ob = s.nbObsidian;
+		int c = s.nbClay;
+		int g = s.getGeode();
+		int ro = s.nbOreRobot;
+		int rob = s.nbObsidianRobot;
+		int rc = s.nbClayRobot;
+		int rg = s.nbGeodeRobot;
+		int m = s.getMinute();
+		for (State st : queue) {
+			int ot = st.nbOre;
+			int obt = st.nbObsidian;
+			int ct = st.nbClay;
+			int gt = st.getGeode();
+			int rot = st.nbOreRobot;
+			int robt = st.nbObsidianRobot;
+			int rct = st.nbClayRobot;
+			int rgt = st.nbGeodeRobot;
+			int mt = st.getMinute();
+			if (m == mt) {
+				if (ot > o && obt >= ob && ct >= c && gt >= g && rot >= ro && robt >= rob && rct >= rc && rgt >= rg) {
+					return true;
+				}
+				if (ot >= o && obt > ob && ct >= c && gt >= g && rot >= ro && robt >= rob && rct >= rc && rgt >= rg) {
+					return true;
+				}
+				if (ot >= o && obt >= ob && ct > c && gt >= g && rot >= ro && robt >= rob && rct >= rc && rgt >= rg) {
+					return true;
+				}
+				if (ot >= o && obt >= ob && ct >= c && gt > g && rot >= ro && robt >= rob && rct >= rc && rgt >= rg) {
+					return true;
+				}
+				if (ot >= o && obt >= ob && ct >= c && gt >= g && rot > ro && robt >= rob && rct >= rc && rgt >= rg) {
+					return true;
+				}
+				if (ot >= o && obt >= ob && ct >= c && gt >= g && rot >= ro && robt > rob && rct >= rc && rgt >= rg) {
+					return true;
+				}
+				if (ot >= o && obt >= ob && ct >= c && gt >= g && rot >= ro && robt >= rob && rct > rc && rgt >= rg) {
+					return true;
+				}
+				if (ot >= o && obt >= ob && ct >= c && gt >= g && rot >= ro && robt >= rob && rct >= rc && rgt > rg) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private int getMinuteMinFirstElement(Queue<State> queue, String element) {
+		List<List<String>> actionsListe = queue.stream().map(State::getActions).toList();
+		List<Integer> index = actionsListe.stream().map(l -> l.indexOf(element)).toList();
+		List<Integer> indexP = index.stream().filter(i -> i >= 0).toList();
+		if (indexP.isEmpty()) {
+			return -1;
+		}
+		Integer min = MesOutils.getMinIntegerFromList(indexP);
+		return min != null ? min : null;
 	}
 
 	private State getNextStateWait(State stateActuel) {
-		State nextState=new State();
-		List<String> actions=new ArrayList<>(stateActuel.getActions());
+		State nextState = new State();
+		List<String> actions = new ArrayList<>(stateActuel.getActions());
 		actions.add("wait");
 		nextState.setActions(actions);
 		nextState.setPrint(stateActuel.getPrint());
@@ -156,7 +261,7 @@ public class A2022Day19 extends A2022 {
 			}
 		}
 		State nextState = new State();
-		List<String> actions=new ArrayList<>(stateActuel.getActions());
+		List<String> actions = new ArrayList<>(stateActuel.getActions());
 		actions.add("ore");
 		nextState.setActions(actions);
 		nextState.setPrint(stateActuel.getPrint());
@@ -195,7 +300,7 @@ public class A2022Day19 extends A2022 {
 			}
 		}
 		State nextState = new State();
-		List<String> actions=new ArrayList<>(stateActuel.getActions());
+		List<String> actions = new ArrayList<>(stateActuel.getActions());
 		actions.add("clay");
 		nextState.setActions(actions);
 		nextState.setPrint(stateActuel.getPrint());
@@ -234,7 +339,7 @@ public class A2022Day19 extends A2022 {
 			}
 		}
 		State nextState = new State();
-		List<String> actions=new ArrayList<>(stateActuel.getActions());
+		List<String> actions = new ArrayList<>(stateActuel.getActions());
 		actions.add("obsidian");
 		nextState.setActions(actions);
 		nextState.setPrint(stateActuel.getPrint());
@@ -272,7 +377,7 @@ public class A2022Day19 extends A2022 {
 			}
 		}
 		State nextState = new State();
-		List<String> actions=new ArrayList<>(stateActuel.getActions());
+		List<String> actions = new ArrayList<>(stateActuel.getActions());
 		actions.add("geode");
 		nextState.setActions(actions);
 		nextState.setPrint(stateActuel.getPrint());
@@ -378,6 +483,9 @@ public class A2022Day19 extends A2022 {
 	}
 
 	private class State {
+		public int nbClay;
+		public int nbObsidian;
+		public int nbOre;
 		Blueprint print;
 		int minute;
 		int nbOreRobot;
@@ -388,13 +496,32 @@ public class A2022Day19 extends A2022 {
 		int clay;
 		int obsidian;
 		int geode;
+		int score;
 		private List<String> actions;
+
 		public Blueprint getPrint() {
 			return print;
 		}
 
-		public boolean canBuildGeodeRobot() {
-			return coutsSupportable("geode");
+		private boolean besoinPlusRessource(String ressource, Blueprint print) {
+			if (ressource.equals("geode")) {
+				return true;
+			}
+			int besoinMax = MesOutils
+					.getMaxIntegerFromList(List.of(print.getCout("clay", ressource), print.getCout("ore", ressource),
+							print.getCout("obsidian", ressource), print.getCout("geode", ressource)));
+			// besoinMax = besoinMax + 3;
+			if (ressource.equals("ore")) {
+				return besoinMax > nbOreRobot;
+			}
+			if (ressource.equals("clay")) {
+				return besoinMax > nbClayRobot;
+			}
+			if (ressource.equals("obsidian")) {
+				return besoinMax > nbObsidianRobot;
+			}
+
+			return true;
 
 		}
 
@@ -430,16 +557,8 @@ public class A2022Day19 extends A2022 {
 			return true;
 		}
 
-		public boolean canBuildClayRobot() {
-			return coutsSupportable("clay");
-		}
-
-		public boolean canBuildObsidianRobot() {
-			return coutsSupportable("obsidian");
-		}
-
-		public boolean canBuildOreRobot() {
-			return coutsSupportable("ore");
+		public boolean canBuildRobot(String ressource, Blueprint print) {
+			return coutsSupportable(ressource) && besoinPlusRessource(ressource, print);
 		}
 
 		public void setPrint(Blueprint print) {
@@ -537,24 +656,20 @@ public class A2022Day19 extends A2022 {
 			// TODO Auto-generated constructor stub
 		}
 
-
-
 		@Override
 		public String toString() {
-			return "State [minute=" + minute + ",actions="+actions+" ,nbOreRobot=" + nbOreRobot + ", nbClayRobot="
+			return "State [minute=" + minute + ",actions=" + actions + " ,nbOreRobot=" + nbOreRobot + ", nbClayRobot="
 					+ nbClayRobot + ", nbObsidianRobot=" + nbObsidianRobot + ", nbGeodeRobot=" + nbGeodeRobot + ", ore="
 					+ ore + ", clay=" + clay + ", obsidian=" + obsidian + ", geode=" + geode + "]";
 		}
-
-	
-		
 
 		@Override
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
 			result = prime * result + getEnclosingInstance().hashCode();
-			result = prime * result + Objects.hash(actions);
+			result = prime * result + Objects.hash(clay, geode, minute, nbClayRobot, nbGeodeRobot, nbObsidianRobot,
+					nbOreRobot, obsidian, ore);
 			return result;
 		}
 
@@ -569,7 +684,10 @@ public class A2022Day19 extends A2022 {
 			State other = (State) obj;
 			if (!getEnclosingInstance().equals(other.getEnclosingInstance()))
 				return false;
-			return Objects.equals(actions, other.actions);
+			return clay == other.clay && geode == other.geode && minute == other.minute
+					&& nbClayRobot == other.nbClayRobot && nbGeodeRobot == other.nbGeodeRobot
+					&& nbObsidianRobot == other.nbObsidianRobot && nbOreRobot == other.nbOreRobot
+					&& obsidian == other.obsidian && ore == other.ore;
 		}
 
 		public List<String> getActions() {
@@ -594,6 +712,21 @@ public class A2022Day19 extends A2022 {
 			super();
 			this.id = id;
 			this.costs = costs;
+		}
+
+		public int getCout(String nomRobot, String ressource) {
+			List<Cost> couts = new ArrayList<>();
+			for (Robot r : costs.keySet()) {
+				if (r.name.equals(nomRobot)) {
+					couts = costs.get(r);
+				}
+			}
+			for (Cost c : couts) {
+				if (c.type.equals(ressource)) {
+					return c.qtt;
+				}
+			}
+			return 0;
 		}
 
 		@Override
