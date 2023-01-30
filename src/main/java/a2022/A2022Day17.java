@@ -12,7 +12,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import outils.MesOutils;
 @Getter
@@ -40,7 +42,6 @@ public class A2022Day17 extends A2022 {
 
 	public long s2(boolean b) {
 		if (!b) {
-			Game g = getGame(b, null);
 			Long totalRock = 1000000000000L;
 			int taillePattern = 7 * 20;
 			long nbPattern = (totalRock - 20) / taillePattern;
@@ -52,18 +53,15 @@ public class A2022Day17 extends A2022 {
 
 			return res;
 		}
-		Game g = getGame(b, null);
 		Long totalRock = 1000000000000L;
 		int taillePattern = 1705;
 		int deb=1870;
-		//s1(b,1200);
 		long nbPattern = (totalRock - deb) / taillePattern;
 		Long reste = (totalRock - deb) - nbPattern * taillePattern;
 		Long res = 0L;
 		int dec = deb + reste.intValue();
 		res += (s1(b, taillePattern + deb) - s1(b, deb)) * nbPattern +  s1(b, dec);
 		return res;
-//too low 1498113207559
 	}
 
 	private int s1(boolean b, int nbRockMax) {
@@ -141,22 +139,6 @@ public class A2022Day17 extends A2022 {
 		Set<Piece> pieces;
 		String winds;
 		int wp;
-
-		private Set<Point> changeElement(int x, int y, String e, Set<Point> newPlateau) {
-			newPlateau.remove(new Point(x, y, ""));
-			newPlateau.add(new Point(x, y, e));
-			return newPlateau;
-		}
-
-		private Point getPts(int x, int y) {
-			for (Point pt : plateau) {
-				if (x == pt.x && y == pt.y) {
-					return pt;
-				}
-			}
-			return null;
-
-		}
 
 		public void faireTomberPiece(Piece p) {
 			for (Point pt : p.points) {
@@ -301,43 +283,19 @@ public class A2022Day17 extends A2022 {
 		}
 
 	}
-
+	@NoArgsConstructor
+	@Getter
+	@Setter
 	private class Piece {
 		String type;
 		List<Point> points;
-
-		public String getType() {
-			return type;
-		}
-
-		public void setType(String type) {
-			this.type = type;
-		}
-
-		public List<Point> getPoints() {
-			return points;
-		}
-
-		public void setPoints(List<Point> points) {
-			this.points = points;
-		}
-
 		public Piece(String type, Point pointEnHautAGauche) {
 			super();
 			this.type = type;
 			this.points = getPointsFromType(pointEnHautAGauche);
 		}
 
-		public Piece(String type2, ArrayList<Point> arrayList) {
-			// TODO Auto-generated constructor stub
-		}
-
-		public Piece() {
-			// TODO Auto-generated constructor stub
-		}
-
 		private List<Point> getPointsFromType(Point pointEnBasAGauche) {
-			List<Point> pts = new ArrayList<>();
 			if (type.equals("0")) {
 				return getPointsFromType0(pointEnBasAGauche);
 			}
@@ -404,26 +362,13 @@ public class A2022Day17 extends A2022 {
 		}
 
 	}
-
+	@AllArgsConstructor
+	@Getter
+	@Setter
 	private static class Point {
 		int x;
 		int y;
 		String element;
-
-		public String getElement() {
-			return element;
-		}
-
-		public void setElement(String element) {
-			this.element = element;
-		}
-
-		public Point(int x, int y, String element) {
-			super();
-			this.x = x;
-			this.y = y;
-			this.element = element;
-		}
 
 		public Point(Point pt) {
 			super();
@@ -462,22 +407,6 @@ public class A2022Day17 extends A2022 {
 				return "#";
 			}
 			return ".";
-		}
-
-		public int getX() {
-			return x;
-		}
-
-		public void setX(int x) {
-			this.x = x;
-		}
-
-		public int getY() {
-			return y;
-		}
-
-		public void setY(int y) {
-			this.y = y;
 		}
 
 		public static Optional<Point> getPoint(Set<Point> pts, Set<Piece> pieces, int x, int y) {
