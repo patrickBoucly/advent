@@ -70,7 +70,7 @@ public class A2020Day20 extends A2020 {
 
 	public int s1(boolean b) {
 		List<String> inputL = Arrays.asList(getInput(b).split("\n")).stream().collect(Collectors.toList());
-		return 2;
+		return 3;
 	}
 	
 	@Getter
