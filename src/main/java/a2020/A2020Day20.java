@@ -1,6 +1,9 @@
 package a2020;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,7 +28,7 @@ public class A2020Day20 extends A2020 {
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-		System.out.println(d.s2(true));
+		System.out.println(d.s2(false));
 		endTime = System.currentTimeMillis();
 		System.out.println("Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took "
 				+ (endTime - startTime) + " milliseconds");
@@ -56,7 +59,7 @@ public class A2020Day20 extends A2020 {
 				num=Integer.parseInt(s.split(" ")[1].split(":")[0].trim());
 			} else {
 				for(int i=0;i<s.length();i++) {
-						pts.add(new Point(i, numLigne, s.substring(i, i+1).equals("#")));
+						pts.add(new Point(numLigne,i , s.substring(i, i+1).equals("#")));
 				}
 				numLigne++;
 			}
@@ -77,10 +80,35 @@ public class A2020Day20 extends A2020 {
 	@Setter
 	@AllArgsConstructor
 	@NoArgsConstructor
-	@ToString
 	public class Tile{
 		int num;
 		Set<Point> pts;
+		@Override
+		public String toString() {
+			StringBuilder s=new StringBuilder();
+			s.append("Tile ").append(num).append(":").append("\n");
+			ArrayList<Point> listPts=new ArrayList<>(pts);
+			Collections.sort( listPts, new Comparator<Point>() {
+			       public int compare(Point x1, Point x2) {
+			         int result = Double.compare(x1.getX(), x2.getX());
+			         if ( result == 0 ) {
+			           // both X are equal -> compare Y too
+			           result = Double.compare(x1.getY(), x2.getY());
+			         } 
+			         return result;
+			      }
+			    });
+			int cpt=0;
+			for(Point p:listPts) {
+				cpt++;
+				s.append(p.diese ? "#":"0");
+				if(cpt%10==0) {
+					s.append("\n");
+				}
+			}
+			return s.toString();
+		}
+		
 	}
 	@Getter
 	@Setter
