@@ -11,7 +11,7 @@ public class A2023Day03 extends A2023 {
 	}
 
 	public static void main(String[] args0) {
-		A2023Day03 d = new A2023Day03(1);
+		A2023Day03 d = new A2023Day03(3);
 		System.out.println(d.s1(true));
 		long startTime = System.currentTimeMillis();
 		d.s1(true);
@@ -38,7 +38,7 @@ public class A2023Day03 extends A2023 {
 	}
 
 	public static List<Long> getDuration() {
-		A2023Day03 d = new A2023Day03(1);
+		A2023Day03 d = new A2023Day03(3);
 		long startTime = System.currentTimeMillis();
 		d.s1(true);
 		long endTime = System.currentTimeMillis();
