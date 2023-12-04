@@ -3,10 +3,12 @@ package a2023;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import a2023.A2023Day03.Chiffre;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +22,7 @@ public class A2023Day03 extends A2023 {
 	public A2023Day03(int day) {
 		super(day);
 	}
-
+	public int id=0;
 	public static void main(String[] args0) {
 		A2023Day03 d = new A2023Day03(3);
 		long startTime = System.currentTimeMillis();
@@ -63,6 +65,7 @@ public class A2023Day03 extends A2023 {
 			String s = l.substring(i, i + 1);
 			if (CHIFFR.contains(s)) {
 				leChiffreEnCours = new Chiffre();
+				leChiffreEnCours.setId(id++);
 				int offset = 0;
 				String next = l.substring(i + offset, i + 1 + offset);
 				while (CHIFFR.contains(next) && i + offset < l.length()) {
@@ -131,34 +134,36 @@ public class A2023Day03 extends A2023 {
 		public long sumGear() {
 			long res=0;
 			List<Point> eng=points.stream().filter(f->f.contenu.equals("*")).toList();
-			List<Chiffre> candidats=chiffres.stream().filter(ch->getVoisinnage(ch).stream().anyMatch(f->f.contenu.equals("*"))).toList();
-			int cptEng=1;
+			int cpt=0;
 			for(Point e:eng) {
-				System.out.println(cptEng);
-				cptEng++;
+				cpt++;
+				System.out.println(cpt);
+				res+=getSumEng(e);
+			}
+			return res;
+		}
+
+		private long getSumEng(Point e) {
+			List<Chiffre> candidats=chiffres.stream().filter(ch->Math.abs(ch.ordonnee-e.y)<3 && Math.abs((ch.debAbs+ch.finAbs)/2-e.x)<8).toList();
 				for(Chiffre c:candidats) {
 					if(pointDansList(getVoisinnage(c),e)) {
 						for(Chiffre c2:candidats.stream().filter(ch->Math.abs(ch.ordonnee-c.ordonnee)<3).toList()) {
 							if(pointDansList(getVoisinnage(c2),e)) {
 								if(!c.equals(c2)) {
 									System.out.println(""+c2.value+"*"+c.value);
-									res+=c.getValue()*c2.getValue();
+									return c.getValue()*c2.getValue();
 								}
 							}
 						}
 					}
 				}
-			}		
-			return res/2;
+				
+			return 0;
 		}
 
 		private boolean pointDansList(Set<Point> voisinnage, Point p) {
-			for(Point v:voisinnage) {
-				if(v.x==p.x && v.y==p.y) {
-					return true;
-				}
-			}
-			return false;
+			return voisinnage.stream().anyMatch(v->v.x==p.x && v.y==p.y);
+
 		}
 
 		private void validerUnChiffre(Chiffre c) {
@@ -213,7 +218,23 @@ public class A2023Day03 extends A2023 {
 		int debAbs;
 		int finAbs;
 		boolean estValide = false;
-
+		int id;
+		@Override
+		public int hashCode() {
+			return Objects.hash(id);
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Chiffre other = (Chiffre) obj;
+			return id == other.id;
+		}
+		
 	}
 
 	@Getter
@@ -245,7 +266,6 @@ public class A2023Day03 extends A2023 {
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
 		d.s2(true);
-		//p2 25'
 		endTime = System.currentTimeMillis();
 		return Arrays.asList(timeS1, endTime - startTime);
 	}
