@@ -114,7 +114,6 @@ public class A2023Day03 extends A2023 {
 		return tg.sumGear();
 	}
 
-
 	@Getter
 	@Setter
 	@AllArgsConstructor
