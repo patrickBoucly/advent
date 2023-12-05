@@ -103,36 +103,7 @@ public class A2023Day04 extends A2023 {
 		}
 	}
 
-	private List<Card> playACard(List<Card> cards) {
-		List<Card> newCards = new ArrayList<>();
-		Optional<Card> c = cards.stream().filter(k -> !k.isPlayed()).findFirst();
-		if (!c.isPresent()) {
-			return cards;
-		}
-		for (Card k : cards) {
-			if (k.num != c.get().num) {
-				newCards.add(k);
-			} else {
-				k.setPlayed(true);
-				k.countWin();
-				newCards.add(k);
-				for (int j =k.getId()+1; j <k.getId()+1+ k.getNbWinning(); j++) {
-					Optional<Card> ad =getCardJ(cards,j);
-					if (ad.isPresent()) {
-						Card d = new Card();
-						numero++;
-						d.setId(ad.get().getId());
-						d.setNum(numero);
-						d.setMyNumbers(ad.get().getMyNumbers());
-						d.setWinning(ad.get().getWinning());
-						d.setPlayed(false);
-						newCards.add(d);
-					}
-				}
-			}
-		}
-		return newCards;
-	}
+	
 
 	private Optional<Card> getCardJ(List<Card> cards, int j) {
 		return cards.stream().filter(h -> h.id == j).findFirst();
