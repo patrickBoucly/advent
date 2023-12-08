@@ -6,12 +6,15 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 
+import lombok.ToString;
+
 
 public class UniformCostSearch {
+	@ToString
 	public static class Graph {
 
 		private HashMap<Integer, Node> nodeLookup = new HashMap<>();
-
+		@ToString
 		public class Node {
 			private int id;
 			private int cost;
@@ -21,7 +24,7 @@ public class UniformCostSearch {
 				this.id = id;
 			}
 		}
-
+		
 		public class Edge {
 			Node toNode;
 			int cost;
@@ -30,6 +33,12 @@ public class UniformCostSearch {
 				this.toNode = toNode;
 				this.cost = cost;
 			}
+
+			@Override
+			public String toString() {
+				return "Edge [cost=" + cost + "]";
+			}
+			
 		}
 
 		public class Pair {
@@ -51,6 +60,9 @@ public class UniformCostSearch {
 
 		public void addNode(int id) {
 			nodeLookup.put(id, new Node(id));
+		}
+		public void addNode(int id,Node node) {
+			nodeLookup.put(id, node);
 		}
 
 		private Node getNode(int id) {
