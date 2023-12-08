@@ -22,7 +22,7 @@ public class A2023Day08 extends A2023 {
 	public static void main(String[] args0) {
 		A2023Day08 d = new A2023Day08(8);
 		long startTime = System.currentTimeMillis();
-		d.s1(true);
+		System.out.println(d.s1(true));
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
@@ -32,9 +32,18 @@ public class A2023Day08 extends A2023 {
 				+ (endTime - startTime) + " milliseconds");
 
 	}
+	
+	public Long s1(boolean b) {
+		List<String> inputL = Arrays.asList(getInput(b).split("\n")).stream().toList();
+		TheGame tg = getTheGameFromInput(inputL,1);
+		return tg.solve();
+	}
 
-
-
+	public Long s2(boolean b) {
+		List<String> inputL = Arrays.asList(getInput(b).split("\n")).stream().toList();
+		TheGame tg = getTheGameFromInput(inputL,2);
+		return tg.solve();
+	}
 	@Getter
 	@Setter
 	@AllArgsConstructor
@@ -82,8 +91,7 @@ public class A2023Day08 extends A2023 {
 			return null;
 		}
 
-		public Long solve2() {
-
+		public Long solve() {
 			while (!currentNodes.stream().allMatch(no -> no.name.substring(2).equals("Z"))) {
 				for (String ins : instructions) {
 					currentNodes = getAllNextNode(ins);
@@ -91,7 +99,6 @@ public class A2023Day08 extends A2023 {
 					for (Node nod : currentNodes) {
 						if (nod.name.substring(2).equals("Z") && nod.minStepToGoOut == -1L) {
 							nod.setMinStepToGoOut(nbStep);
-
 						}
 					}
 					if (currentNodes.stream().allMatch(no -> no.name.substring(2).equals("Z"))) {
@@ -100,11 +107,9 @@ public class A2023Day08 extends A2023 {
 					if (currentNodes.stream().allMatch(no -> no.minStepToGoOut != -1L)) {
 						return MesOutils.ppcmListe(currentNodes.stream().map(n->n.getMinStepToGoOut()).toList());
 					}
-
 				}
 			}
 			return nbStep;
-
 		}
 
 		private List<Node> getAllNextNode(String ins) {
@@ -146,18 +151,8 @@ public class A2023Day08 extends A2023 {
 		String name;
 		String leftNodeName;
 		String rightNodeName;
-		boolean IsCurrentNode;
 		Long minStepToGoOut = -1L;
 		int id;
-
-	}
-
-	public Long s1(boolean b) {
-		List<String> inputL = Arrays.asList(getInput(b).split("\n")).stream().toList();
-		TheGame tg = getTheGameFromInput(inputL);
-		tg.solve1();
-
-		return tg.getNbStep();
 	}
 
 	static Optional<Node> getNodeFromNodes(String nodeGame, List<Node> nodes) {
@@ -178,68 +173,9 @@ public class A2023Day08 extends A2023 {
 		return Optional.empty();
 	}
 
-	private TheGame getTheGameFromInput(List<String> inputL) {
+	private TheGame getTheGameFromInput(List<String> inputL,Integer partie) {
+		
 		TheGame tg = new TheGame();
-		Graph graph = new Graph();
-		Node currentNode = null;
-		List<String> instructions = new ArrayList<>();
-		String ins = inputL.get(0).trim();
-		for (int i = 0; i < ins.length(); i++) {
-			instructions.add(ins.substring(i, i + 1));
-		}
-		int cpt = 0;
-		List<Node> nodes = new ArrayList<>();
-		for (int i = 2; i < inputL.size(); i++) {
-			String ori = inputL.get(i).substring(0, 3);
-			String left = inputL.get(i).substring(7, 10);
-			String rigth = inputL.get(i).substring(12, 15);
-			Node nodeOri = new Node();
-			nodeOri.setId(cpt);
-			cpt++;
-			nodeOri.setName(ori);
-			nodeOri.setLeftNodeName(left);
-			nodeOri.setRightNodeName(rigth);
-			nodes.add(nodeOri);
-			if (ori.equals("AAA")) {
-				currentNode = nodeOri;
-			}
-		}
-
-		for (int i = 0; i < nodes.size(); i++) {
-			graph.addNode(i);
-		}
-		for (Node n : nodes) {
-			graph.addEdge(n.id, getNodeIdFromName(n.leftNodeName, nodes), 1);
-			graph.addEdge(n.id, getNodeIdFromName(n.getRightNodeName(), nodes), 1);
-		}
-		tg.setNodes(nodes);
-		tg.setCurrentNodes(Arrays.asList(currentNode));
-		tg.setGraph(graph);
-		tg.setNbStep(0L);
-		tg.setInstructions(instructions);
-		return tg;
-	}
-
-	private Integer getNodeIdFromName(String name, List<Node> nodes) {
-		for (Node n : nodes) {
-			if (n.name.equals(name)) {
-				return n.id;
-			}
-		}
-		return null;
-	}
-
-	public Long s2(boolean b) {
-		List<String> inputL = Arrays.asList(getInput(b).split("\n")).stream().toList();
-		TheGame tg = getTheGame2FromInput(inputL);
-		return tg.solve2();
-
-
-	}
-
-	private TheGame getTheGame2FromInput(List<String> inputL) {
-		TheGame tg = new TheGame();
-		Graph graph = new Graph();
 		List<Node> currentNodes = new ArrayList<>();
 		List<String> instructions = new ArrayList<>();
 		String ins = inputL.get(0).trim();
@@ -259,26 +195,24 @@ public class A2023Day08 extends A2023 {
 			nodeOri.setLeftNodeName(left);
 			nodeOri.setRightNodeName(rigth);
 			nodes.add(nodeOri);
-			if (ori.substring(2).equals("A")) {
-				currentNodes.add(nodeOri);
+			if(partie==1) {
+				if (ori.equals("AAA")) {
+					currentNodes.add(nodeOri);
+				}
+			}else {
+				if (ori.substring(2).equals("A")) {
+					currentNodes.add(nodeOri);
+				}
 			}
-		}
-
-		for (int i = 0; i < nodes.size(); i++) {
-			graph.addNode(i);
-		}
-		for (Node n : nodes) {
-			graph.addEdge(n.id, getNodeIdFromName(n.leftNodeName, nodes), 1);
-			graph.addEdge(n.id, getNodeIdFromName(n.getRightNodeName(), nodes), 1);
 		}
 		tg.setNodes(nodes);
 		tg.setCurrentNodes(currentNodes);
-		tg.setGraph(graph);
 		tg.setNbStep(0L);
 		tg.setInstructions(instructions);
 		return tg;
-
 	}
+
+	
 
 	public static List<Long> getDuration() {
 		A2023Day08 d = new A2023Day08(8);
