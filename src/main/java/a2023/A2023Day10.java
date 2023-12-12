@@ -24,12 +24,13 @@ public class A2023Day10 extends A2023 {
 
 	public static void main(String[] args0) {
 		A2023Day10 d = new A2023Day10(10);
-		System.out.println(d.s1(true));
+	//	System.out.println(d.s1(true));
 		long startTime = System.currentTimeMillis();
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-		System.out.println(d.s2(true));
+		//System.out.println(d.s2(true));
+		System.out.println(d.s3(true));
 		endTime = System.currentTimeMillis();
 		System.out.println("Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took "
 				+ (endTime - startTime) + " milliseconds");
@@ -40,7 +41,6 @@ public class A2023Day10 extends A2023 {
 		List<String> inputL = Arrays.asList(getInput(b).split("\n")).stream().collect(Collectors.toList());
 		TheGame tg = getGameFromInput(inputL);
 		tg.findLoop();
-		System.out.println(tg.loop.size());
 		return Math.floor((tg.getLoop().size()) / 2);
 	}
 
@@ -72,7 +72,14 @@ public class A2023Day10 extends A2023 {
 		tg.replaceFakePipe();
 		tg.findInOut();
 		return tg.grille.stream().filter(p -> p.info.equals("I") || p.info.equals("K")).count();
-		
+
+	}
+	public long s3(boolean b) {
+		List<String> inputL = Arrays.asList(getInput(b).split("\n")).stream().collect(Collectors.toList());
+		TheGame tg = getGameFromInput(inputL);
+		tg.findLoop();
+		return tg.shoelace()+1-tg.loop.size()/2;
+
 	}
 
 	@Getter
@@ -85,6 +92,15 @@ public class A2023Day10 extends A2023 {
 				findNext();
 			}
 		}
+
+		public Long shoelace() {
+			Long sum=0L;
+			for(int i=0;i<loop.size()-1;i++) {
+				sum+=(loop.get(i+1).x+loop.get(i).x)*(loop.get(i+1).y-loop.get(i).y);
+			}
+			return sum/2;
+		}
+
 		public void replaceFakePipe() {
 			for (Point p : grille) {
 				if (Arrays.asList("F", "J", "-", "|", "7", "L").contains(p.info) && !loop.contains(p)) {
@@ -92,12 +108,15 @@ public class A2023Day10 extends A2023 {
 				}
 			}
 		}
+
 		public void findInOut() {
 			mettreLesOBordure();
+			System.out.println(this);
 			System.out.println(loop.size() + grille.stream().filter(p -> p.info.equals("O")).count());
 			mettreLesK2();
 			mettreLeursVoisinsEnK();
 		}
+
 		private void mettreLesK2() {
 			List<Point> tour = new ArrayList<>(loop);
 			String inside = "down";
@@ -180,7 +199,7 @@ public class A2023Day10 extends A2023 {
 						}
 						pointToCheck = getPoint(grille, curPoint.x, curPoint.y - 1);
 						if (pointToCheck.isPresent() && pointToCheck.get().info.equals(".")) {
-							pointToCheck.get().info = "K";							
+							pointToCheck.get().info = "K";
 						}
 					}
 				}
@@ -188,18 +207,18 @@ public class A2023Day10 extends A2023 {
 					if (inside.equals("left") || inside.equals("down")) {
 						Optional<Point> pointToCheck = getPoint(grille, curPoint.x - 1, curPoint.y);
 						if (pointToCheck.isPresent() && pointToCheck.get().info.equals(".")) {
-							pointToCheck.get().info = "K";							
+							pointToCheck.get().info = "K";
 						}
 						pointToCheck = getPoint(grille, curPoint.x, curPoint.y + 1);
 						if (pointToCheck.isPresent() && pointToCheck.get().info.equals(".")) {
-							pointToCheck.get().info = "K";					
+							pointToCheck.get().info = "K";
 						}
 					}
 					if (inside.equals("rigth") || inside.equals("up")) {
 						Optional<Point> pointToCheck = getPoint(grille, curPoint.x + 1, curPoint.y - 1);
 						if (pointToCheck.isPresent() && pointToCheck.get().info.equals(".")) {
 							pointToCheck.get().info = "K";
-							
+
 						}
 
 					}
@@ -227,7 +246,7 @@ public class A2023Day10 extends A2023 {
 			}
 
 		}
-		
+
 		private String setInsideValue(String inside) {
 			if (inside.equals("rigth") && curPoint.info.equals("F")) {
 				return "down";
@@ -510,12 +529,49 @@ public class A2023Day10 extends A2023 {
 					if (p.isPresent() && curPoint.equals(p.get())) {
 						getPoint(grille, i, j).ifPresentOrElse(pt -> res.append("X"), () -> res.append("."));
 					} else {
-						getPoint(grille, i, j).ifPresentOrElse(pt -> res.append(pt.info), () -> res.append("."));
+						getPoint(grille, i, j).ifPresentOrElse(pt -> res.append(toAscci(pt.info)),
+								() -> res.append("."));
 					}
 				}
 				res.append("\n");
 			}
 			return res.toString();
+		}
+
+		private char toAscci(String info) {
+			
+			if(info.equals("F")) {
+				return '┌';
+			}
+			if(info.equals("7")) {
+				return '┐';
+			}
+			if(info.equals("L")) {
+				return '└';
+			}
+			if(info.equals("J")) {
+				return '┘';
+			}
+			if(info.equals("-")) {
+				return '─';
+			}
+			if(info.equals("|")) {
+				return '│';
+			}
+			if(info.equals("S")) {
+				return 'S';
+			}
+			if(info.equals("O")) {
+				return 'O';
+			}
+			if(info.equals("I")) {
+				return 'I';
+			}
+			if(info.equals(".")) {
+				return '.';
+			}
+
+			return 'O';
 		}
 	}
 
@@ -542,10 +598,12 @@ public class A2023Day10 extends A2023 {
 		int nbLoopPartOnLineRigth = 0;
 		int nbLoopPartOnColUp = 0;
 		int nbLoopPartOnColDown = 0;
+
 		@Override
 		public int hashCode() {
 			return Objects.hash(info, x, y);
 		}
+
 		@Override
 		public boolean equals(Object obj) {
 			if (this == obj)
@@ -558,6 +616,7 @@ public class A2023Day10 extends A2023 {
 			return Objects.equals(info, other.info) && x == other.x && y == other.y;
 		}
 	}
+
 	public static List<Long> getDuration() {
 		A2023Day10 d = new A2023Day10(1);
 		long startTime = System.currentTimeMillis();
