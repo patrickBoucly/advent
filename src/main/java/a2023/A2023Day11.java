@@ -25,9 +25,8 @@ public class A2023Day11 extends A2023 {
 
 	public static void main(String[] args0) {
 		A2023Day11 d = new A2023Day11(11);
-		System.out.println(d.s1(true));
 		long startTime = System.currentTimeMillis();
-		// d.s1(true);
+		System.out.println(d.s1(true));
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
@@ -68,7 +67,7 @@ public class A2023Day11 extends A2023 {
 		Universe univ = getUniverseFromInput(inputL);
 		Long speed=1000000L;
 		if(!b) {
-			speed=10L;
+		//	speed=100L;
 		}
 		univ.expanse(speed-1);
 		

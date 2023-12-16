@@ -30,7 +30,7 @@ public class A2023Day05 extends A2023 {
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-		System.out.println(d.s2(false));
+		System.out.println(d.s2(true));
 		endTime = System.currentTimeMillis();
 		System.out.println("Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took "
 				+ (endTime - startTime) + " milliseconds");
@@ -105,34 +105,32 @@ public class A2023Day05 extends A2023 {
 		List<String> inputL = Arrays.asList(getInput(b).split("\n")).stream().toList();
 		TheGame tg = getTheGame2(inputL);
 		List<Seed> seedsToControl = getSeedsToControl(tg);
-		Seed w=new Seed();
-		w.seedNum=920707452L;
-		w.setCurVal(920707452L);
-		Map<String, Long> correspondingValues = new HashMap<String, Long>();
-		w.setCorrespondingValues(correspondingValues);
-		tg.evaluerSeed(w);
-		System.out.println(seedsToControl);
-		/*
-		 * Long res = Long.MAX_VALUE; Long
-		 * from=MesOutils.getMinLongFromList(tg.seedRanges.stream().map(SeedRange::
-		 * getMinRange).toList()); // Long
-		 * to=MesOutils.getMaxLongFromList(tg.seedRanges.stream().map(SeedRange::
-		 * getMaxRange).toList()); System.out.println(from+" "+to); for(Long
-		 * lg=from;lg<to;lg++) { if(lg%1000000==0) {
-		 * System.out.println((lg-from)/(to-from)*100+ " "+ lg + " "+res); }
-		 * for(SeedRange sdr:tg.getSeedRanges()) { if(sdr.isInRange(lg)) { Seed s=new
-		 * Seed(); s.setCurVal(lg); s.setCorrespondingValues(new HashMap<>());
-		 * tg.evaluerSeed(s); Long
-		 * v=s.getCorrespondingValues().get("humidity-to-location"); if(v<res) { res=v;
-		 * System.out.println("res "+res+" "+lg); } } }
-		 * 
-		 * 
-		 * }
-		 * 
-		 * // too high 77251675 // 555763616 // 237603517 // 60568880, trouvé en 21'
-		 * seed 920707452
-		 * 
-		 */
+		Long res = Long.MAX_VALUE;
+		Long from = MesOutils.getMinLongFromList(tg.seedRanges.stream().map(SeedRange::getMinRange).toList()); // 
+		Long to = MesOutils.getMaxLongFromList(tg.seedRanges.stream().map(SeedRange::getMaxRange).toList());
+		System.out.println(from + " " + to);
+		for (Long lg = from; lg < to; lg++) {
+			if (lg % 1000000 == 0) {
+				System.out.println((lg - from) / (to - from) * 100 + " " + lg + " " + res);
+			}
+			for (SeedRange sdr : tg.getSeedRanges()) {
+				if (sdr.isInRange(lg)) {
+					Seed s = new Seed();
+					s.setCurVal(lg);
+					s.setCorrespondingValues(new HashMap<>());
+					tg.evaluerSeed(s);
+					Long v = s.getCorrespondingValues().get("humidity-to-location");
+					if (v < res) {
+						res = v;
+						System.out.println("res " + res + " " + lg);
+					}
+				}
+			}
+
+		}
+
+		// réponse 60568880, trouvée en 21' seed n°920707452
+
 		return MesOutils.getMinLongFromList(seedsToControl.stream().filter(se -> tg.isInOneRange(se))
 				.map(se -> se.getCorrespondingValues().get("humidity-to-location")).toList());
 
@@ -251,11 +249,11 @@ public class A2023Day05 extends A2023 {
 			this.value = value;
 			this.nextValue = value;
 			this.cat = cat;
-			this.initValue=value;
+			this.initValue = value;
 		}
 
 		public void findSeedOrigin(TheGame tg) {
-			value=initValue;
+			value = initValue;
 			boolean debute = false;
 			catVus = new ArrayList<>();
 			for (int i = tg.cate.size() - 1; i >= 0; i--) {
@@ -282,7 +280,7 @@ public class A2023Day05 extends A2023 {
 				}
 
 			}
-			seedNumOrigin=value;
+			seedNumOrigin = value;
 		}
 
 		public void findLocationValue(TheGame tg) {

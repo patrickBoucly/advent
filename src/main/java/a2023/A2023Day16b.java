@@ -18,14 +18,14 @@ import lombok.Setter;
 import lombok.ToString;
 import outils.MesOutils;
 
-public class A2023Day16 extends A2023 {
+public class A2023Day16b extends A2023 {
 
-	public A2023Day16(int day) {
+	public A2023Day16b(int day) {
 		super(day);
 	}
 
 	public static void main(String[] args0) {
-		A2023Day16 d = new A2023Day16(16);
+		A2023Day16b d = new A2023Day16b(16);
 		System.out.println(d.s1(true));
 		long startTime = System.currentTimeMillis();
 		// d.s1(true);
@@ -84,7 +84,21 @@ public class A2023Day16 extends A2023 {
 	}
 
 	public int s2(boolean b) {
-		return 0;
+		List<String> inputL = Arrays.asList(getInput(b).split("\n")).stream().collect(Collectors.toList());
+		TheGame tg = getTheGame(inputL);
+		Long res=0L;
+		for(Point p:tg.gr) {
+			
+		}
+		//System.out.println(tg);
+		tg.deplacerBeams();
+	//	tg.afficherDejaVu();
+		Set<Point> vu=new HashSet<>();
+		for(Point p:tg.dejaVu.keySet().stream().map(k->k.getPos()).toList()) {
+			vu.add(p);
+		}
+		
+		return vu.size();
 
 	}
 
