@@ -5,15 +5,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import a2023.A2023Day08.Node;
-import a2023.A2023Day08.TheGame;
-import a2023.A2023Day09.Sequence;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import outils.UniformCostSearch.Graph;
 
 public class A2023Day09 extends A2023 {
 
@@ -39,7 +35,6 @@ public class A2023Day09 extends A2023 {
 	public Long s1(boolean b) {
 		List<String> inputL = Arrays.asList(getInput(b).split("\n")).stream().collect(Collectors.toList());
 		TheGame tg = getTheGame(inputL);
-		System.out.println(tg);
 		tg.solve1();
 		Long res=0L;
 		for(Sequence seq:tg.seqs) {
@@ -52,7 +47,6 @@ public class A2023Day09 extends A2023 {
 	public Long s2(boolean b) {
 		List<String> inputL = Arrays.asList(getInput(b).split("\n")).stream().collect(Collectors.toList());
 		TheGame tg = getTheGame(inputL);
-		System.out.println(tg);
 		tg.solve2();
 		Long res=0L;
 		for(Sequence seq:tg.seqs) {

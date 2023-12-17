@@ -86,7 +86,6 @@ public class A2023Day04 extends A2023 {
 			comptages.put(c.getId(), 1);
 		}
 		compter(comptages,cards);
-		System.out.println(comptages);
 		return comptages.values().stream().reduce(0, Integer::sum);
 	}
 

@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 
+import a2023.A2023Day17b.Point;
+import a2023.A2023Day17b.State;
 import lombok.ToString;
 
 
@@ -104,7 +106,68 @@ public class UniformCostSearch {
 
 			return end.cost;
 		}
+		
+		public int uniformSearchC(int start, int end,int imax) {
+			return uniformSearchC(getNode(start), getNode(end),imax);
+		}
+		private int uniformSearchC(Node start, Node end,int imax) {
+			HashSet<Node> visited = new HashSet<>();
+			LinkedList<Node> visitedL = new LinkedList<>();
+			PriorityQueue<Pair> queue = new PriorityQueue<>(new NodeComparator());
+			queue.add(new Pair(start, 0));
 
+			while (!queue.isEmpty()) {
+				Pair pair = queue.poll();
+				Node node = pair.node;
+				if (respectePasLaCondition(node.id,visitedL,imax))
+					continue;				
+				visited.add(node);
+				visitedL.add(node);
+				node.cost = pair.cost;
+
+				for (Edge edge : node.adj) {
+					Node child = edge.toNode;
+					int cost = (pair.cost + edge.cost);
+					if(visitedL.size()>2 && visitedL.get(1).id==1) {
+						for(Node n:visitedL) {
+							System.out.println(n);
+						}
+					}
+					
+					if ( child.cost < cost && respectePasLaCondition(edge.toNode.id,visitedL,imax))
+						continue;
+					queue.add(new Pair(child, cost));
+				}
+
+			}
+
+			return end.cost;
+		}
+		private boolean respectePasLaCondition(int vid, LinkedList<Node> visitedL,int imax) {
+
+			if (visitedL.size() < 4) {
+				return false;
+			}
+			
+		
+			int t = visitedL.get(visitedL.size() - 4).id;
+			int x = visitedL.get(visitedL.size() - 3).id;
+			int y = visitedL.get(visitedL.size() - 2).id;
+			int z = visitedL.get(visitedL.size() - 1).id;
+			if (t - x == 1 && x - y == 1 && y - z == 1 && z - vid == 1) {
+				return true;
+			}
+			if (t - x == -1 && x - y == -1 && y - z == -1 && z - vid == -1) {
+				return true;
+			}
+			if (t - x == (imax + 1) && x - y == (imax + 1) && y - z == (imax + 1) && z - vid == (imax + 1)) {
+				return true;
+			}
+			if (t - x == -(imax + 1) && x - y == -(imax + 1) && y - z == -(imax + 1) && z - vid == -(imax + 1)) {
+				return true;
+			}
+			return false;
+		}
 	}
 
 	public static void main(String[] args) {

@@ -113,24 +113,13 @@ public class A2023Day13 extends A2023 {
 					resoudreGrillePairSymVer(g);
 					resoudreGrilleImpairSymHor(g);
 					g.resultat = 0;
-					//System.out.println(g);
-					Point pointToChange = getPointToChange(g);
-
-					/*
-					 * for (Point pt : g.points) { if (pt.equals(pointToChange)) {
-					 * pt.setInfo(pointToChange.info); } } System.out.println(g); g.resultat = 0;
-					 * resoudreGrillePairSymVer(g); resoudreGrilleImpairSymHor(g); if (g.resultat ==
-					 * 0) { System.out.println(g); }
-					 */
-				
+					getPointToChange(g);
 			}
 
 		}
 
 		private Point getPointToChange(Grille g) {
-		//	System.out.println(g);
 			for (Point p : g.points) {
-			//	System.out.println(p);
 				p.setInfo(p.info.equals("#") ? "." : "#");
 
 				resoudreGrillePairSymVer(g);
@@ -152,15 +141,10 @@ public class A2023Day13 extends A2023 {
 		private void resoudreGrilleImpairSymHor(Grille g) {
 			int linmax = MesOutils
 					.getMaxIntegerFromList(g.points.stream().map(Point::getY).collect(Collectors.toList()));
-			// System.out.println("linmax "+linmax);
 			for (int numLin = 0; numLin < linmax; numLin++) {
-				// System.out.println(g);
 				if (symHor(g, numLin)) {
 					int add = (numLin + 1) * 100;
-					/*
-					 * System.out.println("SymHor"); System.out.println(numLin);
-					 * System.out.println(g);
-					 */
+					
 					if (g.type.equals("o")) {
 						g.type = "h";
 					} else {
@@ -176,21 +160,13 @@ public class A2023Day13 extends A2023 {
 		private boolean symHor(Grille g, int numLin) {
 
 			for (Point p : g.points) {
-				// System.out.println("point p:"+p);
 				Optional<Point> pSymHor = getPointSymHor(g, p, numLin);
-				/*
-				 * if (pSymHor.isEmpty()) { System.out.println("hors champ"); } else {
-				 * System.out.println("sym :"+pSymHor.get()); }
-				 */
 				if (pSymHor.isPresent()) {
 					if (!pSymHor.get().info.equals(p.info)) {
-						// System.out.println("pas de symetrie hotizontale en ligne "+numLin+" pour la
-						// grille "+g.id);
 						return false;
 					}
 				}
 			}
-		//	System.out.println("Symetrie horizontale en ligne " + numLin + " pour la grille " + g.id);
 			return true;
 
 		}
@@ -202,14 +178,9 @@ public class A2023Day13 extends A2023 {
 		private void resoudreGrillePairSymVer(Grille g) {
 			int colmax = MesOutils
 					.getMaxIntegerFromList(g.points.stream().map(Point::getX).collect(Collectors.toList()));
-			// System.out.println("colMAx "+colmax);
 			for (int numCol = 0; numCol < colmax; numCol++) {
 				if (symVer(g, numCol)) {
 					int add = numCol + 1;
-					/*
-					 * System.out.println("SymVer"); System.out.println(numCol);
-					 * System.out.println(g);
-					 */
 					if (g.type.equals("o")) {
 						g.type = "v";
 					} else {
@@ -231,7 +202,6 @@ public class A2023Day13 extends A2023 {
 					}
 				}
 			}
-		//	System.out.println("Symetrie verticale en colonne " + numCol + " pour la grille " + g.id);
 			return true;
 		}
 

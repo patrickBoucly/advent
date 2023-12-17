@@ -5,9 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
-import outils.MesOutils;
 
 @Getter
 @Setter
@@ -64,7 +64,7 @@ public class A2023  {
 	public static void printDuration() {
 		String res="---------------------------------------------------------------";
 		res+="\n";
-		res+="-------------------Advent of Code 2021-------------------------";
+		res+="-------------------Advent of Code 2023-------------------------";
 		res+="\n";
 		res+="--------------------------TIMINGS-----------------------------";
 		res+="\n";
@@ -103,6 +103,7 @@ public class A2023  {
 		System.out.println(cpt++);
 		res+=getColoredLine(A2023Day16.getDuration(),16);
 		System.out.println(cpt++);
+		/*
 		res+=getColoredLine(A2023Day17.getDuration(),17);
 		System.out.println(cpt++);
 		res+=getColoredLine(A2023Day18.getDuration(),18);
@@ -120,6 +121,7 @@ public class A2023  {
 		res+=getColoredLine(A2023Day24.getDuration(),24);
 		System.out.println(cpt++);
 		res+=getColoredLine(A2023Day25.getDuration(),25);
+		*/
 		System.out.println(res);
 		
 	}

@@ -130,10 +130,7 @@ public class A2023Day12 extends A2023 {
 			Long res = 0L;
 			for (Instruction ins : insts) {
 				cpt++;
-				System.out.println("ligne "+cpt);
-				System.out.println(ins);
 				Long arrNb = compterArrangements(ins);
-				System.out.println("ArrangementCount :" + arrNb);
 				res += arrNb;
 			}
 			return res;
@@ -165,10 +162,7 @@ public class A2023Day12 extends A2023 {
 					if (newChaines.containsKey(k)) {
 						newChaines.put(k, newChaines.get(k) + newChainesInst.get(k));
 					} else {
-						if(newChaines.keySet().size() !=0 && newChaines.keySet().size() % 1000000==0) {
-							System.out.println(k.lavaSpot.stream().filter(j->j.equals("?")).count());
-							System.out.println(newChaines.keySet().size());
-						}
+						
 						newChaines.put(k, newChainesInst.get(k));
 					}
 				}
@@ -225,20 +219,7 @@ public class A2023Day12 extends A2023 {
 			}
 			Long countCond = 0L;
 			int nbConnu = 0;
-			/*
-			System.out.println("inst  complete");
-			System.out.println(inst1);
-			System.out.println("safe : " + safe);
-			System.out.println("seq " + seq);
-			System.out.println(inst1.contiguousDamaged);
-			System.out.println(nbLava);
-			*/
 			while (countCond != nbLava) {
-				/*
-				System.out.println("nb connu :" + nbConnu);
-				System.out.println("countCond " + countCond);
-				System.out.println(inst1.contiguousDamaged.get(nbConnu));
-				*/
 				countCond += inst1.contiguousDamaged.get(nbConnu);
 				nbConnu++;
 			}
@@ -248,7 +229,6 @@ public class A2023Day12 extends A2023 {
 			List<String> seqConservee = inst1.lavaSpot.subList(safe + 1, inst1.lavaSpot.size());
 			inst.setLavaSpot(seqConservee);
 			Entry<Instruction, Long> reste = new AbstractMap.SimpleEntry<>(inst, nb);
-			//System.out.println("reste : " + reste);
 			return reste;
 		}
 

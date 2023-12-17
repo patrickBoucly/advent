@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 public class A2023Day15 extends A2023 {
 
@@ -64,7 +63,6 @@ public class A2023Day15 extends A2023 {
 		List<String> inputL = Arrays.asList(getInput(b).split("\n")).stream().collect(Collectors.toList());
 		TheGame tg=getTheGame(inputL);
 		tg.ranger();
-		System.out.println(tg);
 		return tg.calculer();
 	}
 	

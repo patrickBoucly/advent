@@ -11,7 +11,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import a2023.A2023Day17b.Point;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,14 +20,14 @@ import outils.MesOutils;
 import outils.UniformCostSearch;
 import outils.UniformCostSearch.Graph;
 
-public class A2023Day17 extends A2023 {
+public class A2023Day17b extends A2023 {
 
-	public A2023Day17(int day) {
+	public A2023Day17b(int day) {
 		super(day);
 	}
 
 	public static void main(String[] args0) {
-		A2023Day17 d = new A2023Day17(17);
+		A2023Day17b d = new A2023Day17b(17);
 		System.out.println(d.s1(true));
 		long startTime = System.currentTimeMillis();
 		// d.s1(true);
@@ -56,7 +55,7 @@ public class A2023Day17 extends A2023 {
 		}
 		points.sort(Comparator.comparing(Point::getY).thenComparing(Comparator.comparing(Point::getX)));
 		List<Integer> startAndStop = init(graph, b, points, jmax, imax);
-		return graph.uniformSearchC(startAndStop.get(0), startAndStop.get(1), imax);
+		return graph.uniformSearchC(startAndStop.get(0), startAndStop.get(1),imax);
 	}
 
 	public Long s1(boolean b) {
@@ -66,12 +65,7 @@ public class A2023Day17 extends A2023 {
 
 		State initial = new State();
 		initial.setCost(0L);
-		initial.setNbDown(0);
-		initial.setNbRigth(0);
-		initial.setDetour(0);
-		initial.setPosition(getPoint(tg.points, 0, 0).get());
 		initial.setChemin(Arrays.asList(getPoint(tg.points, 0, 0).get()));
-		initial.setId(tg.idState++);
 		return tg.bfs(initial);
 	}
 
@@ -113,74 +107,86 @@ public class A2023Day17 extends A2023 {
 			}
 			Set<State> visitedStates = new HashSet<>();
 			visitedStates.add(stateInitial);
-			Long minCost = (long) sumDiag;//1564
-			minCost=1200L;
+			Long minCost = (long) sumDiag;
 			int k = 0;
 			while (!queue.isEmpty()) {
-				
-				State stateActuel = queue.poll();// on recupere le noeud à étudier
 				if (k % 2000 == 0) {
-					System.out.println("queue size : " + queue.size()+" cost stateActuel "+stateActuel.cost);
+					System.out.println("queue size : " + queue.size()+" "+queue.get(0).chemin.size());
 				}
 				k++;
-				if (stateActuel.cost < minCost) {
+
+				State stateActuel = queue.poll();// on recupere le noeud à étudier
+				if (stateActuel.cost < minCost && interessant(stateActuel)) {
 					// if (minCost >1000000000L && stateActuel.cost < minCost) {
-					if (stateActuel.position.indice == (imax + 1) * (imax + 1) - 1) {
+					if (stateActuel.chemin.get(stateActuel.chemin.size() - 1).indice == (imax + 1) * (imax + 1) - 1) {
 						if (stateActuel.cost < minCost) {
-							afficherChemin(stateActuel.chemin, stateActuel.id);
+							 afficherChemin(stateActuel.chemin);
 							minCost = stateActuel.cost;
 							System.out.println("nouveau min! :" + minCost);
-							System.out.println(stateActuel.last4actions);
 						}
 					} else {
 
-						List<Point> voisins = getVoisins(stateActuel.position);
-						List<Point> nextCandidats = new ArrayList<Point>();
+						List<Point> voisins = getVoisins(stateActuel.chemin.get(stateActuel.chemin.size() - 1));
+						List<Point> nextCandidats = new ArrayList<A2023Day17b.Point>();
 						for (Point v : voisins) {
-							nextCandidats.add(v);
+							if (respecteLaCondition(v, stateActuel)) {
+								if (!stateActuel.chemin.contains(v)) {
+									nextCandidats.add(v);
+								}
+							}
 						}
 						for (Point next : nextCandidats) {
-							Long nextStateId = idState++;
-							int nbDown = 0;
-							int nbRigth = 0;
-							int detour = 0;
 							State nextState = new State();
-							List<String> last3actions = new ArrayList<String>(stateActuel.last4actions);
-							if (next.indice - stateActuel.position.indice == 1) {
-								nbRigth = stateActuel.nbRigth + 1;
-								last3actions.add(">");
-							} else if (next.indice - stateActuel.position.indice == (imax + 1)) {
-								nbDown = stateActuel.nbDown + 1;
-								last3actions.add("v");
-							} else if (next.indice - stateActuel.position.indice == -(imax + 1)) {
-								detour = stateActuel.detour + 1;
-								last3actions.add("^");
-							} else if (next.indice - stateActuel.position.indice == -1) {
-								detour = stateActuel.detour + 1;
-								last3actions.add("<");
-							}
-							if (last3actions.size() > 4) {
-								last3actions = last3actions.subList(1, 5);
-							}
-							nextState.setLast4actions(last3actions);
 							nextState.cost = stateActuel.cost + next.cost;
-							nextState.setNbDown(nbDown);
-							nextState.setNbRigth(nbRigth);
-							nextState.setPosition(next);
-							nextState.setDetour(detour);
-							List<Point> chemin = new ArrayList<Point>(stateActuel.chemin);
-							chemin.add(nextState.position);
+							List<Point> chemin = new ArrayList<A2023Day17b.Point>(stateActuel.chemin);
+							chemin.add(next);
 							nextState.setChemin(chemin);
-							/*
-							 * if(nextStateId==26515) { System.out.println(nextState);
-							 * afficherChemin(stateActuel.chemin, nextStateId); System.out.println(nbDown);
-							 * }
-							 */
-							if (nbDown < 4 && nbRigth < 4 && detour < 3 && ajoutable(nextState, visitedStates)) {
-								nextState.setId(nextStateId);
+							if (chemin.size() < 4) {
 								queue.add(nextState);
 								visitedStates.add(nextState);
+							} else {
+
+								Optional<State> dejaLa = visitedStates.stream()
+										.filter(s -> s.chemin.size() > 3 && s.chemin
+												.subList(s.chemin.size() - 4, s.chemin.size()).equals(nextState.chemin
+														.subList(nextState.chemin.size() - 4, nextState.chemin.size())))
+										.findFirst();
+								if (!dejaLa.isPresent()) {
+
+									queue.add(nextState);
+									visitedStates.add(nextState);
+								} else if (dejaLa.get().cost > nextState.cost) {
+									int removeI = -1;
+									for (int i = 0; i < queue.size(); i++) {
+										if (queue.get(i).chemin
+												.subList(queue.get(i).chemin.size() - 4, queue.get(i).chemin.size())
+												.equals(dejaLa.get().chemin.subList(dejaLa.get().chemin.size() - 4,
+														dejaLa.get().chemin.size()))) {
+											removeI = i;
+										}
+									}
+									if (removeI != -1) {
+										queue.remove(removeI);
+									}
+									int removeIv = -1;
+									List<State> visitedStatesL = new ArrayList<A2023Day17b.State>(visitedStates);
+									for (int i = 0; i < visitedStates.size(); i++) {
+										if (visitedStatesL.get(i).chemin.size()>4 && visitedStatesL.get(i).chemin
+												.subList(visitedStatesL.get(i).chemin.size() - 4, visitedStatesL.get(i).chemin.size())
+												.equals(dejaLa.get().chemin.subList(dejaLa.get().chemin.size() - 4,
+														dejaLa.get().chemin.size()))) {
+											removeIv = i;
+										}
+									}
+									if (removeIv != -1) {
+										visitedStatesL.remove(removeIv);
+									}
+									queue.add(nextState);
+									visitedStates=new HashSet<A2023Day17b.State>(visitedStatesL);
+									visitedStates.add(nextState);
+								}
 							}
+
 						}
 					}
 				}
@@ -188,9 +194,58 @@ public class A2023Day17 extends A2023 {
 			return minCost;
 		}
 
-		public void afficherChemin(List<Point> chemin, Long id) {
+		private boolean interessant(State stateActuel) {
+			int cptDetour=0;
+			if(stateActuel.chemin.size()>20) {
+				for(int i=1;i<stateActuel.chemin.size();i++) {
+					if(stateActuel.chemin.get(i).indice-stateActuel.chemin.get(i-1).indice==-1
+							||stateActuel.chemin.get(i).indice-stateActuel.chemin.get(i-1).indice==-13) {
+						cptDetour++;
+					}
+				}
+				//System.out.println(cptDetour+" "+stateActuel.chemin.size());
+				if(cptDetour>1) {
+					return false;
+				}
+			}
+			
+			return true;
+		}
+
+		private boolean respecteLaCondition(Point v, State stateActuel) {
+
+			if (stateActuel.chemin.size() < 4) {
+				return true;
+			}
+			int t = stateActuel.chemin.get(stateActuel.chemin.size() - 4).indice;
+			int x = stateActuel.chemin.get(stateActuel.chemin.size() - 3).indice;
+			int y = stateActuel.chemin.get(stateActuel.chemin.size() - 2).indice;
+			int z = stateActuel.chemin.get(stateActuel.chemin.size() - 1).indice;
+			if (t - x == 1 && x - y == 1 && y - z == 1 && z - v.indice == 1) {
+				return false;
+			}
+			if (t - x == -1 && x - y == -1 && y - z == -1 && z - v.indice == -1) {
+				return false;
+			}
+			if (t - x == (imax + 1) && x - y == (imax + 1) && y - z == (imax + 1) && z - v.indice == (imax + 1)) {
+				return false;
+			}
+			if (t - x == -(imax + 1) && x - y == -(imax + 1) && y - z == -(imax + 1) && z - v.indice == -(imax + 1)) {
+				return false;
+			}
+			return true;
+		}
+
+		private List<Point> getVoisins(Point p) {
+			return points.stream().filter(q -> !q.equals(p) && (Math.abs(p.x - q.x) + Math.abs(p.y - q.y) == 1))
+					.toList();
+		}
+
+		Set<Point> points;
+		int imax;
+
+		public void afficherChemin(List<Point> chemin) {
 			StringBuilder res = new StringBuilder();
-			res.append("State id " + id).append("\n");
 			Integer imax = MesOutils
 					.getMaxIntegerFromList(points.stream().map(Point::getX).collect(Collectors.toList()));
 			Integer jmax = MesOutils
@@ -213,65 +268,6 @@ public class A2023Day17 extends A2023 {
 			}
 			System.out.println(res.toString());
 		}
-
-		private boolean ajoutable(State nextState, Set<State> visitedStates) {
-			if (nextState.last4actions.stream().filter(s -> s.equals(">")).toList().size() == 4) {
-				return false;
-			}
-			if (nextState.last4actions.stream().filter(s -> s.equals("v")).toList().size() == 4) {
-				return false;
-			}
-			if (nextState.last4actions.size() == 4 ) {
-				if( nextState.last4actions.get(3).equals(">") && nextState.last4actions.get(2).equals("<") )
-				return false;
-				if( nextState.last4actions.get(3).equals("<") && nextState.last4actions.get(2).equals(">") )
-				return false;
-				if( nextState.last4actions.get(3).equals("^") && nextState.last4actions.get(2).equals("v") )
-				return false;
-				if( nextState.last4actions.get(3).equals("v") && nextState.last4actions.get(2).equals("^") )
-				return false;
-			}
-			if (nextState.last4actions.stream().filter(s -> s.equals("v")).toList().size() == 4) {
-				return false;
-			}
-			for (State v : visitedStates.stream().filter(v -> v.position.equals(nextState.position)).toList()) {
-				if (v.nbDown == nextState.nbDown) {
-					if (v.nbRigth == nextState.nbRigth) {
-						if (v.cost < nextState.cost) {
-							return false;
-						}
-					}
-				}
-
-				if (v.nbDown == nextState.nbDown) {
-					if (v.cost == nextState.cost) {
-						if (v.nbRigth < nextState.nbRigth) {
-							return false;
-						}
-					}
-				}
-				if (v.nbRigth == nextState.nbRigth) {
-					if (v.cost == nextState.cost) {
-						if (v.nbDown < nextState.nbDown) {
-							return false;
-						}
-					}
-				}
-			}
-			return true;
-		}
-
-	
-
-		private List<Point> getVoisins(Point p) {
-			return points.stream().filter(q -> !q.equals(p) && (Math.abs(p.x - q.x) + Math.abs(p.y - q.y) == 1))
-					.toList();
-		}
-
-		Set<Point> points;
-		int imax;
-		Long idState = 0L;
-
 	}
 
 	@Getter
@@ -280,18 +276,12 @@ public class A2023Day17 extends A2023 {
 	@NoArgsConstructor
 	@ToString
 	public static class State {
-		Point position;
-		List<String> last4actions = new ArrayList<>();
-		int nbDown;
-		int nbRigth;
-		Long cost;
-		int detour;
-		Long id;
 		List<Point> chemin;
+		Long cost;
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(cost, nbDown, nbRigth, position);
+			return Objects.hash(chemin);
 		}
 
 		@Override
@@ -303,8 +293,7 @@ public class A2023Day17 extends A2023 {
 			if (getClass() != obj.getClass())
 				return false;
 			State other = (State) obj;
-			return Objects.equals(cost, other.cost) && nbDown == other.nbDown && nbRigth == other.nbRigth
-					&& Objects.equals(position, other.position);
+			return Objects.equals(chemin.get(chemin.size() - 1), other.chemin.get(other.chemin.size() - 1));
 		}
 
 	}
@@ -390,7 +379,7 @@ public class A2023Day17 extends A2023 {
 	}
 
 	public static List<Long> getDuration() {
-		A2023Day17 d = new A2023Day17(17);
+		A2023Day17b d = new A2023Day17b(17);
 		long startTime = System.currentTimeMillis();
 		d.s1(true);
 		long endTime = System.currentTimeMillis();

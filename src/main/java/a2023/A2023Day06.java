@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import a2023.A2023Day06.RaceRecord;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,7 +36,6 @@ public class A2023Day06 extends A2023 {
 
 	public int s1(boolean b) {
 		List<String> inputL = Arrays.asList(getInput(b).split("\n")).stream().collect(Collectors.toList());
-		System.out.println(inputL);
 		Races races=getRacesFromInput(inputL);
 		races.findNbPossibleVictory();
 		return races.getS1();
@@ -61,7 +59,6 @@ public class A2023Day06 extends A2023 {
 
 	public int s2(boolean b) {
 		List<String> inputL = Arrays.asList(getInput(b).split("\n")).stream().collect(Collectors.toList());
-		System.out.println(inputL);
 		Races races=getRaces2FromInput(inputL);
 		races.findNbPossibleVictory();
 		return races.getS1();

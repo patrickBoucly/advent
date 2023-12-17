@@ -111,8 +111,6 @@ public class A2023Day10 extends A2023 {
 
 		public void findInOut() {
 			mettreLesOBordure();
-			System.out.println(this);
-			System.out.println(loop.size() + grille.stream().filter(p -> p.info.equals("O")).count());
 			mettreLesK2();
 			mettreLeursVoisinsEnK();
 		}
@@ -624,7 +622,7 @@ public class A2023Day10 extends A2023 {
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-		d.s2(true);
+		d.s3(true);
 		endTime = System.currentTimeMillis();
 		return Arrays.asList(timeS1, endTime - startTime);
 	}

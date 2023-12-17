@@ -2,14 +2,12 @@ package a2023;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import a2023.A2023Day07.Hand;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,7 +47,6 @@ public class A2023Day07 extends A2023 {
 		List<String> inputL = Arrays.asList(getInput(b).split("\n")).stream().toList();
 		TheGame tg = getTheGame(inputL);
 		tg.determinerKinds();
-		System.out.println(tg);
 		tg.ranger();
 		return tg.hands.stream().mapToInt(h -> h.bid * h.rank).sum();
 	}

@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import a2023.A2023Day03.Chiffre;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -136,7 +135,6 @@ public class A2023Day03 extends A2023 {
 			int cpt=0;
 			for(Point e:eng) {
 				cpt++;
-				System.out.println(cpt);
 				res+=getSumEng(e);
 			}
 			return res;
@@ -149,7 +147,6 @@ public class A2023Day03 extends A2023 {
 						for(Chiffre c2:candidats.stream().filter(ch->Math.abs(ch.ordonnee-c.ordonnee)<3).toList()) {
 							if(pointDansList(getVoisinnage(c2),e)) {
 								if(!c.equals(c2)) {
-									System.out.println(""+c2.value+"*"+c.value);
 									return c.getValue()*c2.getValue();
 								}
 							}

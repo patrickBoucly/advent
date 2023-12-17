@@ -1,6 +1,5 @@
 package a2023;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,7 +31,7 @@ public class A2023Day16b extends A2023 {
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-		// System.out.println(d.s2(true));
+		System.out.println(d.s2(true));
 		endTime = System.currentTimeMillis();
 		System.out.println("Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took "
 				+ (endTime - startTime) + " milliseconds");
@@ -42,11 +41,9 @@ public class A2023Day16b extends A2023 {
 	public int s1(boolean b) {
 		List<String> inputL = Arrays.asList(getInput(b).split("\n")).stream().collect(Collectors.toList());
 		TheGame tg = getTheGame(inputL);
-		//System.out.println(tg);
 		tg.deplacerBeams();
-	//	tg.afficherDejaVu();
 		Set<Point> vu=new HashSet<>();
-		for(Point p:tg.dejaVu.keySet().stream().map(k->k.getPos()).toList()) {
+		for(Point p:tg.beams.stream().map(k->k.getPos()).toList()) {
 			vu.add(p);
 		}
 		return vu.size();
@@ -79,26 +76,116 @@ public class A2023Day16b extends A2023 {
 		dejaVu.put(b2, 1);
 		tg.setDejaVu(dejaVu);
 		tg.setBeams(beams);
-
+		tg.cmax = inputL.get(0).length() - 1;
+		tg.lmax = inputL.size() - 1;
 		return tg;
 	}
 
-	public int s2(boolean b) {
+	public Long s2(boolean b) {
 		List<String> inputL = Arrays.asList(getInput(b).split("\n")).stream().collect(Collectors.toList());
 		TheGame tg = getTheGame(inputL);
-		Long res=0L;
-		for(Point p:tg.gr) {
-			
+		Long res = 0L;
+		int nbPbord = 0;
+		for (Point p : tg.gr.points) {
+			TheGame tg2 = null;
+			if (p.x == 0) {
+				nbPbord++;
+				System.out.println("départ du point: " + p + " direction >, indice " + nbPbord);
+				Beam depart = new Beam();
+				Point np = new Point();
+				np.setX(p.x);
+				np.setY(p.y);
+				np.setInfo(">");
+				depart.setPos(np);
+				tg2 = getTheGame(inputL);
+				tg2.beams = new HashSet<>();
+				tg2.beams.add(depart);
+				tg2.deplacerBeams();
+				Set<Point> vu=new HashSet<>();
+				for(Point q:tg2.beams.stream().map(k->k.getPos()).toList()) {
+					vu.add(q);
+				}
+				System.out.println(p + " " + vu.size());
+				if (vu.size() > res) {
+					res = (long) vu.size();
+					System.out.println("noueau max : " + res);
+				}
+
+			}
+			if (p.y == 0) {
+				nbPbord++;
+				System.out.println("départ du point: " + p + " direction v, indice " + nbPbord);
+				Beam depart = new Beam();
+				Point np = new Point();
+				np.setX(p.x);
+				np.setY(p.y);
+				np.setInfo("v");
+				depart.setPos(np);
+				tg2 = getTheGame(inputL);
+				tg2.beams = new HashSet<>();
+				tg2.beams.add(depart);
+				tg2.deplacerBeams();
+				Set<Point> vu=new HashSet<>();
+				for(Point q:tg2.beams.stream().map(k->k.getPos()).toList()) {
+					vu.add(q);
+				}
+				System.out.println(p + " " + vu.size());
+				if (vu.size() > res) {
+					res = (long) vu.size();
+					System.out.println("noueau max : " + res);
+				}
+			}
+			if (p.x == tg.cmax - 1) {
+				nbPbord++;
+				System.out.println("départ du point: " + p + " direction <, indice " + nbPbord);
+				Beam depart = new Beam();
+				Point np = new Point();
+				np.setX(p.x);
+				np.setY(p.y);
+				np.setInfo("<");
+				depart.setPos(np);
+				tg2 = getTheGame(inputL);
+				tg2.beams = new HashSet<>();
+				tg2.beams.add(depart);
+				tg2.deplacerBeams();
+				Set<Point> vu=new HashSet<>();
+				for(Point q:tg2.beams.stream().map(k->k.getPos()).toList()) {
+					vu.add(q);
+				}
+				System.out.println(p + " " + vu.size());
+				if (vu.size() > res) {
+					res = (long) vu.size();
+					System.out.println("noueau max : " + res);
+				}
+			}
+			if (p.y == tg.lmax ) {
+				nbPbord++;
+				System.out.println("départ du point: " + p + " direction ^, indice " + nbPbord);
+				Beam depart = new Beam();
+				Point np = new Point();
+				np.setX(p.x);
+				np.setY(p.y);
+				np.setInfo("^");
+				depart.setPos(np);
+				tg2 = getTheGame(inputL);
+				tg2.beams = new HashSet<>();
+				tg2.beams.add(depart);
+
+				tg2.deplacerBeams();
+				Set<Point> vu=new HashSet<>();
+				for(Point q:tg2.beams.stream().map(k->k.getPos()).toList()) {
+					vu.add(q);
+				}
+				System.out.println(p + " " + vu.size());
+				if (vu.size() > res) {
+					res = (long) vu.size();
+					System.out.println("noueau max : " + res);
+				}
+			}
+
 		}
-		//System.out.println(tg);
-		tg.deplacerBeams();
-	//	tg.afficherDejaVu();
-		Set<Point> vu=new HashSet<>();
-		for(Point p:tg.dejaVu.keySet().stream().map(k->k.getPos()).toList()) {
-			vu.add(p);
-		}
-		
-		return vu.size();
+
+		return res;
 
 	}
 
@@ -107,54 +194,15 @@ public class A2023Day16b extends A2023 {
 	@AllArgsConstructor
 	@NoArgsConstructor
 	private static class TheGame {
+		int cmax;
+		int lmax;
 		public void deplacerBeams() {
-			Set<Point> vu=new HashSet<>();
-			int i = 0;
-			int dejaVuSize=0;
-			int newDejaVuSize=dejaVu.size();
-			while (!beams.isEmpty()  && i<1000 ) {
-				dejaVuSize=dejaVu.keySet().size();
-				Set<Beam> nextBeams = new HashSet<>();
-				for (Beam b : beams) {
-					nextBeams.addAll(getNextBeams(b));
+			while (!beams.stream().filter(Beam::isJustAdded).toList().isEmpty()) {
+				for (Beam r : beams.stream().filter(Beam::isJustAdded).toList()) {
+					beams.addAll(getNextBeams(r));
+					r.justAdded=false;
 				}
-				alimenterDejaVu(nextBeams);
-				newDejaVuSize=dejaVu.keySet().size();
-			
-				for(Point p:dejaVu.keySet().stream().map(k->k.getPos()).toList()) {
-					vu.add(p);
-				}
-				beams = new HashSet<>(nextBeams);
-			
-				if(i%10==0) {
-					System.out.println(i+" "+ newDejaVuSize+" "+beams.size());
-				}
-				
-				i++;
 			}
-
-		}
-
-		public void afficherDejaVu() {
-			StringBuilder res = new StringBuilder();
-			int imax = MesOutils
-					.getMaxIntegerFromList(gr.points.stream().map(Point::getX).collect(Collectors.toList()));
-			int jmax = MesOutils
-					.getMaxIntegerFromList(gr.points.stream().map(Point::getY).collect(Collectors.toList()));
-			for (int j = 0; j <= jmax; j++) {
-				for (int i = 0; i <= imax; i++) {
-					if (getPoint(gr.points, i, j).isPresent()) {
-						Point p = new Point(i, j, "");
-						if (dejaVu.keySet().contains(p)) {
-							res.append("#");
-						} else {
-							res.append(getPoint(gr.points, i, j).get().info);
-						}
-					}
-				}
-				res.append("\n");
-			}
-			System.out.println(res);
 
 		}
 
@@ -391,22 +439,7 @@ public class A2023Day16b extends A2023 {
 			return nextBeams;
 		}
 
-		private void alimenterDejaVu(Set<Beam> nextBeams) {
-			Map<Beam, Integer> dejaVuCopy = new HashMap<>();
-			for(Beam b : dejaVu.keySet()) {
-				Beam nb =new Beam( new Point(b.pos.x, b.pos.y, b.pos.info));
-				dejaVuCopy.put(nb, dejaVu.get(b));
-			}
-			for (Beam b : nextBeams) {
-				if (dejaVuCopy.keySet().contains(b)) {
-							dejaVu.put(b, dejaVuCopy.get(b) + 1);
-						
-				} else {
-					dejaVu.put(b, 1);
-				}
-			}
-
-		}
+	
 
 		Grille gr;
 		Set<Beam> beams;
@@ -422,7 +455,7 @@ public class A2023Day16b extends A2023 {
 					.getMaxIntegerFromList(gr.points.stream().map(Point::getY).collect(Collectors.toList()));
 			for (int j = 0; j <= jmax; j++) {
 				for (int i = 0; i <= imax; i++) {
-					Beam isCurBeam = new Beam(new Point(i, j, ""));
+					Beam isCurBeam = new Beam(new Point(i, j, ""),true);
 					if (beams.stream().map(b -> b.pos).toList().contains(isCurBeam.pos)) {
 
 						for (Beam be : beams) {
@@ -531,7 +564,7 @@ public class A2023Day16b extends A2023 {
 	@ToString
 	private static class Beam {
 		Point pos;
-
+		boolean justAdded=true;
 		@Override
 		public int hashCode() {
 			return Objects.hash(pos);

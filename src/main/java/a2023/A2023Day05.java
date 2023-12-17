@@ -43,7 +43,6 @@ public class A2023Day05 extends A2023 {
 		tg.evaluerSeeds();
 		Long res = Long.MAX_VALUE;
 		for (Seed sd : tg.seeds) {
-			/// System.out.println(sd);
 			if (sd.getCorrespondingValues().get("humidity-to-location") < res) {
 				res = sd.getCorrespondingValues().get("humidity-to-location");
 			}
@@ -108,11 +107,8 @@ public class A2023Day05 extends A2023 {
 		Long res = Long.MAX_VALUE;
 		Long from = MesOutils.getMinLongFromList(tg.seedRanges.stream().map(SeedRange::getMinRange).toList()); // 
 		Long to = MesOutils.getMaxLongFromList(tg.seedRanges.stream().map(SeedRange::getMaxRange).toList());
-		System.out.println(from + " " + to);
 		for (Long lg = from; lg < to; lg++) {
-			if (lg % 1000000 == 0) {
-				System.out.println((lg - from) / (to - from) * 100 + " " + lg + " " + res);
-			}
+			
 			for (SeedRange sdr : tg.getSeedRanges()) {
 				if (sdr.isInRange(lg)) {
 					Seed s = new Seed();
@@ -122,7 +118,6 @@ public class A2023Day05 extends A2023 {
 					Long v = s.getCorrespondingValues().get("humidity-to-location");
 					if (v < res) {
 						res = v;
-						System.out.println("res " + res + " " + lg);
 					}
 				}
 			}
@@ -270,7 +265,6 @@ public class A2023Day05 extends A2023 {
 							}
 
 						}
-						// System.out.println(sd.getCorrespondingValues());
 						if (!catVus.contains(categorie)) {
 							nextValue = value;
 							catVus.add(categorie);
@@ -300,7 +294,6 @@ public class A2023Day05 extends A2023 {
 							}
 
 						}
-						// System.out.println(sd.getCorrespondingValues());
 						if (!catVus.contains(categorie)) {
 							nextValue = value;
 							catVus.add(categorie);
@@ -378,15 +371,11 @@ public class A2023Day05 extends A2023 {
 				for (Instruction ins : instructionsByCategory.get(cate.get(i))) {
 					if (sd.curVal >= ins.getSourceRangeStart()
 							&& sd.curVal < ins.getSourceRangeStart() + ins.getRangeLength()) {
-						// System.out.println(cate.get(i));
-						// System.out.println(sd);
-						// System.out.println(ins);
 						sd.nextCurVal = sd.curVal - ins.getSourceRangeStart() + ins.getDestinationRangeStart();
 						sd.correspondingValues.put(cate.get(i), sd.nextCurVal);
 					}
 
 				}
-				// System.out.println(sd.getCorrespondingValues());
 				if (!sd.getCorrespondingValues().containsKey(cate.get(i))) {
 					sd.nextCurVal = sd.curVal;
 					sd.correspondingValues.put(cate.get(i), sd.curVal);
