@@ -11,7 +11,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import a2023.A2023Day17b.Point;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +21,8 @@ import outils.UniformCostSearch;
 import outils.UniformCostSearch.Graph;
 
 public class A2023Day17 extends A2023 {
+
+	
 
 	public A2023Day17(int day) {
 		super(day);
@@ -103,28 +104,19 @@ public class A2023Day17 extends A2023 {
 
 			LinkedList<State> queue = new LinkedList<>();
 			queue.add(stateInitial);
-			int sumDiag = 0;
-			for (int j = 1; j < 2 * (imax + 1) - 1; j++) {
-				if (j % 2 == 0) {
-					sumDiag += getPoint(points, j / 2, j / 2).get().cost;
-				} else {
-					sumDiag += getPoint(points, (j + 1) / 2, (j + 1) / 2 - 1).get().cost;
-				}
-			}
 			Set<State> visitedStates = new HashSet<>();
 			visitedStates.add(stateInitial);
-			Long minCost = (long) sumDiag;//1564
-			minCost=1200L;
+			Long minCost = 1100L;
 			int k = 0;
 			while (!queue.isEmpty()) {
-				
+
 				State stateActuel = queue.poll();// on recupere le noeud à étudier
 				if (k % 2000 == 0) {
-					System.out.println("queue size : " + queue.size()+" cost stateActuel "+stateActuel.cost);
+					System.out.println("queue size : " + queue.size() + " cost stateActuel " + stateActuel.cost);
 				}
 				k++;
+				queue = reduceSize(queue);
 				if (stateActuel.cost < minCost) {
-					// if (minCost >1000000000L && stateActuel.cost < minCost) {
 					if (stateActuel.position.indice == (imax + 1) * (imax + 1) - 1) {
 						if (stateActuel.cost < minCost) {
 							afficherChemin(stateActuel.chemin, stateActuel.id);
@@ -171,12 +163,7 @@ public class A2023Day17 extends A2023 {
 							List<Point> chemin = new ArrayList<Point>(stateActuel.chemin);
 							chemin.add(nextState.position);
 							nextState.setChemin(chemin);
-							/*
-							 * if(nextStateId==26515) { System.out.println(nextState);
-							 * afficherChemin(stateActuel.chemin, nextStateId); System.out.println(nbDown);
-							 * }
-							 */
-							if (nbDown < 4 && nbRigth < 4 && detour < 3 && ajoutable(nextState, visitedStates)) {
+							if (nbDown < 4 && nbRigth < 4 && detour < 5 && ajoutable(nextState, visitedStates)) {
 								nextState.setId(nextStateId);
 								queue.add(nextState);
 								visitedStates.add(nextState);
@@ -186,6 +173,24 @@ public class A2023Day17 extends A2023 {
 				}
 			}
 			return minCost;
+		}
+
+		private LinkedList<State> reduceSize(LinkedList<State> queue) {
+			LinkedList<State> q = new LinkedList<>();
+			Long mediumC = 0L;
+			if (queue.size() > 5000) {
+				for (State s : queue) {
+					mediumC += s.cost;
+				}
+				mediumC = mediumC / queue.size();
+				for (State s : queue) {
+					if (s.cost < mediumC) {
+						q.add(s);
+					}
+				}
+				return q;
+			}
+			return queue;
 		}
 
 		public void afficherChemin(List<Point> chemin, Long id) {
@@ -221,15 +226,15 @@ public class A2023Day17 extends A2023 {
 			if (nextState.last4actions.stream().filter(s -> s.equals("v")).toList().size() == 4) {
 				return false;
 			}
-			if (nextState.last4actions.size() == 4 ) {
-				if( nextState.last4actions.get(3).equals(">") && nextState.last4actions.get(2).equals("<") )
-				return false;
-				if( nextState.last4actions.get(3).equals("<") && nextState.last4actions.get(2).equals(">") )
-				return false;
-				if( nextState.last4actions.get(3).equals("^") && nextState.last4actions.get(2).equals("v") )
-				return false;
-				if( nextState.last4actions.get(3).equals("v") && nextState.last4actions.get(2).equals("^") )
-				return false;
+			if (nextState.last4actions.size() == 4) {
+				if (nextState.last4actions.get(3).equals(">") && nextState.last4actions.get(2).equals("<"))
+					return false;
+				if (nextState.last4actions.get(3).equals("<") && nextState.last4actions.get(2).equals(">"))
+					return false;
+				if (nextState.last4actions.get(3).equals("^") && nextState.last4actions.get(2).equals("v"))
+					return false;
+				if (nextState.last4actions.get(3).equals("v") && nextState.last4actions.get(2).equals("^"))
+					return false;
 			}
 			if (nextState.last4actions.stream().filter(s -> s.equals("v")).toList().size() == 4) {
 				return false;
@@ -260,8 +265,6 @@ public class A2023Day17 extends A2023 {
 			}
 			return true;
 		}
-
-	
 
 		private List<Point> getVoisins(Point p) {
 			return points.stream().filter(q -> !q.equals(p) && (Math.abs(p.x - q.x) + Math.abs(p.y - q.y) == 1))
