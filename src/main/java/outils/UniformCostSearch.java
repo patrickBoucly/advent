@@ -1,19 +1,21 @@
 package outils;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.PriorityQueue;
 
 import lombok.ToString;
-
 
 public class UniformCostSearch {
 	@ToString
 	public static class Graph {
 
 		private HashMap<Integer, Node> nodeLookup = new HashMap<>();
+
 		@ToString
 		public class Node {
 			private int id;
@@ -24,7 +26,7 @@ public class UniformCostSearch {
 				this.id = id;
 			}
 		}
-		
+
 		public class Edge {
 			Node toNode;
 			int cost;
@@ -38,16 +40,24 @@ public class UniformCostSearch {
 			public String toString() {
 				return "Edge [cost=" + cost + "]";
 			}
-			
+
 		}
 
 		public class Pair {
 			Node node;
 			int cost;
+			LinkedList<Node> lastAddedNodes;
 
 			public Pair(Node node, int cost) {
 				this.node = node;
 				this.cost = cost;
+			}
+
+			// Ajouter un constructeur prenant une liste de nœuds comme troisième paramètre
+			public Pair(Node node, int cost, LinkedList<Node> lastAddedNodes) {
+				this.node = node;
+				this.cost = cost;
+				this.lastAddedNodes = lastAddedNodes;
 			}
 		}
 
@@ -61,7 +71,8 @@ public class UniformCostSearch {
 		public void addNode(int id) {
 			nodeLookup.put(id, new Node(id));
 		}
-		public void addNode(int id,Node node) {
+
+		public void addNode(int id, Node node) {
 			nodeLookup.put(id, node);
 		}
 
@@ -104,110 +115,86 @@ public class UniformCostSearch {
 
 			return end.cost;
 		}
-		
-		public int uniformSearchC(int start, int end,int imax) {
-			return uniformSearchC(getNode(start), getNode(end),imax);
+
+		public int uniformSearchC(int start, int end, int indice) {
+			return uniformSearchC(getNode(start), getNode(end), indice);
 		}
-		private int uniformSearchC(Node start, Node end,int imax) {
-			HashSet<Node> visited = new HashSet<>();
-			LinkedList<Node> visitedL = new LinkedList<>();
+
+		private int uniformSearchC(Node start, Node end, int indice) {
+			HashSet<LinkedList<Node>> visited = new HashSet<>();
 			PriorityQueue<Pair> queue = new PriorityQueue<>(new NodeComparator());
-			queue.add(new Pair(start, 0));
+			queue.add(new Pair(start, 0, new LinkedList<>()));
 
 			while (!queue.isEmpty()) {
 				Pair pair = queue.poll();
 				Node node = pair.node;
-				if (respectePasLaCondition(node.id,visitedL,imax))
-					continue;				
-				visited.add(node);
-				visitedL.add(node);
+				LinkedList<Node> lastAddedNodes = new LinkedList<>(pair.lastAddedNodes);
+
+
+				if (lastAddedNodes.size() >= 4) {					
+					if (areNodesAligned(lastAddedNodes.get(lastAddedNodes.size()-4), lastAddedNodes.get(lastAddedNodes.size()-1-3), lastAddedNodes.get(lastAddedNodes.size()-2),
+							lastAddedNodes.get(lastAddedNodes.size()-1), indice)) {
+						// Si les trois derniers nœuds sont alignés, ne pas ajouter le nœud actuel
+						continue;
+					} 
+					if(getDetour(lastAddedNodes,indice)>1) {
+						continue;
+					}
+					if(demitour(lastAddedNodes)) {
+						continue;
+					}
+				}	
 				node.cost = pair.cost;
 
 				for (Edge edge : node.adj) {
 					Node child = edge.toNode;
-					int cost = (pair.cost + edge.cost);
-					if(visitedL.size()>2 && visitedL.get(1).id==1) {
-						for(Node n:visitedL) {
-							System.out.println(n);
-						}
-					}
-					
-					if ( child.cost < cost && respectePasLaCondition(edge.toNode.id,visitedL,imax))
+					int cost = pair.cost + edge.cost;
+					lastAddedNodes.add(child);
+					if (visited.contains(lastAddedNodes) && child.cost < cost)
 						continue;
-					queue.add(new Pair(child, cost));
-				}
+					queue.add(new Pair(child, cost, new LinkedList<>(lastAddedNodes)));
 
+				}
 			}
 
 			return end.cost;
 		}
-		private boolean respectePasLaCondition(int vid, LinkedList<Node> visitedL,int imax) {
 
-			if (visitedL.size() < 4) {
+		private boolean demitour(LinkedList<Node> lastAddedNodes) {
+			if(lastAddedNodes.get(lastAddedNodes.size()-1).id-lastAddedNodes.get(lastAddedNodes.size()-2).id==
+					-1*lastAddedNodes.get(lastAddedNodes.size()-2).id-lastAddedNodes.get(lastAddedNodes.size()-3).id) {
+				return true;
+			}
+			return false;
+		}
+
+		private int getDetour(LinkedList<Node> lastAddedNodes, int indice) {
+			int detour=0;
+			for(int i=1;i<lastAddedNodes.size();i++) {
+				if (lastAddedNodes.get(i).id - lastAddedNodes.get(i-1).id == -(indice)) {
+					detour ++;
+				} else if (lastAddedNodes.get(i).id - lastAddedNodes.get(i-1).id == -1) {
+					detour ++;
+				}
+			}
+			return detour;
+		}
+
+		private boolean areNodesAligned(Node node1, Node node2, Node node3, Node node4, int indice) {
+			if (node1 == null || node2 == null || node3 == null || node4 == null) {
+				// Si l'un des nœuds est null, retourner false pour éviter la comparaison
 				return false;
 			}
 			
-		
-			int t = visitedL.get(visitedL.size() - 4).id;
-			int x = visitedL.get(visitedL.size() - 3).id;
-			int y = visitedL.get(visitedL.size() - 2).id;
-			int z = visitedL.get(visitedL.size() - 1).id;
-			if (t - x == 1 && x - y == 1 && y - z == 1 && z - vid == 1) {
+
+			if (node1.id - node2.id == 1 && node2.id - node3.id == 1 && node3.id - node4.id == 1) {
 				return true;
 			}
-			if (t - x == -1 && x - y == -1 && y - z == -1 && z - vid == -1) {
-				return true;
-			}
-			if (t - x == (imax + 1) && x - y == (imax + 1) && y - z == (imax + 1) && z - vid == (imax + 1)) {
-				return true;
-			}
-			if (t - x == -(imax + 1) && x - y == -(imax + 1) && y - z == -(imax + 1) && z - vid == -(imax + 1)) {
+			if (node1.id - node2.id == indice  && node2.id - node3.id == indice 
+					&& node3.id - node4.id == indice ) {
 				return true;
 			}
 			return false;
 		}
 	}
-
-	public static void main(String[] args) {
-		/*
-		Graph graph = new Graph();
-		// s
-		A2021Day15 d = new A2021Day15(15);
-		List<Point> p1 = d.getPoints(true);
-		System.out.println(p1);
-		List<Point> points = d.getAllPoints(p1, 5);
-		
-		points.sort(Comparator.comparing(Point::getY).thenComparing(Comparator.comparing(Point::getX)));
-		Cave c=new Cave(points);
-		 System.out.println(c);
-		for (int i = 0; i < points.size(); i++) {
-			graph.addNode(i);
-		}
-		int imax = MesOutils.getMaxIntegerFromList(points.stream().map(Point::getX).collect(Collectors.toList()));
-		points.sort(Comparator.comparing(Point::getY).thenComparing(Comparator.comparing(Point::getX)));
-		for (int j = 0; j <= imax; j++) {
-			for (int i = 0; i < imax; i++) {
-				Point mpt=Point.getPoint(i + 1, j, points);
-				graph.addEdge((imax+1) * j + i, (imax+1) * j + i + 1, mpt.getValue());
-				mpt=Point.getPoint(i, j , points);
-				graph.addEdge( (imax+1) * j + i + 1,(imax+1) * j + i, mpt.getValue());
-			//	graph.addEdge((imax+1) * j + i, (imax+1) * j + i + 1, points.get((imax+1) * j + i + 1).getValue());
-			}
-		}
-		points.sort(Comparator.comparing(Point::getX).thenComparing(Comparator.comparing(Point::getY)));
-		for (int i = 0; i <= imax; i++) {
-			for (int j = 0; j < imax; j++) {
-				Point mpt=Point.getPoint(i, j + 1, points);
-				graph.addEdge((imax+1) * j + i, (imax+1) * (j + 1) + i, mpt.getValue());
-				mpt=Point.getPoint(i, j , points);
-				graph.addEdge((imax+1) * (j + 1) + i,(imax+1) * j + i, mpt.getValue());
-			//	graph.addEdge((imax+1) * j + i, (imax+1) * j + i + 1, points.get((imax+1) * i + j + 1).getValue());
-			}
-		}
-		System.out.println("Cost calc");
-		int cost = graph.uniformSearch(0, points.size()-1);
-		System.out.println("Cost : " + cost);
-		*/
-	}
-
 }

@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import a2023.A2023Day17.State;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,11 +23,11 @@ import outils.UniformCostSearch.Graph;
 
 public class A2023Day17 extends A2023 {
 
-	
-
 	public A2023Day17(int day) {
 		super(day);
 	}
+
+	public static final int MAX_DETOUR = 3;
 
 	public static void main(String[] args0) {
 		A2023Day17 d = new A2023Day17(17);
@@ -115,19 +116,19 @@ public class A2023Day17 extends A2023 {
 					System.out.println("queue size : " + queue.size() + " cost stateActuel " + stateActuel.cost);
 				}
 				k++;
-				queue = reduceSize(queue);
+				// queue = reduceSize(queue);
 				if (stateActuel.cost < minCost) {
 					if (stateActuel.position.indice == (imax + 1) * (imax + 1) - 1) {
 						if (stateActuel.cost < minCost) {
 							afficherChemin(stateActuel.chemin, stateActuel.id);
 							minCost = stateActuel.cost;
 							System.out.println("nouveau min! :" + minCost);
-							System.out.println(stateActuel.last4actions);
+							System.out.println(stateActuel.actions);
 						}
 					} else {
 
 						List<Point> voisins = getVoisins(stateActuel.position);
-						List<Point> nextCandidats = new ArrayList<Point>();
+						List<Point> nextCandidats = new ArrayList<>();
 						for (Point v : voisins) {
 							nextCandidats.add(v);
 						}
@@ -137,36 +138,37 @@ public class A2023Day17 extends A2023 {
 							int nbRigth = 0;
 							int detour = 0;
 							State nextState = new State();
-							List<String> last3actions = new ArrayList<String>(stateActuel.last4actions);
+							List<String> nextActions = new ArrayList<>(stateActuel.actions);
 							if (next.indice - stateActuel.position.indice == 1) {
 								nbRigth = stateActuel.nbRigth + 1;
-								last3actions.add(">");
+								nextActions.add(">");
 							} else if (next.indice - stateActuel.position.indice == (imax + 1)) {
 								nbDown = stateActuel.nbDown + 1;
-								last3actions.add("v");
+								nextActions.add("v");
 							} else if (next.indice - stateActuel.position.indice == -(imax + 1)) {
 								detour = stateActuel.detour + 1;
-								last3actions.add("^");
+								nextActions.add("^");
 							} else if (next.indice - stateActuel.position.indice == -1) {
 								detour = stateActuel.detour + 1;
-								last3actions.add("<");
+								nextActions.add("<");
 							}
-							if (last3actions.size() > 4) {
-								last3actions = last3actions.subList(1, 5);
-							}
-							nextState.setLast4actions(last3actions);
+
+							nextState.setActions(nextActions);
 							nextState.cost = stateActuel.cost + next.cost;
 							nextState.setNbDown(nbDown);
 							nextState.setNbRigth(nbRigth);
 							nextState.setPosition(next);
 							nextState.setDetour(detour);
-							List<Point> chemin = new ArrayList<Point>(stateActuel.chemin);
+							List<Point> chemin = new ArrayList<>(stateActuel.chemin);
 							chemin.add(nextState.position);
 							nextState.setChemin(chemin);
-							if (nbDown < 4 && nbRigth < 4 && detour < 5 && ajoutable(nextState, visitedStates)) {
+							if (nbDown < 4 && nbRigth < 4 && detour < MAX_DETOUR
+									&& ajoutable(nextState, queue)) {
+
 								nextState.setId(nextStateId);
 								queue.add(nextState);
 								visitedStates.add(nextState);
+
 							}
 						}
 					}
@@ -219,27 +221,51 @@ public class A2023Day17 extends A2023 {
 			System.out.println(res.toString());
 		}
 
-		private boolean ajoutable(State nextState, Set<State> visitedStates) {
-			if (nextState.last4actions.stream().filter(s -> s.equals(">")).toList().size() == 4) {
+		private boolean ajoutable(State nextState, LinkedList<State> queue) {
+			if (nextState.actions.size() < 4) {
+				if (nextState.actions.size() == 3) {
+					if (nextState.actions.get(2).equals(">") && nextState.actions.get(1).equals("<"))
+						return false;
+					if (nextState.actions.get(2).equals("<") && nextState.actions.get(1).equals(">"))
+						return false;
+					if (nextState.actions.get(2).equals("^") && nextState.actions.get(1).equals("v"))
+						return false;
+					if (nextState.actions.get(2).equals("v") && nextState.actions.get(1).equals("^"))
+						return false;
+				}
+				if (nextState.actions.size() == 2) {
+					if (nextState.actions.get(0).equals(">") && nextState.actions.get(1).equals("<"))
+						return false;
+					if (nextState.actions.get(0).equals("<") && nextState.actions.get(1).equals(">"))
+						return false;
+					if (nextState.actions.get(0).equals("^") && nextState.actions.get(1).equals("v"))
+						return false;
+					if (nextState.actions.get(0).equals("v") && nextState.actions.get(1).equals("^"))
+						return false;
+				}
+				return true;
+			}
+			int h = nextState.actions.size();
+			List<String> last4 = nextState.actions.subList(h - 4, h);
+			if (last4.stream().filter(s -> s.equals(">")).collect(Collectors.toList()).size() == 4) {
 				return false;
 			}
-			if (nextState.last4actions.stream().filter(s -> s.equals("v")).toList().size() == 4) {
+			if (last4.stream().filter(s -> s.equals("v")).collect(Collectors.toList()).size() == 4) {
 				return false;
 			}
-			if (nextState.last4actions.size() == 4) {
-				if (nextState.last4actions.get(3).equals(">") && nextState.last4actions.get(2).equals("<"))
+		
+				if (last4.get(3).equals(">") && last4.get(2).equals("<"))
 					return false;
-				if (nextState.last4actions.get(3).equals("<") && nextState.last4actions.get(2).equals(">"))
+				if (last4.get(3).equals("<") && last4.get(2).equals(">"))
 					return false;
-				if (nextState.last4actions.get(3).equals("^") && nextState.last4actions.get(2).equals("v"))
+				if (last4.get(3).equals("^") && last4.get(2).equals("v"))
 					return false;
-				if (nextState.last4actions.get(3).equals("v") && nextState.last4actions.get(2).equals("^"))
+				if (last4.get(3).equals("v") && last4.get(2).equals("^"))
 					return false;
-			}
-			if (nextState.last4actions.stream().filter(s -> s.equals("v")).toList().size() == 4) {
-				return false;
-			}
-			for (State v : visitedStates.stream().filter(v -> v.position.equals(nextState.position)).toList()) {
+			
+
+			for (State v : queue.stream().filter(v -> v.position.equals(nextState.position))
+					.collect(Collectors.toList())) {
 				if (v.nbDown == nextState.nbDown) {
 					if (v.nbRigth == nextState.nbRigth) {
 						if (v.cost < nextState.cost) {
@@ -268,7 +294,7 @@ public class A2023Day17 extends A2023 {
 
 		private List<Point> getVoisins(Point p) {
 			return points.stream().filter(q -> !q.equals(p) && (Math.abs(p.x - q.x) + Math.abs(p.y - q.y) == 1))
-					.toList();
+					.collect(Collectors.toList());
 		}
 
 		Set<Point> points;
@@ -284,7 +310,7 @@ public class A2023Day17 extends A2023 {
 	@ToString
 	public static class State {
 		Point position;
-		List<String> last4actions = new ArrayList<>();
+		List<String> actions = new ArrayList<>();
 		int nbDown;
 		int nbRigth;
 		Long cost;
@@ -319,27 +345,25 @@ public class A2023Day17 extends A2023 {
 			graph.addNode(i);
 		}
 		startAndEnd.sort(null);
-		for (Point p : points) {
-			for (Point p2 : points) {
-				if (sontVoisins(p, p2)) {
-					graph.addEdge(getRang(p, pts), getRang(p2, pts), p2.cost);
-					graph.addEdge(getRang(p2, pts), getRang(p, pts), p.cost);
+		for (int i = 0; i <= imax; i++) {
+			for (int j = 0; j <= jmax; j++) {
+				Optional<Point> pSource = getPoint(points, i, j);
+				Optional<Point> pH = getPoint(points, i, j - 1);
+				Optional<Point> pB = getPoint(points, i, j + 1);
+				Optional<Point> pG = getPoint(points, i - 1, j);
+				Optional<Point> pD = getPoint(points, i + 1, j);
+				if (pSource.isPresent()) {
+					for (Optional<Point> o : Arrays.asList(pH, pB, pD, pG))
+						if (o.isPresent()) {
+							graph.addEdge(getRang(pSource.get(), pts), getRang(o.get(), pts), o.get().cost);
+						}
 				}
 			}
+
 		}
 		startAndEnd.add(0);
 		startAndEnd.add(pts.size() - 1);
 		return List.of(Math.abs(startAndEnd.get(0)), startAndEnd.get(1));
-	}
-
-	private boolean sontVoisins(Point p, Point p2) {
-		if (p.equals(p2)) {
-			return false;
-		}
-		if (Math.abs(p.x - p2.x) + Math.abs(p.y - p2.y) == 1) {
-			return true;
-		}
-		return false;
 	}
 
 	public static int getRang(Point p, List<Point> pts) {

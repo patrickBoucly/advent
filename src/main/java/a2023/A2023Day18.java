@@ -25,7 +25,7 @@ public class A2023Day18 extends A2023 {
 		// System.out.println(d.s1(true));
 		// too low
 		long startTime = System.currentTimeMillis();
-		// d.s1(true);
+		System.out.println(d.s1(true));
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
@@ -39,24 +39,14 @@ public class A2023Day18 extends A2023 {
 	public long s1(boolean b) {
 		List<String> inputL = Arrays.asList(getInput(b).split("\n")).stream().collect(Collectors.toList());
 		TheGame tg = getTheGame(inputL);
-		tg.creuser();
-		// tg.creuserInside();
-		// System.out.println(tg);
-		return tg.shoelace() + 1 - tg.cubes.size() / 2 + tg.cubes.size();
+		tg.creuserCoin();
+		return tg.shoelace() + 1 +tg.compterCubeBord() / 2 ;
 	}
 
 	public long s2(boolean b) {
 		List<String> inputL = Arrays.asList(getInput(b).split("\n")).stream().collect(Collectors.toList());
 		TheGame tg = getTheGame2(inputL);
 		tg.creuserCoin();
-		for (Instruction in : tg.insts) {
-			System.out.println(in);
-		}
-		for (int i=0;i< tg.cubes.size();i++) {
-			System.out.println(tg.cubes.get(i));
-		}
-		// tg.creuserInside();
-		// System.out.println(tg);
 	return tg.shoelace() + 1 + tg.compterCubeBord() / 2 ;
 	}
 
@@ -113,7 +103,7 @@ public class A2023Day18 extends A2023 {
 				ins.setDir(3);
 			}
 			ins.setQtt(Integer.parseInt(sp[1].trim()));
-			ins.setRgb(sp[2].replace("(", "").replace(")", ""));
+			ins.setRgb("");
 			insts.add(ins);
 		}
 		tg.setInsts(insts);
