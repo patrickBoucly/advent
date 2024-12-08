@@ -2,8 +2,12 @@ package a2024;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,20 +21,19 @@ public class A2024Day7 extends A2024 {
 
 	public static void main(String[] args0) {
 		A2024Day7 d = new A2024Day7(7);
-		System.out.println(d.s1(true));
+		//System.out.println(d.s1(true));
 		long startTime = System.currentTimeMillis();
 		// d.s1(true);
 		long endTime = System.currentTimeMillis();
 		long timeS1 = endTime - startTime;
 		startTime = System.currentTimeMillis();
-		//System.out.println(d.s2(true));
+		System.out.println(d.s2(true));
 		endTime = System.currentTimeMillis();
 		System.out.println("Day " + d.day + " run 1 took " + timeS1 + " milliseconds, run 2 took "
 				+ (endTime - startTime) + " milliseconds");
 	}
 
 	public long s1(boolean b) {
-	    // Récupération simplifiée de l'input
 	    List<String> input = Arrays.stream(getInput(b).trim().split("\n"))
 	            .map(String::trim)
 	            .toList();
@@ -43,25 +46,27 @@ public class A2024Day7 extends A2024 {
 	
 
 	private Game getGame(List<String> input) {
-		List<Equation> eqs=new ArrayList<>();
-		for(String s:input) {
-			String[] elements=s.split(":")[1].trim().split(" ");
-			List<Long> longElement=new ArrayList<Long>();
-			for(String e:elements) {
-				longElement.add(Long.parseLong(e.trim()));
-			}
-			Equation eq=new Equation(Long.parseLong(s.split(":")[0].trim()), longElement, false);
-			eqs.add(eq);
-			
-		}
-		return new Game(eqs,0L);
+		List<Equation> eqs = new ArrayList<>();
+	    for (String s : input) {
+	        String[] parts = s.split(":");
+	        long result = Long.parseLong(parts[0].trim());
+	        List<Long> longElements = Arrays.stream(parts[1].trim().split(" "))
+	                                        .map(String::trim)
+	                                        .map(Long::parseLong)
+	                                        .toList();
+	        eqs.add(new Equation(result, longElements, false));
+	    }
+	    return new Game(eqs, 0L);
 	}
 
-	public int s2(boolean b) {
-	    List<String> input = Arrays.stream(getInput(b).trim().split("\n"))
+	public Long s2(boolean b) {
+		List<String> input = Arrays.stream(getInput(b).trim().split("\n"))
 	            .map(String::trim)
 	            .toList();
-	    return 0;
+	    Game g=getGame(input);
+	    System.out.println(g);
+	    g.solve2();
+	    return g.res1;
 	}
 
 	@Data
@@ -70,8 +75,11 @@ public class A2024Day7 extends A2024 {
 		List<Equation> equations;
 	    Long res1=0L;
 	    public void solve1() {
+	    	int cpt=0;
+	    	equations.sort(Comparator.comparingInt(e -> ((Equation) e).getElement().size()));
 			for(Equation eq:equations) {
-				System.out.println(eq);
+				cpt++;
+				System.out.println("liste "+cpt);
 				solve1Eq(eq);
 				if(eq.solvable) {
 					
@@ -81,62 +89,156 @@ public class A2024Day7 extends A2024 {
 			}
 			
 		}
-		private void solve1Eq(Equation eq) {
-			if(!(eq.result<eq.calculerPlus() || eq.result>eq.calculerFois())) {
-				 AtomicBoolean stopSignal = new AtomicBoolean(false);
-			        MesOutils.generatePermutations(eq.element, permutation -> {
-			            eq.testList(permutation);
-			            if (eq.isSolvable()) {
-			                stopSignal.set(true); 
-			            }
-			        }, stopSignal);
+		public void solve2() {
+			int cpt=0;
+	    	equations.sort(Comparator.comparingInt(e -> ((Equation) e).getElement().size()));
+			for(Equation eq:equations) {
+				cpt++;
+				System.out.println("liste "+cpt);
+				solve2Eq(eq);
+				if(eq.solvable) {
+					
+					res1+=eq.result;
+					System.out.println(res1);
+				}
 			}
 			
 		}
-		
+		private void solve2Eq(Equation eq) {
+			AtomicBoolean stopSignal = new AtomicBoolean(false);
+			solveEquationWithOperators2(eq.element, eq.result, solution -> {
+		        System.out.println("Solution trouvée : " + solution);
+		        eq.setSolvable(true);
+		    }, stopSignal);
+			
+		}
+		private void solve1Eq(Equation eq) {
+			AtomicBoolean stopSignal = new AtomicBoolean(false);
+			solveEquationWithOperators(eq.element, eq.result, solution -> {
+		        System.out.println("Solution trouvée : " + solution);
+		        eq.setSolvable(true);
+		    }, stopSignal);
+			
+		}
+		public static void solveEquationWithOperators(
+		        List<Long> numbers, Long target, Consumer<String> consumer, AtomicBoolean stopSignal) {
+		    explore(0, numbers, target, 0L, "", consumer, stopSignal);
+		}public static void solveEquationWithOperators2(
+		        List<Long> numbers, Long target, Consumer<String> consumer, AtomicBoolean stopSignal) {
+		    explore2(0, numbers, target, 0L, "", consumer, stopSignal);
+		}
+
+		private static void explore(
+		        int index,
+		        List<Long> numbers,
+		        Long target,
+		        Long currentResult,
+		        String currentExpression,
+		        Consumer<String> consumer,
+		        AtomicBoolean stopSignal) {
+
+		    // Arrêter si une solution est déjà trouvée
+		    if (stopSignal.get()) return;
+
+		    // Si tous les nombres ont été utilisés, vérifier si le résultat correspond à la cible
+		    if (index == numbers.size()) {
+		        if (currentResult.equals(target)) {
+		            consumer.accept(currentExpression); // Envoyer l'expression valide
+		            stopSignal.set(true); // Arrêter si une solution suffit
+		        }
+		        return;
+		    }
+
+		    // Récupérer le nombre courant
+		    Long currentNumber = numbers.get(index);
+
+		    // Appliquer l'opérateur "+"
+		    explore(
+		            index + 1,
+		            numbers,
+		            target,
+		            currentResult + currentNumber,
+		            currentExpression.isEmpty() ? "" + currentNumber : currentExpression + " + " + currentNumber,
+		            consumer,
+		            stopSignal
+		    );
+
+		    // Appliquer l'opérateur "*"
+		    explore(
+		            index + 1,
+		            numbers,
+		            target,
+		            currentResult * (index == 0 ? 1 : currentNumber), // Multiplication spéciale pour le 1er élément
+		            currentExpression.isEmpty() ? "" + currentNumber : currentExpression + " * " + currentNumber,
+		            consumer,
+		            stopSignal
+		    );
+		}
+		private static void explore2(
+		        int index,
+		        List<Long> numbers,
+		        Long target,
+		        Long currentResult,
+		        String currentExpression,
+		        Consumer<String> consumer,
+		        AtomicBoolean stopSignal) {
+
+		    // Debug : Afficher les paramètres actuels
+		    //System.out.println("Index: " + index + ", Result: " + currentResult + ", Expression: " + currentExpression);
+
+		    if (stopSignal.get()) return;
+
+		    if (index == numbers.size()) {
+		        if (currentResult.equals(target)) {
+		            System.out.println("Expression valide trouvée : " + currentExpression);
+		            consumer.accept(currentExpression);
+		            stopSignal.set(true);
+		        }
+		        return;
+		    }
+
+		    Long currentNumber = numbers.get(index);
+
+		    explore2(
+		            index + 1,
+		            numbers,
+		            target,
+		            currentResult + currentNumber,
+		            currentExpression.isEmpty() ? "" + currentNumber : currentExpression + " + " + currentNumber,
+		            consumer,
+		            stopSignal
+		    );
+
+		    explore2(
+		            index + 1,
+		            numbers,
+		            target,
+		            currentResult * currentNumber,
+		            currentExpression.isEmpty() ? "" + currentNumber : currentExpression + " * " + currentNumber,
+		            consumer,
+		            stopSignal
+		    );
+
+		    if (!currentExpression.isEmpty()) {
+		        Long concatenatedResult = Long.parseLong(currentResult + "" + currentNumber);
+		       // System.out.println("Concaténation : " + currentResult + " || " + currentNumber + " = " + concatenatedResult);
+		        explore2(
+		                index + 1,
+		                numbers,
+		                target,
+		                concatenatedResult,
+		                currentExpression + " || " + currentNumber,
+		                consumer,
+		                stopSignal
+		        );
+		    }
+		}
 	}
 
 
 	@Data
 	@AllArgsConstructor
 	private static class Equation {
-	    public void testList(List<Long> l) {
-	    	List<List<String>> choixOperators=MesOutils.cartesianProduct(operators,l.size()-1);
-			for(List<String> ops:choixOperators) {
-				Long cal=calculer(l,ops);
-				if(cal.equals(result)) {
-					solvable=true;
-					break;
-				}
-			}
-			
-		}
-		public Long calculerFois() {
-			Long cf=element.get(0);
-			for(int i=1;i<element.size();i++) {
-				cf=cf*element.get(i);
-			}
-			return cf;
-		}
-		public Long calculerPlus() {
-			Long cf=element.get(0);
-			for(int i=1;i<element.size();i++) {
-				cf=cf+element.get(i);
-			}
-			return cf;
-		}
-		private static Long calculer(List<Long> l, List<String> ops) {
-			Long res=l.get(0);
-			for(int i=0;i<ops.size();i++) {
-				if(ops.get(i).equals("+")) {
-					res=res+l.get(i+1);
-				}else {
-					res=res*l.get(i+1);
-				}
-				
-			}
-			return res;
-		}
 		Long result;
 	    List<Long> element;
 	    boolean solvable;

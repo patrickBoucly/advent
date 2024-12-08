@@ -132,19 +132,6 @@ public class A2024Day6 extends A2024 {
 	    return null;
 	}
 
-	private Set<Point> getPointsInput(List<String> input) {
-	    Set<Point> pts = new HashSet<>();
-	    for (int j = 0; j < input.size(); j++) {
-	        String s = input.get(j);
-	        for (int i = 0; i < s.length(); i++) {
-	            char c = s.charAt(i);
-	            boolean obstacle = (c == '#');
-	            pts.add(new Point(i, j, obstacle));
-	        }
-	    }
-	    return pts;
-	}
-
 	@Data
 	@AllArgsConstructor
 	public static class Game {
