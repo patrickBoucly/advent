@@ -5,6 +5,13 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.ArrayRealVector;
+import org.apache.commons.math3.linear.DecompositionSolver;
+import org.apache.commons.math3.linear.LUDecomposition;
+import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.linear.RealVector;
+
 public class MesOutils {
 	public static Integer getMaxIntegerFromList(List<Integer> listOfIntegers) {
 		return listOfIntegers.stream().mapToInt(v -> v).max().getAsInt();
@@ -117,18 +124,28 @@ public class MesOutils {
             used[i] = false;
         }
     }
-	/*
-	 * public static long getMinOccuredLetter(String line) { InputStream
-	 * targetStream = new ByteArrayInputStream(line.getBytes()); return
-	 * targetStream. mapToLong(v ->
-	 * v).min().orElseThrow(NoSuchElementException::new); } public static long
-	 * getMaxOccuredLetter(String line) { return listOfLongs.stream().mapToLong(v ->
-	 * v).min().orElseThrow(NoSuchElementException::new); }
-	 * 
-	 * 
-	 * 
-	 * public static Stream GenerateStreamFromString(string s) { var stream = new
-	 * MemoryStream(); var writer = new StreamWriter(stream); writer.Write(s);
-	 * writer.Flush(); stream.Position = 0; return stream; }
-	 */
+    public static List<Long> solveLinearEquations(List<List<Long>> coefficients, List<Long> constants) {
+        // Convertir List<List<Long>> en double[][]
+        double[][] coefficientsArray = coefficients.stream()
+                .map(row -> row.stream().mapToDouble(Long::doubleValue).toArray())
+                .toArray(double[][]::new);
+
+        // Convertir List<Long> en double[]
+        double[] constantsArray = constants.stream().mapToDouble(Long::doubleValue).toArray();
+
+        // Résolution avec Apache Commons Math
+        RealMatrix matrix = new Array2DRowRealMatrix(coefficientsArray, false);
+        DecompositionSolver solver = new LUDecomposition(matrix).getSolver();
+        RealVector solutionVector = solver.solve(new ArrayRealVector(constantsArray));
+
+        // Convertir RealVector en List<Long>
+        List<Long> solution = new ArrayList<>();
+        for (int i = 0; i < solutionVector.getDimension(); i++) {
+            solution.add(Math.round(solutionVector.getEntry(i))); // Conversion en Long
+        }
+
+        return solution;
+    }
+
+ 
 }
