@@ -26,7 +26,7 @@ public class A2024Day16 extends A2024 {
 
 	public static void main(String[] args0) {
 		A2024Day16 d = new A2024Day16(16);
-		//System.out.println(d.s1(false));
+		// System.out.println(d.s1(false));
 		// too high 104512
 		long startTime = System.currentTimeMillis();
 		// d.s1(true);
@@ -77,7 +77,7 @@ public class A2024Day16 extends A2024 {
 
 	@Data
 	@AllArgsConstructor
-	private static class Game {
+	public static class Game {
 		Maps map;
 		Set<State> states;
 		State initialState;
@@ -126,11 +126,11 @@ public class A2024Day16 extends A2024 {
 				State stateActuel = ((LinkedList<State>) queue).removeLast();// on recupere le noeud à étudier
 				if (stateActuel.cost < 104000 || (stateActuel.actuelle.contenu.equals("E") && stateActuel.cost > 1)) {
 					if (stateActuel.actuelle.contenu.equals("S")) {
-						
-						if(stateActuel.cost.equals(103512L)) {
+
+						if (stateActuel.cost.equals(103512L)) {
 							dansItOpti.addAll(stateActuel.itineraire);
 						}
-						
+
 					} else {
 						Set<State> nextState = new HashSet<>();
 						Set<Position> voisins = map.getVoisins(stateActuel);
@@ -257,6 +257,128 @@ public class A2024Day16 extends A2024 {
 			System.out.println(res);
 
 		}
+
+		public long calculerRes181() {
+			// La queue contiendra tous les noeuds(=les states) à visiter
+			Queue<State> queue = new LinkedList<>();
+			queue.add(initialState);
+
+			// on ne visitera que les noeuds nouveaux afin de ne pas tourner en rond, donc
+			// on a besoin de sauvegarder l'ensemble des noeuds deja visités
+			Map<State, Long> visitedStates = new HashMap<>();
+			visitedStates.put(initialState, initialState.cost);
+			List<Long> cost = new ArrayList<>();
+			cost.add(Long.MAX_VALUE);
+			while (!queue.isEmpty()) { // on continue tant que la queue contient encore des noeuds à visiter (mais on
+										// peut spécifier un arrêt apres si on a trouvé un noeud cherché)
+
+				State stateActuel = ((LinkedList<State>) queue).removeLast();// on recupere le noeud à étudier
+				if (stateActuel.cost < 104000 || (stateActuel.actuelle.contenu.equals("E") && stateActuel.cost > 1)) {
+					if (stateActuel.actuelle.contenu.equals("S")) {
+						// afficherIt(stateActuel);
+						cost.add(stateActuel.cost);
+					} else {
+						Set<State> nextState = new HashSet<>();
+						Set<Position> voisins = map.getVoisins(stateActuel);
+						for (Position p : voisins) {
+							if (stateActuel.precedente == null) {
+
+								List<Position> it = new ArrayList<>();
+								it.addAll(stateActuel.itineraire);
+								it.add(p);
+								State aNextState = new State(p, stateActuel.actuelle, stateActuel.cost + 1, it);
+								nextState.add(aNextState);
+							} else {
+								List<Position> it = new ArrayList<>();
+								it.addAll(stateActuel.itineraire);
+								it.add(p);
+								State aNextState = new State(p, stateActuel.actuelle, stateActuel.cost, it);
+								if (p.x == stateActuel.precedente.x || p.y == stateActuel.precedente.y) {
+									aNextState.cost += 1;
+								} else {
+									aNextState.cost += 1;
+								}
+								nextState.add(aNextState);
+							}
+						}
+						for (State st : nextState) {
+							if (visitedStates.containsKey(st)) {
+								if (st.cost < visitedStates.get(st)) {
+									visitedStates.put(st, st.cost);
+									queue.add(st);
+								}
+							} else {
+								visitedStates.put(st, st.cost);
+								queue.add(st);
+							}
+
+						}
+					}
+				}
+			}
+			return MesOutils.getMinLongFromList(cost);
+		}
+
+		public long res201() {
+			Queue<State> queue = new LinkedList<>();
+			queue.add(initialState);
+
+			// on ne visitera que les noeuds nouveaux afin de ne pas tourner en rond, donc
+			// on a besoin de sauvegarder l'ensemble des noeuds deja visités
+			Map<State, Long> visitedStates = new HashMap<>();
+			visitedStates.put(initialState, initialState.cost);
+			List<Long> cost = new ArrayList<>();
+			cost.add(Long.MAX_VALUE);
+			while (!queue.isEmpty()) { // on continue tant que la queue contient encore des noeuds à visiter (mais on
+										// peut spécifier un arrêt apres si on a trouvé un noeud cherché)
+
+				State stateActuel = ((LinkedList<State>) queue).removeLast();// on recupere le noeud à étudier
+				if (stateActuel.cost < 104000 || (stateActuel.actuelle.contenu.equals("S") && stateActuel.cost > 1)) {
+					if (stateActuel.actuelle.contenu.equals("E")) {
+						// afficherIt(stateActuel);
+						cost.add(stateActuel.cost);
+					} else {
+						Set<State> nextState = new HashSet<>();
+						Set<Position> voisins = map.getVoisins(stateActuel);
+						for (Position p : voisins) {
+							if (stateActuel.precedente == null) {
+
+								List<Position> it = new ArrayList<>();
+								it.addAll(stateActuel.itineraire);
+								it.add(p);
+								State aNextState = new State(p, stateActuel.actuelle, stateActuel.cost + 1, it);
+								nextState.add(aNextState);
+							} else {
+								List<Position> it = new ArrayList<>();
+								it.addAll(stateActuel.itineraire);
+								it.add(p);
+								State aNextState = new State(p, stateActuel.actuelle, stateActuel.cost, it);
+								if (p.x == stateActuel.precedente.x || p.y == stateActuel.precedente.y) {
+									aNextState.cost += 1;
+								} else {
+									aNextState.cost += 1;
+								}
+								nextState.add(aNextState);
+							}
+						}
+						for (State st : nextState) {
+							if (visitedStates.containsKey(st)) {
+								if (st.cost < visitedStates.get(st)) {
+									visitedStates.put(st, st.cost);
+									queue.add(st);
+								}
+							} else {
+								visitedStates.put(st, st.cost);
+								queue.add(st);
+							}
+
+						}
+					}
+				}
+			}
+			return MesOutils.getMinLongFromList(cost);
+		}
+
 	}
 
 	@Data
@@ -298,6 +420,32 @@ public class A2024Day16 extends A2024 {
 				}
 			}
 			return Optional.empty();
+		}
+
+		public Set<Position> getVoisins(Position q) {
+			Set<Position> v = new HashSet<>();
+			for (Position p : mapPos) {
+				if (manDist(q, p.x, p.y) == 1) {
+					v.add(p);
+				}
+			}
+			return v;
+		}
+
+		public boolean ouvreUnChemin(Position q) {
+			Set<Position> v = getVoisins(q);
+			List<String> valide=List.of(".","S","E");
+			for (Position v1 : v) {
+				for (Position v2 : v) {
+					if (v1 != v2) {
+						if (manDist(v1, v2.x, v2.y)==2 &&  valide.contains(v1.contenu) && valide.contains(v2.contenu)) {
+							return true;
+						}
+						
+					}
+				}
+			}
+			return false;
 		}
 
 		public Set<Position> getVoisins(State s) {
@@ -342,7 +490,7 @@ public class A2024Day16 extends A2024 {
 
 	@Data
 	@AllArgsConstructor
-	private static class Position {
+	public static class Position {
 		int x;
 		int y;
 		String contenu;
