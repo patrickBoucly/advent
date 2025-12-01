@@ -41,10 +41,7 @@ public class A2024Day20 extends A2024 {
 		Map<Long, Long> saveSecCheatWays = new HashMap<>();
 		Long refTime = g.res201();
 		int cpt = 0;
-		List<Position> candidat = g.map.mapPos.stream().filter(p -> p.contenu.equals("#") && g.map.ouvreUnChemin(p))
-				.toList();
-		System.out.println(candidat.size());
-		for (Position p : candidat) {
+		for (Position p : g.map.mapPos) {
 			if (p.contenu.equals("#")) {
 				cpt++;
 				Game g2 = getGame(input, b, (int) input.size());
