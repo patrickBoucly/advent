@@ -5,9 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
-import outils.MesOutils;
 
 @Getter
 @Setter
@@ -64,14 +64,66 @@ public class A2019  {
 	public static void printDuration() {
 		String res="---------------------------------------------------------------";
 		res+="\n";
-		res+="-------------------Advent of Code 2021-------------------------";
+		res+="-------------------Advent of Code 2019-------------------------";
 		res+="\n";
 		res+="--------------------------TIMINGS-----------------------------";
 		res+="\n";
 		res+="---------------------------------------------------------------";
 		res+="\n";
 		int cpt=0;
+		/*
+		res+=getColoredLine(A2019Day01.getDuration(),1);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day02.getDuration(),2);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day03.getDuration(),3);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day04.getDuration(),4);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day05.getDuration(),5);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day06.getDuration(),6);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day07.getDuration(),7);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day08.getDuration(),8);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day09.getDuration(),9);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day10.getDuration(),10);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day11.getDuration(),11);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day12.getDuration(),12);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day13.getDuration(),13);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day14.getDuration(),14);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day15.getDuration(),15);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day16.getDuration(),16);
+		System.out.println(cpt++);
 		
+		res+=getColoredLine(A2019Day17.getDuration(),17);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day18.getDuration(),18);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day19.getDuration(),19);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day20.getDuration(),20);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day21.getDuration(),21);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day22.getDuration(),22);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day23.getDuration(),23);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day24.getDuration(),24);
+		System.out.println(cpt++);
+		res+=getColoredLine(A2019Day25.getDuration(),25);
+		*/
+		System.out.println(res);
 		
 	}
 	
