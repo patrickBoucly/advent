@@ -42,6 +42,11 @@ public class MesOutils {
 	public static long ppcm(long a, long b) {
 		return a * (b / pgcd(a, b));
 	}
+	
+	// Fonction pour calculer le PPCM (Plus Petit Commun Multiple)
+		public static Long parseIntToLong(int a) {
+			return Long.parseLong(String.valueOf(a));
+		}
 
 	public static long pgcdListe(List<Long> liste) {
 		if (liste == null || liste.isEmpty()) {
